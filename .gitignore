@@ -1,0 +1,17 @@
+# Variáveis de ambiente — contém tokens, NUNCA commitar
+.env
+.env.local
+.env.*.local
+
+# Dependências
+node_modules/
+
+# Vercel
+.vercel
+
+# Sistema
+Thumbs.db
+Desktop.ini
+
+.vercel
+.env*

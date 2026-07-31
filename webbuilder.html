@@ -1,0 +1,1654 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guedes WebBuilder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="templates-data.js"></script>
+<style>
+/* ============ DESIGN SYSTEM — Pulsedesk-Inspired ============ */
+:root{
+--bg:#080c14;--bg2:#0d1220;--bg3:rgba(255,255,255,.04);--bg-input:rgba(255,255,255,.03);
+--border:rgba(255,255,255,.06);--border-hover:rgba(255,255,255,.12);
+--text:rgba(255,255,255,.65);--dim:rgba(255,255,255,.35);--bright:#FFFFFF;
+--accent:#4C43F7;--accent-hover:#6359FF;--accent-glow:rgba(76,67,247,.2);
+--secondary:#56D9DF;--cyan-glow:rgba(86,217,223,.15);
+--green:#20C997;--warning:#F59E0B;--error:#EF4444;
+--r:12px;--r-card:20px;--r-btn:9999px;--r-modal:24px;
+--font:'Inter',system-ui,-apple-system,sans-serif;
+--shadow-card:0 1px 0 rgba(255,255,255,.04),0 4px 24px rgba(0,0,0,.3);
+--shadow-glow:0 0 60px rgba(76,67,247,.1);
+--transition:200ms cubic-bezier(.4,0,.2,1);
+--max-w:1280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+a{color:var(--accent);text-decoration:none}
+
+/* ============ ATMOSPHERE ============ */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+background:radial-gradient(circle at 50% -10%,rgba(88,166,255,.08),transparent 36%),
+radial-gradient(circle at 82% 18%,rgba(103,232,249,.04),transparent 28%),
+linear-gradient(180deg,#0b1020 0%,#080c14 42%,#0a0d13 100%);}
+
+/* ============ BUTTONS ============ */
+.btn{padding:11px 22px;border-radius:var(--r-btn);border:none;cursor:pointer;font-family:var(--font);font-weight:500;font-size:13px;transition:all var(--transition);display:inline-flex;align-items:center;justify-content:center;gap:7px;letter-spacing:.01em}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(76,67,247,.25)}
+.btn-p:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 8px 24px rgba(76,67,247,.35)}
+.btn-p:active{transform:translateY(0)}
+.btn-s{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-s:hover{background:var(--bg3);border-color:var(--border-hover);color:var(--bright)}
+.btn-e{background:var(--green);color:#000;font-weight:600}
+.btn-e:hover{background:#34D9A0;transform:translateY(-1px);box-shadow:0 8px 24px rgba(32,201,151,.2)}
+.btn-sm{padding:7px 14px;font-size:11px}
+
+/* ============ TOOLBAR ============ */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:rgba(8,12,20,.8);border-bottom:1px solid var(--border);flex-shrink:0;gap:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.toolbar-brand{font-weight:600;font-size:14px;color:var(--bright);white-space:nowrap;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.toolbar-brand::before{content:'';display:block;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px rgba(76,67,247,.6)}
+
+/* ============ STEPS (STEPPER) ============ */
+.steps{display:flex;gap:4px;padding:0 24px;height:44px;align-items:center;background:rgba(8,12,20,.6);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;backdrop-filter:blur(12px)}
+.step{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:500;color:var(--dim);white-space:nowrap;transition:all var(--transition);flex-shrink:0;letter-spacing:.02em}
+.step .num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:rgba(255,255,255,.04);border:1px solid var(--border);transition:all var(--transition)}
+.step:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.step.active{color:var(--bright);background:rgba(76,67,247,.1)}
+.step.active .num{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(76,67,247,.4)}
+.step.done{color:var(--green)}.step.done .num{background:rgba(32,201,151,.2);border-color:var(--green);color:var(--green)}
+
+/* ============ MAIN ============ */
+.main{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* ============ PREVIEW ============ */
+.preview{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0;position:relative}
+.preview-bar{display:flex;align-items:center;gap:10px;padding:7px 16px;background:rgba(13,18,32,.6);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.pdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;opacity:.8}
+.pdot.r{background:#FF5F57}.pdot.y{background:#FEBC2E}.pdot.g{background:#28C840}
+.purl{flex:1;padding:4px 12px;background:rgba(255,255,255,.03);border-radius:6px;font-size:11px;color:var(--dim);text-align:center;overflow:hidden;white-space:nowrap;border:1px solid var(--border)}
+.szbtns{display:flex;gap:3px}
+.szbtns button{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:11px;font-family:var(--font);transition:all var(--transition)}
+.szbtns button:hover{background:var(--bg3);color:var(--text)}
+.szbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pwrap{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;background:#0d1117;padding:28px}
+.pwrap iframe{border:none;background:#fff;border-radius:6px;transition:all var(--transition);box-shadow:0 0 0 1px rgba(255,255,255,.04),0 24px 80px rgba(0,0,0,.5)}
+
+/* ============ PANEL ============ */
+.panel{width:460px;background:rgba(13,18,32,.5);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.panel-content{flex:1;overflow-y:auto;padding:28px 24px}
+.panel-content::-webkit-scrollbar{width:4px}
+.panel-content::-webkit-scrollbar-track{background:transparent}
+.panel-content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.05);border-radius:8px}
+.panel-nav{display:flex;gap:10px;padding:14px 24px;border-top:1px solid var(--border);flex-shrink:0;background:rgba(13,18,32,.6);backdrop-filter:blur(12px)}
+.panel-nav button{flex:1}
+
+/* ============ SETUP CENTERED CARD ============ */
+.setup-wrapper{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto}
+.setup-card{width:100%;max-width:600px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:40px;box-shadow:var(--shadow-card)}
+.setup-card .step-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:8px}
+.setup-card .step-desc{text-align:center;margin-bottom:32px;font-size:14px;color:var(--dim)}
+.setup-card .sec-hdr{font-size:12px;margin:28px 0 14px;padding-top:20px}
+.setup-card .sec-hdr:first-child{margin-top:0;padding-top:0}
+
+/* ============ FORM ELEMENTS ============ */
+.fg{margin-bottom:16px}
+.fl{display:block;font-weight:500;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.fi{width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-family:var(--font);font-size:13px;transition:all var(--transition);outline:none}
+.fi::placeholder{color:var(--dim)}
+.fi:hover{border-color:var(--border-hover)}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
+
+/* ============ COLORS ============ */
+.colors-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.color-dot{width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all var(--transition)}
+.color-dot:hover{transform:scale(1.12);border-color:var(--bright)}
+.color-dot.sel{border-color:var(--bright);box-shadow:0 0 20px rgba(255,255,255,.15)}
+.color-pick{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:var(--r);border:1px solid var(--border);transition:all var(--transition)}
+.color-pick:hover{border-color:var(--border-hover)}
+.color-pick input[type=color]{width:32px;height:32px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px}
+.color-pick .cn{flex:1;font-size:12px;font-weight:500;color:var(--text)}
+.color-pick .cv{font-size:11px;font-family:'SF Mono','Fira Code',monospace;color:var(--dim);background:var(--bg-input);padding:2px 8px;border-radius:4px}
+
+/* ============ IMAGE PREVIEW ============ */
+.img-prev{width:100%;height:52px;object-fit:contain;background:rgba(0,0,0,.3);border-radius:8px;margin-top:6px;border:1px solid var(--border)}
+.img-prev:not([src]){display:none}
+.upload-btn{cursor:pointer;padding:7px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-weight:500;color:var(--dim);display:inline-flex;align-items:center;gap:5px;transition:all var(--transition)}
+.upload-btn:hover{border-color:var(--accent);color:var(--bright);background:rgba(76,67,247,.06)}
+.upload-btn input{display:none}
+
+/* ============ SECTIONS ============ */
+.sec-hdr{font-weight:600;font-size:11px;color:var(--secondary);margin:28px 0 14px;padding-top:20px;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em}
+.sec-hdr:first-child{margin-top:0;padding-top:0;border-top:none}
+
+.step-title{font-weight:700;font-size:20px;color:var(--bright);margin-bottom:6px;letter-spacing:-.02em}
+.step-desc{font-size:13px;color:var(--dim);margin-bottom:24px;line-height:1.6}
+.elfsight-guide{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:20px;margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--dim)}
+.elfsight-guide strong{color:var(--bright)}
+.elfsight-guide ol{margin:8px 0 0 18px}
+.elfsight-guide li{margin-bottom:5px}
+.elfsight-guide a{color:var(--secondary)}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.panel-content>*{animation:fadeIn 250ms ease-out}
+.setup-card{animation:scaleIn 300ms ease-out}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+<div class="toolbar-brand">🛠️ Guedes WebBuilder</div>
+<div style="display:flex;gap:8px;align-items:center">
+</div>
+</div>
+
+<div class="steps" id="stepsBar"></div>
+
+<div class="main">
+<div class="preview">
+<div class="preview-bar">
+<span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
+<span class="purl" id="previewLabel">Landing Page</span>
+<div class="szbtns">
+<button class="on" onclick="setSize('100%',this)">💻</button>
+<button onclick="setSize('768px',this)">📲</button>
+<button onclick="setSize('375px',this)">📱</button>
+</div>
+</div>
+<div class="pwrap" id="previewWrap"><iframe id="previewFrame" src="about:blank" style="width:100%;height:100%"></iframe></div>
+</div>
+
+<div class="panel">
+<div class="panel-content" id="panelContent"></div>
+<div class="panel-nav">
+<button class="btn btn-s" id="btnPrev" onclick="prevStep()">← Anterior</button>
+<button class="btn btn-p" id="btnNext" onclick="nextStep()">Próximo →</button>
+</div>
+</div>
+</div>
+
+<script>
+// ==================== STATE ====================
+const STEPS=[
+{id:'boasvindas',icon:'👋',label:'Boas-vindas'},
+{id:'setup',icon:'🚀',label:'Pré-Configuração'},
+{id:'identidade',icon:'🏷️',label:'Identidade'},
+{id:'cores',icon:'🎨',label:'Cores'},
+{id:'textos',icon:'📝',label:'Textos'},
+{id:'contato',icon:'🔗',label:'Contato'},
+{id:'imagens',icon:'🖼️',label:'Imagens'},
+{id:'avaliacoes',icon:'⭐',label:'Avaliações'},
+{id:'planos',icon:'💎',label:'Planos'},
+{id:'publicar',icon:'🚀',label:'Publicar'},
+];
+let currentPage='landing',currentStep=0,setupSubStep=0,setupCache={};
+let templateData={landing:null,planos:null};
+let edits={landing:{cores:{},imagens:{},textos:{},links:{}},planos:{cores:{},imagens:{},textos:{},links:{}}};
+
+const colorDefs=[
+{key:'cor-fundo',label:'Fundo da página'},
+{key:'cor-superficie',label:'Fundo de cards/seções'},
+{key:'cor-escuro',label:'Títulos, CTA, footer'},
+{key:'cor-medio',label:'Botões principais'},
+{key:'cor-acento',label:'Detalhes e links'},
+{key:'cor-texto',label:'Texto principal'},
+{key:'cor-texto-suave',label:'Texto secundário'},
+{key:'cor-borda',label:'Bordas e linhas'},
+];
+const colorPresets=[
+{name:'Original',colors:{'cor-fundo':'#FBF7F2','cor-superficie':'#FFFFFF','cor-escuro':'#3A2D28','cor-medio':'#5C4033','cor-acento':'#C17B5E','cor-texto':'#2C2420','cor-texto-suave':'#7A6E66','cor-borda':'#E8E0D8'}},
+{name:'Sálvia',colors:{'cor-fundo':'#F6F8F5','cor-superficie':'#FFFFFF','cor-escuro':'#2D3830','cor-medio':'#4A6B52','cor-acento':'#8BA88A','cor-texto':'#252E27','cor-texto-suave':'#5E6B60','cor-borda':'#DCE5DC'}},
+{name:'Azul',colors:{'cor-fundo':'#F5F7FA','cor-superficie':'#FFFFFF','cor-escuro':'#1D2B3A','cor-medio':'#2E4868','cor-acento':'#D4896A','cor-texto':'#1D2B3A','cor-texto-suave':'#5A6B7E','cor-borda':'#D8E0E8'}},
+{name:'Lavanda',colors:{'cor-fundo':'#FBFAFD','cor-superficie':'#FFFFFF','cor-escuro':'#2D2540','cor-medio':'#5E4D7A','cor-acento':'#C48B9E','cor-texto':'#2D2540','cor-texto-suave':'#6D5E85','cor-borda':'#DDD5ED'}},
+{name:'Terracota',colors:{'cor-fundo':'#FDF9F6','cor-superficie':'#FFFFFF','cor-escuro':'#3D2518','cor-medio':'#8B5540','cor-acento':'#D4956A','cor-texto':'#3D2518','cor-texto-suave':'#7A5E50','cor-borda':'#EAD5C8'}},
+{name:'Dark',colors:{'cor-fundo':'#1A1A1A','cor-superficie':'#242424','cor-escuro':'#C4A97D','cor-medio':'#8B7355','cor-acento':'#D4785C','cor-texto':'#E0E0E0','cor-texto-suave':'#999','cor-borda':'#333'}},
+];
+const defaults={landing:JSON.parse(JSON.stringify(colorPresets[0].colors)),planos:JSON.parse(JSON.stringify(colorPresets[0].colors))};
+
+// ==================== COLOR HELPERS ====================
+function hexToHSL(hex){
+let r=0,g=0,b=0;hex=hex.replace('#','');
+if(hex.length===3){r=parseInt(hex[0]+hex[0],16);g=parseInt(hex[1]+hex[1],16);b=parseInt(hex[2]+hex[2],16);}
+else{r=parseInt(hex.substring(0,2),16);g=parseInt(hex.substring(2,4),16);b=parseInt(hex.substring(4,6),16);}
+r/=255;g/=255;b/=255;
+const max=Math.max(r,g,b),min=Math.min(r,g,b);
+let h=0,s=0,l=(max+min)/2;
+if(max!==min){const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);
+switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}
+return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};
+}
+function hslToHex(h,s,l){
+s/=100;l/=100;const a=s*Math.min(l,1-l);
+const f=n=>{const k=(n+h/30)%12;const color=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*color).toString(16).padStart(2,'0');};
+return `#${f(0)}${f(8)}${f(4)}`;
+}
+function getLuminance(hex){
+hex=hex.replace('#','');
+if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+const r=parseInt(hex.substring(0,2),16),g=parseInt(hex.substring(2,4),16),b=parseInt(hex.substring(4,6),16);
+return (0.299*r+0.587*g+0.114*b)/255;
+}
+function lightenColor(hex,amount){
+const hsl=hexToHSL(hex);hsl.l=Math.min(100,hsl.l+amount*100);return hslToHex(hsl.h,hsl.s,hsl.l);
+}
+function darkenColor(hex,amount){
+const hsl=hexToHSL(hex);hsl.l=Math.max(0,hsl.l-amount*100);return hslToHex(hsl.h,hsl.s,hsl.l);
+}
+function autoPalette(c1,c2,c3){
+const colors=[{hex:c1,lum:getLuminance(c1)},{hex:c2,lum:getLuminance(c2)},{hex:c3,lum:getLuminance(c3)}];
+colors.sort((a,b)=>a.lum-b.lum);
+const dark=colors[0].hex,mid=colors[1].hex,light=colors[2].hex;
+return{
+'cor-fundo':lightenColor(light,0.08),
+'cor-superficie':'#FFFFFF',
+'cor-escuro':dark,
+'cor-medio':mid,
+'cor-acento':mid,
+'cor-texto':dark,
+'cor-texto-suave':lightenColor(dark,0.45),
+'cor-borda':lightenColor(mid,0.35),
+};
+}
+
+function toggleReviewsGuide(){
+const cb=document.getElementById('su-has-reviews');
+const guide=document.getElementById('su-reviews-guide');
+if(cb&&guide){guide.style.display=cb.checked?'block':'none';}
+}
+
+// ==================== PHONE MASK ====================
+// ==================== DOMÍNIO & ASAAS ====================
+async function checkDomain(){
+let domain=document.getElementById('pub-domain')?.value.trim();
+if(!domain){alert('Digite um domínio (ex: nomedoestudio.com)');return;}
+const resultDiv=document.getElementById('pub-domain-result');
+
+// Vercel NÃO vende .com.br — força TLD compatível
+const vercelTLDs=['.com','.net','.org','.dev','.app','.io','.co','.ai','.me','.tv','.xyz','.sh','.info'];
+domain=domain.toLowerCase().replace(/\s/g,'');
+const hasTLD=vercelTLDs.some(t=>domain.endsWith(t));
+if(!hasTLD){
+const base=domain.includes('.')?domain.split('.')[0]:domain;
+const sugs=vercelTLDs.slice(0,6).map(t=>base+t);
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error);margin-bottom:8px">⚠️ A Vercel não vende <strong>.com.br</strong> nem essa terminação.</p><p style="font-size:11px;color:var(--dim);margin-bottom:4px">Extensões disponíveis:</p>'+sugs.map(s=>'<button class="btn btn-s btn-sm" style="margin:3px" onclick="document.getElementById(\'pub-domain\').value=\''+s+'\';checkDomain();">'+s+'</button>').join('')+'<p style="font-size:10px;color:var(--dim);margin-top:6px">🔗 O domínio .com.br pode ser comprado no Registro.br e apontado manualmente.</p>';
+return;
+}
+
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--dim)">🔍 Verificando '+esc(domain)+'...</p>';
+
+// Tenta verificação via DNS Google + Vercel API
+let available=false;let checked=false;
+
+// 1. DNS lookup (gratuito, funciona pra qualquer TLD)
+if(!checked){
+try{
+const dnsRes=await fetch('https://dns.google/resolve?name='+encodeURIComponent(domain)+'&type=A');
+const dnsJson=await dnsRes.json();
+if(!dnsJson.Answer||dnsJson.Answer.length===0){
+available=true;checked=true;
+}else{
+checked=true;
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ <strong>'+esc(domain)+'</strong> já está registrado (DNS encontrado).</p>';
+return;
+}
+}catch(e){}
+}
+
+// 3. Tenta Vercel API como fallback
+if(!checked){
+try{
+const token=localStorage.getItem('vercel_token')||'';
+const res=await fetch('https://api.vercel.com/v4/domains/status?name='+encodeURIComponent(domain),{
+headers:{'Authorization':'Bearer '+token}
+});
+if(res.ok){
+const json=await res.json();
+if(json.available){available=true;checked=true;}
+else{resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ <strong>'+esc(domain)+'</strong> já está registrado.</p>';return;}
+}
+}catch(e){}
+}
+
+if(available){
+resultDiv.innerHTML='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.15);border-radius:var(--r);padding:14px 16px;margin-top:6px"><p style="font-size:12px;color:var(--green);margin-bottom:6px">✅ <strong>'+esc(domain)+'</strong> está disponível!</p><p style="font-size:12px;color:var(--text);margin-bottom:12px">💰 <strong>R$ 79,90/ano</strong> — Compra e configuração automática</p><button class="btn btn-p btn-sm" onclick="buyDomainVercel(\''+esc(domain)+'\')" style="width:100%;margin-bottom:6px">🛒 Comprar e Configurar Domínio</button><p style="font-size:10px;color:var(--dim)">Pagamento via Asaas. Após confirmação, o domínio é registrado e linkado ao site automaticamente.</p></div>';
+}else if(!checked){
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--warning)">⚠️ Não foi possível verificar <strong>'+esc(domain)+'</strong>. Verifique o formato (ex: nomedoestudio.com.br) e sua conexão.</p>';
+}
+}
+
+async function buyDomainVercel(domain){
+const vercelToken=localStorage.getItem('vercel_token')||'';
+const asaasTok=localStorage.getItem('asaas_token')||'';
+const nome=edits.landing.textos['logo-text']||'Cliente';
+const email=prompt('Email do cliente para cobrança (Asaas):','');
+if(!email)return;
+const resultDiv=document.getElementById('pub-domain-result');
+if(asaasTok){
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--dim)">⏳ Gerando cobrança via Asaas...</p>';
+try{
+const asaasRes=await fetch('https://api.asaas.com/v3/paymentLinks',{
+method:'POST',headers:{'access_token':asaasTok,'Content-Type':'application/json'},
+body:JSON.stringify({name:'Domínio '+domain+' + Site',description:'Registro do domínio '+domain+' por 1 ano + configuração no site '+nome+'.',value:79.90,billingType:'UNDEFINED',chargeType:'DETACHED',name:nome,email:email,dueDateLimitDays:3})
+});
+const asaasJson=await asaasRes.json();
+if(asaasRes.ok&&asaasJson.url){
+resultDiv.innerHTML='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.15);border-radius:var(--r);padding:16px;margin-top:6px"><p style="font-size:13px;color:var(--green);margin-bottom:4px">💳 <strong>Link de pagamento gerado!</strong></p><p style="font-size:11px;color:var(--dim);margin-bottom:10px">Envie para o cliente. Após pagamento, compre o domínio abaixo:</p><div style="display:flex;gap:6px;align-items:center;margin-bottom:10px"><input class="fi" value="'+esc(asaasJson.url)+'" readonly style="flex:1;font-size:11px;cursor:text" onclick="this.select()" id="pub-payment-link"><button class="btn btn-s btn-sm" onclick="copyLink(\'pub-payment-link\')">📋 Copiar</button></div><a href="'+esc(asaasJson.url)+'" target="_blank" class="btn btn-s btn-sm" style="width:100%;margin-bottom:10px">💳 Abrir Link de Pagamento</a><hr style="border-color:var(--border);margin:10px 0"><p style="font-size:11px;color:var(--dim);margin-bottom:8px">Após confirmar o pagamento no Asaas, clique abaixo para registrar o domínio:</p><button class="btn btn-p btn-sm" onclick="registerDomain(\''+esc(domain)+'\',\''+esc(nome.replace(/'/g,"\\'"))+'\')" style="width:100%">🔒 Registrar Domínio e Linkar ao Site</button></div>';
+}else{
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ Erro Asaas: '+(asaasJson.errors?.[0]?.description||'Verifique o token')+'</p>';
+}
+}catch(e){
+registerDomainDirect(domain,nome,resultDiv,vercelToken);
+}
+}else{
+registerDomainDirect(domain,nome,resultDiv,vercelToken);
+}
+}
+
+async function registerDomain(domain,nome){
+const resultDiv=document.getElementById('pub-domain-result');
+const vercelToken=localStorage.getItem('vercel_token')||'';
+registerDomainDirect(domain,nome,resultDiv,vercelToken);
+}
+
+async function registerDomainDirect(domain,nome,resultDiv,vercelToken){
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--dim)">⏳ Registrando domínio <strong>'+esc(domain)+'</strong> na Vercel...</p>';
+try{
+const buyRes=await fetch('https://api.vercel.com/v4/domains/buy',{
+method:'POST',headers:{'Authorization':'Bearer '+vercelToken,'Content-Type':'application/json'},
+body:JSON.stringify({name:domain,expectedPrice:40})
+});
+const buyJson=await buyRes.json();
+if(!buyRes.ok&&buyRes.status!==409){
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ Erro ao comprar domínio: '+(buyJson.error?.message||'Verifique o token')+'</p>';
+return;
+}
+const projectName=document.getElementById('pub-name')?.value.trim()||nome.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--dim)">⏳ Linkando domínio ao projeto...</p>';
+const linkRes=await fetch('https://api.vercel.com/v9/projects/'+encodeURIComponent(projectName)+'/domains',{
+method:'POST',headers:{'Authorization':'Bearer '+vercelToken,'Content-Type':'application/json'},
+body:JSON.stringify({name:domain})
+});
+const linkJson=await linkRes.json();
+if(linkRes.ok||linkRes.status===409){
+resultDiv.innerHTML='<div style="background:rgba(32,201,151,.08);border:1px solid rgba(32,201,151,.2);border-radius:var(--r-card);padding:24px;text-align:center;margin-top:8px"><div style="font-size:40px;margin-bottom:12px">🎉</div><div style="font-weight:700;font-size:16px;color:var(--bright);margin-bottom:6px">Domínio registrado e linkado!</div><a href="https://'+esc(domain)+'" target="_blank" style="color:var(--green);font-size:15px;font-weight:600">'+esc(domain)+'</a><div style="margin-top:8px;font-size:11px;color:var(--dim)">O DNS será configurado automaticamente pela Vercel.</div></div>';
+}else{
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ Erro ao linkar: '+(linkJson.error?.message||'Tente novamente')+'</p>';
+}
+}catch(e){
+resultDiv.innerHTML='<p style="font-size:11px;color:var(--error)">❌ Erro: '+esc(e.message)+'</p>';
+}
+}
+function copyLink(inputId){
+const input=document.getElementById(inputId);
+if(!input)return;
+input.select();input.setSelectionRange(0,99999);
+navigator.clipboard.writeText(input.value).then(()=>{
+const btn=input.nextElementSibling;
+if(btn){const orig=btn.textContent;btn.textContent='✅ Copiado!';setTimeout(()=>btn.textContent=orig,1500);}
+}).catch(()=>{alert('Link: '+input.value);});
+}
+
+function phoneMask(input){
+let v=input.value.replace(/\D/g,'');
+if(v.length>11)v=v.substring(0,11);
+if(v.length>0){
+if(v.length<=2){v='('+v;}
+else if(v.length<=7){v='('+v.substring(0,2)+') '+v.substring(2);}
+else{v='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);}
+}
+input.value=v;
+}
+function phoneMaskDisplay(raw){
+if(!raw)return'';
+const v=raw.replace(/\D/g,'');
+if(v.length<=2)return'('+v;
+if(v.length<=7)return'('+v.substring(0,2)+') '+v.substring(2);
+return'('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7,11);
+}
+function phoneStripMasked(input){
+return input?input.value.replace(/\D/g,''):'';
+}
+function phoneFormatDisplay(raw){
+if(!raw)return'';
+const v=raw.replace(/\D/g,'');
+if(v.length<=2)return'('+v;
+if(v.length<=7)return'('+v.substring(0,2)+') '+v.substring(2);
+return'('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7,11);
+}
+
+// ==================== INIT ====================
+function init(){
+// Token Vercel — configure seu token manualmente ou via variável de ambiente
+// Para deploy automático, gere um token em: https://vercel.com/account/tokens
+// Token Asaas — agora gerenciado pela serverless function (api/verificar-pagamento.js)
+// Não armazenamos mais o token no frontend por segurança.
+if(typeof TEMPLATES==='undefined'){alert('templates-data.js não encontrado!');return}
+templateData.landing=TEMPLATES.get('landing');templateData.planos=TEMPLATES.get('planos');
+if(!templateData.landing||!templateData.planos){alert('Erro nos templates!');return}
+edits.landing.cores=JSON.parse(JSON.stringify(defaults.landing));
+edits.planos.cores=JSON.parse(JSON.stringify(defaults.planos));
+parseFields('landing');parseFields('planos');
+buildStepsBar();renderStep();updatePreview();
+}
+
+function parseFields(page){
+const parser=new DOMParser();const doc=parser.parseFromString(templateData[page],'text/html');
+const e=edits[page];e.imagens={};e.textos={};e.links={};
+doc.querySelectorAll('[data-editable]').forEach(el=>{
+const key=el.getAttribute('data-editable');if(!key)return;
+if(el.tagName==='IMG'){e.imagens[key]=el.getAttribute('src')||'';return;}
+if(el.tagName==='A'&&el.hasAttribute('href')){e.links[key]=el.getAttribute('href')||'';
+if(el.hasAttribute('data-editable-text'))e.textos[el.getAttribute('data-editable-text')]=el.textContent.trim();return;}
+if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){e.textos[key]=el.getAttribute('value')||el.value||'';return;}
+if(el.hasAttribute('data-editable-text')){e.textos[el.getAttribute('data-editable-text')]=el.textContent.trim();}
+else{e.textos[key]=el.textContent.trim();}
+});
+doc.querySelectorAll('[data-editable-bg]').forEach(el=>{const k=el.getAttribute('data-editable-bg');if(k&&!e.imagens[k])e.imagens[k]='';});
+doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k)e.textos[k]=el.innerHTML.trim();});
+}
+
+// ==================== STEPS BAR ====================
+function buildStepsBar(){
+const bar=document.getElementById('stepsBar');
+bar.innerHTML=STEPS.map((s,i)=>`<div class="step" id="step${i}" onclick="goToStep(${i})"><span class="num">${i+1}</span>${s.icon} ${s.label}</div>`).join('');
+}
+
+function updateStepsBar(){
+STEPS.forEach((s,i)=>{
+const el=document.getElementById('step'+i);
+el.classList.remove('active','done');
+if(i===currentStep)el.classList.add('active');
+else if(i<currentStep)el.classList.add('done');
+});
+document.getElementById('btnPrev').style.display=currentStep===0?'none':'flex';
+const isLast=currentStep===STEPS.length-1;
+document.getElementById('btnNext').style.display=isLast?'none':'flex';
+document.getElementById('btnNext').textContent='Próximo →';
+}
+
+function goToStep(i){
+	currentStep=i;
+	if(i===1)setupSubStep=0;
+	// Auto-switch page tab when entering/leaving planos step
+	if(i===8){currentPage='planos';}
+	else if(currentPage==='planos'){currentPage='landing';}
+	renderStep();updateStepsBar();
+}
+function nextStep(){
+		if(currentStep===0){
+			goToStep(1);return;
+		}
+		if(currentStep===1){
+			applySetup();return;
+		}
+	
+	if(currentStep<STEPS.length-1){currentStep++;
+		if(currentStep===8){currentPage='planos';}
+		else if(currentPage==='planos'){currentPage='landing';}
+		renderStep();updateStepsBar();
+	}else{exportAll()}
+}
+function prevStep(){
+	if(currentStep>0){currentStep--;
+		if(currentStep===8){currentPage='planos';}
+		else if(currentPage==='planos'){currentPage='landing';}
+		renderStep();updateStepsBar();
+	}
+}
+
+// ==================== RENDER STEP ====================
+function renderStep(){
+const pc=document.getElementById('panelContent');const s=STEPS[currentStep];
+let h=`<div class="step-title">${s.icon} Etapa ${currentStep+1}: ${s.label}</div>`;
+switch(s.id){
+case 'boasvindas':h+=renderBoasvindas();break;
+case 'setup':h+=renderSetup();break;
+case 'identidade':h+=renderIdentidade();break;
+case 'cores':h+=renderCores();break;
+case 'textos':h+=renderTextos();break;
+case 'contato':h+=renderContato();break;
+case 'imagens':h+=renderImagens();break;
+case 'avaliacoes':h+=renderAvaliacoes();break;
+case 'planos':h+=renderPlanos();break;
+case 'publicar':h+=renderPublicar();break;
+}
+pc.innerHTML=h;updateStepsBar();
+// Layout: setup ocupa tela cheia (sem preview)
+toggleSetupLayout(s.id==='boasvindas'||s.id==='setup');
+// bind color pickers after render
+if(s.id==='setup')setTimeout(()=>previewSetupPalette(),50);
+if(s.id==='cores')bindColorPickers();
+}
+
+function toggleSetupLayout(isSetup){
+const preview=document.querySelector('.preview');
+const panel=document.querySelector('.panel');
+const main=document.querySelector('.main');
+const panelContent=document.getElementById('panelContent');
+const panelNav=document.querySelector('.panel-nav');
+const stepsBar=document.getElementById('stepsBar');
+const btnPrev=document.getElementById('btnPrev');
+const btnNext=document.getElementById('btnNext');
+if(isSetup){
+// Esconde preview, steps, nav e botão exportar
+if(preview)preview.style.display='none';
+if(stepsBar)stepsBar.style.display='none';
+if(panelNav)panelNav.style.display='none';
+const btnExp=document.getElementById('btnExport');if(btnExp)btnExp.style.display='none';
+// Painel centralizado como card
+if(panel){panel.style.width='100%';panel.style.borderLeft='none';panel.style.background='transparent';panel.style.backdropFilter='none';}
+if(main)main.style.justifyContent='center';
+if(panelContent){panelContent.style.display='flex';panelContent.style.alignItems='flex-start';panelContent.style.justifyContent='center';panelContent.style.padding='32px 24px';}
+// Envolve conteúdo em card estilizado
+const existing=document.querySelector('.setup-card');
+if(!existing&&panelContent){
+const wrapper=document.createElement('div');wrapper.className='setup-wrapper';
+const card=document.createElement('div');card.className='setup-card';
+while(panelContent.firstChild){card.appendChild(panelContent.firstChild);}
+wrapper.appendChild(card);panelContent.appendChild(wrapper);
+}
+}else{
+if(preview)preview.style.display='';
+if(stepsBar)stepsBar.style.display='';
+if(panelNav)panelNav.style.display='';
+const btnExp=document.getElementById('btnExport');if(btnExp)btnExp.style.display='';
+if(panel){panel.style.width='';panel.style.borderLeft='';panel.style.background='';panel.style.backdropFilter='';}
+if(main)main.style.justifyContent='';
+if(panelContent){panelContent.style.display='';panelContent.style.alignItems='';panelContent.style.justifyContent='';panelContent.style.padding='';}
+// Remove wrapper se existir
+const wrapper=document.querySelector('.setup-wrapper');
+if(wrapper){
+const card=wrapper.querySelector('.setup-card');
+if(card){while(card.firstChild){panelContent.appendChild(card.firstChild);}}
+wrapper.remove();
+}
+}
+}
+
+function renderIdentidade(){
+let h='<p class="step-desc">Nome do negócio, logo e imagens decorativas da Hero</p>';
+h+=field('logo-text','Nome da Empresa (texto)','Sua Empresa');
+h+=imageField('logo','Logo (Header)');
+h+=imageField('logo-hero','Logo (Hero)');
+h+=imageField('favicon','Favicon');
+h+='<div class="sec-hdr">🖼️ Imagens Decorativas da Hero</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:12px">As imagens recebem tratamento automático: tons lavados, suaves e elegantes. Envie fotos no estilo wellness/Pilates para o melhor resultado.</p>';
+h+=imageField('hero-img-left','Imagem Lateral Esquerda');
+h+=imageField('hero-img-right','Imagem Lateral Direita');
+return h;
+}
+
+// ==================== BOAS-VINDAS ====================
+function renderBoasvindas(){
+const nomeSlug=slugify(edits.landing.textos['logo-text']||'cliente');
+let h='';
+h+='<div style="text-align:center;margin-bottom:16px;position:relative">';
+h+='<img src="assets/SELO-DOM-1.webp" alt="Selo de Qualidade" style="position:absolute;top:-28px;left:-22px;width:95px;height:95px;object-fit:contain;z-index:5">';
+h+='<span style="font-size:40px">👋</span></div>';
+h+='<div class="step-title" style="text-align:center;font-size:22px">Seu site profissional em minutos</div>';
+h+='<p class="step-desc" style="text-align:center">Desenvolva você mesmo seu site com um template validado, adaptado à identidade do seu negócio.</p>';
+
+// Como funciona
+h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px">';
+h+='<p style="font-weight:600;font-size:12px;color:var(--bright);margin-bottom:8px">⚡ Como funciona</p>';
+h+='<p style="font-size:12px;color:var(--dim);line-height:1.7">Você desenvolve o seu site com base em um template já validado, adaptado à identidade visual do seu negócio (cores, logo, fotos).</p>';
+h+='<p style="font-size:12px;color:var(--green);margin-top:6px;font-weight:600">⏱ Prazo: Fica pronto agora mesmo</p>';
+h+='</div>';
+
+// Domínio e hospedagem
+h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px">';
+h+='<p style="font-weight:600;font-size:12px;color:var(--bright);margin-bottom:8px">🏢 Domínio e hospedagem</p>';
+h+='<p style="font-size:12px;color:var(--dim);line-height:1.7">Pensa como um condomínio: o <strong style="color:var(--text)">domínio</strong> é o endereço do seu apartamento. A <strong style="color:var(--text)">hospedagem</strong> é o aluguel do espaço onde ficam os arquivos do site.</p>';
+h+='<p style="font-size:11px;color:var(--dim);margin-top:6px">Utilizamos a <strong style="color:var(--secondary)">Vercel</strong> — você tem direito a um domínio gratuito. Ideal para começar.</p>';
+h+='</div>';
+
+// Cards de investimento
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+h+='<div style="background:rgba(76,67,247,.06);border:1px solid rgba(76,67,247,.15);border-radius:var(--r);padding:16px;text-align:center">';
+h+='<p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Site Pronto</p>';
+h+='<p style="font-size:22px;font-weight:700;color:var(--bright);margin-bottom:2px">R$300</p>';
+h+='<p style="font-size:10px;color:var(--dim)">pagamento único</p>';
+h+='<p style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.5">Desenvolvimento completo do site com template personalizado</p>';
+h+='</div>';
+h+='<div style="background:rgba(86,217,223,.04);border:1px solid rgba(86,217,223,.12);border-radius:var(--r);padding:16px;text-align:center">';
+h+='<p style="font-size:11px;color:var(--secondary);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Suporte</p>';
+h+='<p style="font-size:22px;font-weight:700;color:var(--bright);margin-bottom:2px">R$35</p>';
+h+='<p style="font-size:10px;color:var(--dim)">por mês</p>';
+h+='<p style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.5">Hospedagem + suporte. Cobrado todo dia 15</p>';
+h+='</div>';
+h+='</div>';
+
+// Domínio personalizado
+h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">';
+h+='<div><p style="font-size:12px;font-weight:600;color:var(--bright)">🌐 Domínio personalizado</p><p style="font-size:10px;color:var(--dim)">Ex: nomedoestudio.com</p></div>';
+h+='<div style="text-align:right"><p style="font-size:16px;font-weight:700;color:var(--bright)">R$79,90</p><p style="font-size:9px;color:var(--dim)">por ano · opcional</p></div>';
+h+='</div>';
+
+// WhatsApp
+h+='<a href="https://wa.me/5538998760323?text=Olá! Gostaria de um site personalizado." target="_blank" style="display:block;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.2);border-radius:var(--r);padding:16px;margin-bottom:20px;text-decoration:none;transition:all var(--transition)">';
+h+='<div style="display:flex;align-items:center;gap:10px">';
+h+='<span style="font-size:24px">💬</span>';
+h+='<div style="flex:1"><p style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:2px">Quer um site totalmente personalizado?</p><p style="font-size:11px;color:var(--dim)">Clique aqui e fale comigo no WhatsApp.</p></div>';
+h+='<span style="font-size:18px">→</span>';
+h+='</div></a>';
+
+// Verifica se já pagou
+const pagamentoOK=localStorage.getItem('pagamento_ok_'+nomeSlug);
+if(pagamentoOK){
+h+='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px"><p style="font-size:12px;color:var(--green)">✅ Pagamento confirmado! Você já pode continuar.</p></div>';
+h+='<button class="btn btn-p" onclick="goToStep(1)" style="width:100%;padding:16px;font-size:15px">🚀 Ir para Pré-Configuração →</button>';
+}else{
+h+='<button class="btn btn-p" onclick="startPayment()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
+h+='<div id="payment-area" style="margin-top:12px"></div>';
+}
+h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:8px">Após o pagamento, você será guiado por 4 etapas simples</p>';
+return h;
+}
+
+const PAYMENT_LINK='https://www.asaas.com/c/4y3wfuhg6v76a6mt';
+const PAYMENT_ID='4y3wfuhg6v76a6mt'; // ID do link de pagamento
+
+function slugify(s){return(s||'cliente').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')||'cliente';}
+
+async function startPayment(){
+const nomeRaw=edits.landing.textos['logo-text']||'Cliente';
+const nomeSlug=slugify(nomeRaw);
+const area=document.getElementById('payment-area');
+const btn=document.getElementById('btn-start-pay');
+btn.style.display='none';
+
+localStorage.setItem('asaas_payment_id',PAYMENT_ID);
+localStorage.setItem('asaas_client_slug',nomeSlug);
+
+area.innerHTML='<div style="background:rgba(76,67,247,.06);border:1px solid rgba(76,67,247,.15);border-radius:var(--r-card);padding:28px 24px;text-align:center">'+
+'<div style="font-size:48px;margin-bottom:16px">💳</div>'+
+'<p style="font-size:16px;font-weight:700;color:var(--bright);margin-bottom:4px">Investimento R$300,00</p>'+
+'<p style="font-size:12px;color:var(--dim);margin-bottom:20px">Pague por PIX, boleto ou cartão para continuar</p>'+
+'<a href="'+PAYMENT_LINK+'" target="_blank" class="btn btn-p" style="width:100%;padding:16px;font-size:15px;margin-bottom:16px">💳 Ir para Pagamento →</a>'+
+'<p style="font-size:10px;color:var(--dim);margin-bottom:20px">O link abrirá em nova aba. A confirmação é <strong>automática</strong> — não precisa voltar aqui.</p>'+
+'<div id="payment-status-box" style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:16px;margin-bottom:16px">'+
+'<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
+'<p style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:6px">Aguardando pagamento...</p>'+
+'<p style="font-size:11px;color:var(--dim);line-height:1.6">Verificamos a cada <strong style="color:var(--bright)">10 segundos</strong>. PIX confirma em até 30s após o pagamento.</p>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:6px" id="poll-debug"></p>'+
+'</div>'+
+'<button class="btn btn-s btn-sm" onclick="verificarPagamento()" id="btn-verify" style="width:100%;padding:14px;font-weight:700;margin-bottom:6px">🔍 Verificar Agora</button>'+
+'<button class="btn btn-s btn-sm" onclick="confirmarViaWhatsApp()" style="width:100%;padding:10px;font-size:11px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.15);color:var(--green)">💬 Já paguei — Confirmar via WhatsApp</button>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:10px">Dúvidas? <a href="https://wa.me/5538998760323" target="_blank">Fale no WhatsApp</a></p>'+
+'</div>';
+
+// Inicia verificação automática a cada 10 segundos
+if(window._pollInterval)clearInterval(window._pollInterval);
+window._pollInterval=setInterval(verificarPagamento,10000);
+// Primeira verificação após 5s
+setTimeout(verificarPagamento,5000);
+}
+
+function confirmarViaWhatsApp(){
+const nomeRaw=edits.landing.textos['logo-text']||'Cliente';
+window.open('https://wa.me/5538998760323?text=Olá! Acabei de fazer o pagamento do site e quero confirmar.', '_blank');
+}
+
+async function verificarPagamento(){
+const nomeSlug=localStorage.getItem('asaas_client_slug')||slugify(edits.landing.textos['logo-text']||'cliente');
+const paymentId=localStorage.getItem('asaas_payment_id')||PAYMENT_ID;
+const btn=document.getElementById('btn-verify');
+const area=document.getElementById('payment-area');
+const debugEl=document.getElementById('poll-debug');
+if(btn){btn.textContent='⏳ Verificando...';btn.disabled=true;}
+
+let pago=false;
+let msg='';
+
+// Chama nossa API interna (serverless function) que consulta o Asaas no backend
+// Sem CORS, sem token exposto no frontend
+try{
+const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(paymentId));
+if(res.ok){
+const json=await res.json();
+pago=json.pago;
+msg=json.pago
+  ? ('✅ Encontrado: '+json.total+' pagamento(s)')
+  : ('⏳ Nenhum pagamento ainda'+(json.erro?' | '+json.erro:''));
+if(debugEl)debugEl.textContent=msg;
+}else{
+msg='Erro HTTP '+res.status;
+if(debugEl)debugEl.textContent='⚠️ '+msg;
+}
+}catch(e){
+msg='Erro de rede: '+e.message;
+if(debugEl)debugEl.textContent='⚠️ '+msg;
+}
+
+const areaEl=area||document.getElementById('payment-area');
+if(pago){
+// Parar polling automático
+if(window._pollInterval){clearInterval(window._pollInterval);window._pollInterval=null;}
+localStorage.setItem('pagamento_ok_'+nomeSlug,'true');
+if(areaEl)areaEl.innerHTML='<div style="background:rgba(32,201,151,.08);border:1px solid rgba(32,201,151,.2);border-radius:var(--r-card);padding:24px;text-align:center"><div style="font-size:48px;margin-bottom:12px">🎉</div><p style="font-size:16px;color:var(--green);font-weight:700;margin-bottom:4px">Pagamento confirmado!</p><p style="font-size:12px;color:var(--dim);margin-bottom:16px">Seu acesso foi liberado.</p><button class="btn btn-p" onclick="goToStep(1)" style="width:100%;padding:14px;font-size:15px">🚀 Começar a Criar Meu Site →</button></div>';
+}else{
+if(btn){btn.textContent='🔍 Verificar Novamente';btn.disabled=false;}
+const statusBox=document.getElementById('payment-status-box');
+if(statusBox){
+const tentativas=((parseInt(localStorage.getItem('poll_tentativas')||'0'))+1);
+localStorage.setItem('poll_tentativas',tentativas);
+statusBox.innerHTML='<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
+'<p style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:6px">Aguardando pagamento...</p>'+
+'<p style="font-size:11px;color:var(--dim);line-height:1.6">Verificamos a cada <strong style="color:var(--bright)">10 segundos</strong>. PIX confirma em até 30s após o pagamento.</p>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:6px">🔍 Tentativa #'+tentativas+' | '+msg+'</p>';
+}
+}
+}
+
+async function checkPayment(nome){
+const linkId=localStorage.getItem('payment_link_id_'+nome)||'';
+const area=document.getElementById('payment-area');
+area.innerHTML='<p style="font-size:11px;color:var(--dim);text-align:center">🔍 Verificando pagamento...</p>';
+try{
+const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(linkId));
+if(res.ok){
+const json=await res.json();
+if(json.pago){
+localStorage.setItem('pagamento_ok_'+nome,'true');
+area.innerHTML='<div style="background:rgba(32,201,151,.08);border:1px solid rgba(32,201,151,.25);border-radius:var(--r);padding:16px;text-align:center"><p style="font-size:14px;color:var(--green);font-weight:600;margin-bottom:8px">✅ Pagamento confirmado!</p><button class="btn btn-p" onclick="goToStep(1)" style="width:100%">🚀 Ir para Pré-Configuração →</button></div>';
+return;
+}
+}
+area.innerHTML='<p style="font-size:11px;color:var(--warning);text-align:center">⚠️ Pagamento ainda não confirmado. Se já pagou, aguarde alguns instantes e tente novamente.</p>';
+}catch(e){
+area.innerHTML='<p style="font-size:11px;color:var(--warning);text-align:center">⚠️ Não foi possível verificar agora (erro de conexão). Tente novamente ou confirme via WhatsApp.</p>';
+}
+}
+
+// ==================== SETUP / PRÉ-CONFIGURAÇÃO ====================
+function renderSetup(){
+const total=4;
+const titles=['Identidade & Marca','Fotos do Estúdio','Contato & Localização','Planos & Valores'];
+const icons=['🏷️','🖼️','📱','💎'];
+// Progress dots
+let dots='';
+for(let i=0;i<total;i++){
+dots+=`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 4px;background:${i===setupSubStep?'var(--accent)':i<setupSubStep?'var(--green)':'var(--border)'};transition:all var(--transition)"></span>`;
+}
+let h=`<div style="text-align:center;margin-bottom:24px">${dots}</div>`;
+h+=`<div class="step-title" style="text-align:center">${icons[setupSubStep]} ${titles[setupSubStep]}</div>`;
+h+=`<p class="step-desc" style="text-align:center">Etapa ${setupSubStep+1} de ${total}</p>`;
+
+if(setupSubStep===0){
+// --- IDENTIDADE + LOGO + CORES ---
+h+='<div class="sec-hdr">📌 Identidade</div>';
+h+=`<div class="fg"><label class="fl">Nome do Estúdio</label><input class="fi" id="su-nome" value="${esc(edits.landing.textos['logo-text']||'')}" placeholder="Nome do seu estúdio"></div>`;
+const logoVal=edits.landing.imagens['logo']||'';
+h+=`<div class="fg"><label class="fl">Logotipo (PNG sem fundo)</label>`;
+h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-logo-url" value="${esc(logoVal)}" placeholder="URL ou upload...">`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadLogo(this)"></label></div>`;
+h+=`<img class="img-prev" id="su-logo-prev" src="${esc(logoVal)}" onerror="this.style.display='none'" onload="this.style.display='block'" ${logoVal?'':'style="display:none"'}></div>`;
+h+='<button class="btn btn-s btn-sm" onclick="removeLogoBackground()" style="margin-top:6px;width:100%">🧹 Remover Fundo</button>';
+h+='<div class="sec-hdr">🎨 Cores da Marca</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:8px">A mais clara = fundo. A mais escura = textos.</p>';
+const sc=[getSetupColor(1),getSetupColor(2),getSetupColor(3)];
+for(let i=1;i<=3;i++){
+h+=`<div class="color-pick"><input type="color" id="su-cor${i}" value="${sc[i-1]}" onchange="previewSetupPalette()"><span class="cn">Cor ${i}</span></div>`;
+}
+h+='<div id="su-paleta-preview" style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;padding:8px;background:rgba(0,0,0,.3);border-radius:8px"></div>';
+}
+
+else if(setupSubStep===1){
+// --- FOTOS HERO + GALERIA ---
+h+='<div class="sec-hdr">🖼️ Imagens da Hero</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:6px">Fundo da Hero com efeito lavado. Fotos wellness/Pilates.</p>';
+const heroLabels=['Lateral Esquerda','Lateral Direita'];
+const heroKeys=['hero-img-left','hero-img-right'];
+for(let i=0;i<2;i++){
+const fv=edits.landing.imagens[heroKeys[i]]||'';
+h+=`<div class="fg"><label class="fl">${heroLabels[i]}</label>`;
+h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-foto${i}" value="${esc(fv)}" placeholder="URL ou upload...">`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadFoto(${i},this,'${heroKeys[i]}')"></label></div></div>`;
+}
+h+='<div class="sec-hdr">📸 Galeria</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:6px">Fotos do estúdio para o carrossel.</p>';
+const galeriaKeys=['galeria-1','galeria-2','galeria-3','galeria-4','galeria-5','galeria-6'];
+for(let i=0;i<6;i++){
+const fv=edits.landing.imagens[galeriaKeys[i]]||'';
+const idx=i+2;
+h+=`<div class="fg"><label class="fl">Foto ${i+1}</label>`;
+h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-foto${idx}" value="${esc(fv)}" placeholder="URL ou upload...">`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadFoto(${idx},this,'${galeriaKeys[i]}')"></label></div></div>`;
+}
+}
+
+else if(setupSubStep===2){
+// --- CONTATO + LOCALIZAÇÃO + INSTAGRAM ---
+h+='<div class="sec-hdr">📱 Contato</div>';
+h+=`<div class="fg"><label class="fl">WhatsApp (DDD+número)</label><input class="fi" id="su-wpp" value="${esc(phoneMaskDisplay(edits.landing.textos['whatsapp-numero']||''))}" placeholder="(11) 90000-0000" oninput="phoneMask(this)"></div>`;
+h+=`<div class="fg"><label class="fl">Telefone visível</label><input class="fi" id="su-tel" value="${esc(phoneMaskDisplay(edits.landing.textos['telefone-numero']||''))}" placeholder="(11) 90000-0000" oninput="phoneMask(this)"></div>`;
+h+='<div class="sec-hdr">📍 Localização</div>';
+h+=`<div class="fg"><label class="fl">Endereço completo (com CEP)</label><input class="fi" id="su-endereco" value="${esc(edits.landing.textos['local-endereco']||'')}" placeholder="Av. Paulista, 1159 - Bela Vista, SP, 01311-921"></div>`;
+h+='<div class="sec-hdr">📷 Instagram</div>';
+h+=`<div class="fg"><label class="fl">@ do Instagram</label><input class="fi" id="su-insta" value="${esc(edits.landing.textos['insta-handle']||'')}" placeholder="@seuinstagram"></div>`;
+const mockupVal=edits.landing.imagens['insta-mockup']||'';
+h+=`<div class="fg"><label class="fl">Print do perfil (mockup)</label>`;
+h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-mockup-url" value="${esc(mockupVal)}" placeholder="URL ou upload...">`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadMockup(this)"></label></div>`;
+h+=`<img class="img-prev" src="${esc(mockupVal)}" onerror="this.style.display='none'" onload="this.style.display='block'" ${mockupVal?'':'style="display:none"'}></div>`;
+// --- GOOGLE REVIEWS ---
+const hasReviews=edits.landing.textos['google-reviews']||'';
+h+='<div class="sec-hdr">⭐ Avaliações do Google</div>';
+h+='<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;margin-bottom:12px" onclick="toggleReviewsGuide()">';
+h+=`<input type="checkbox" id="su-has-reviews" ${hasReviews?'checked':''} style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer" onchange="event.stopPropagation();toggleReviewsGuide()">`;
+h+='<span style="font-size:13px;color:var(--text)">Meu estúdio tem avaliações no Google</span></label>';
+h+=`<div id="su-reviews-guide" style="display:${hasReviews?'block':'none'}">`;
+h+=`<div class="elfsight-guide">`;
+h+='<strong>⭐ Como obter o código do Google Reviews:</strong><ol>';
+h+='<li>Acesse <a href="https://elfsight.com/google-reviews-widget/" target="_blank">elfsight.com/google-reviews-widget</a></li>';
+h+='<li>Clique em <strong>"Create widget"</strong> (grátis)</li>';
+h+='<li>Conecte sua conta Google e selecione seu negócio</li>';
+h+='<li>Personalize e copie o <strong>código embed</strong></li>';
+h+='<li>Cole no campo abaixo 👇</li></ol></div>';
+h+=`<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea class="fi" id="su-reviews-code" rows="4" placeholder="Cole aqui o código HTML do widget...">${esc(hasReviews)}</textarea></div></div>`;
+}
+
+else if(setupSubStep===3){
+// --- PLANOS ---
+h+='<div class="sec-hdr">💎 Valores dos Planos</div>';
+const planoNames=['Mensal','Trimestral','Semestral'];
+const planoKeys=['plano1','plano2','plano3'];
+const freqLabels=['1x na semana','2x na semana','3x na semana'];
+for(let p=0;p<3;p++){
+h+=`<p style="font-weight:600;font-size:12px;margin:12px 0 6px;color:var(--secondary)">📌 ${planoNames[p]}</p>`;
+for(let f=0;f<3;f++){
+const pk=`${planoKeys[p]}-op${f+1}-preco`;
+h+=`<div class="fg"><label class="fl">${freqLabels[f]}</label><input class="fi" id="su-${pk}" value="${esc(edits.planos.textos[pk]||'')}" placeholder="R$ 000,00"></div>`;
+}
+}
+h+=`<div class="fg"><label class="fl">Aula avulsa</label><input class="fi" id="su-avulso" value="${esc(edits.planos.textos['avulso']||'')}" placeholder="R$180,00 cada aula"></div>`;
+}
+
+// --- NAVEGAÇÃO ---
+h+='<div style="display:flex;gap:10px;margin-top:28px">';
+if(setupSubStep>0){
+h+='<button class="btn btn-s" onclick="prevSetupSubStep()" style="flex:1">← Voltar</button>';
+}
+if(setupSubStep<total-1){
+h+='<button class="btn btn-p" onclick="nextSetupSubStep()" style="flex:1">Continuar →</button>';
+}else{
+h+='<button class="btn btn-p" onclick="applySetup()" style="flex:1;box-shadow:0 4px 20px rgba(76,67,247,.4)">✨ Aplicar Configuração</button>';
+}
+h+='</div>';
+
+return h;
+}
+
+function saveSetupSubStep(){
+// Captura todos os inputs da sub-etapa atual
+const inputs=document.querySelectorAll('.setup-card .fi, .setup-card input[type=color], .setup-card input[type=checkbox], .setup-card textarea');
+inputs.forEach(inp=>{
+if(inp.type==='checkbox'){setupCache[inp.id]=inp.checked;}
+else{setupCache[inp.id]=inp.value;}
+});
+// Salva previews de imagem
+const logoPrev=document.getElementById('su-logo-prev');
+if(logoPrev&&logoPrev.src&&logoPrev.src.startsWith('data:'))setupCache['su-logo-prev']=logoPrev.src;
+const mockupPrev=document.querySelector('#su-mockup-url + label + img');
+if(mockupPrev&&mockupPrev.src&&mockupPrev.src.startsWith('data:'))setupCache['su-mockup-prev']=mockupPrev.src;
+// Salva dados já nos edits (uploads)
+['hero-img-left','hero-img-right','galeria-1','galeria-2','galeria-3','galeria-4','galeria-5','galeria-6'].forEach(k=>{
+if(edits.landing.imagens[k]&&edits.landing.imagens[k].startsWith('data:'))setupCache['img-'+k]=edits.landing.imagens[k];
+});
+if(edits.landing.imagens['logo']&&edits.landing.imagens['logo'].startsWith('data:'))setupCache['img-logo']=edits.landing.imagens['logo'];
+if(edits.landing.imagens['insta-mockup']&&edits.landing.imagens['insta-mockup'].startsWith('data:'))setupCache['img-mockup']=edits.landing.imagens['insta-mockup'];
+
+// Aplica textos do cache nos edits em tempo real (para re-render preservar)
+if(setupCache['su-nome']){['landing','planos'].forEach(pg=>{edits[pg].textos['logo-text']=setupCache['su-nome'];});}
+if(setupCache['su-wpp']){const w=setupCache['su-wpp'].replace(/\D/g,'');['landing','planos'].forEach(pg=>{edits[pg].textos['whatsapp-numero']=w;});}
+if(setupCache['su-tel']){['landing','planos'].forEach(pg=>{edits[pg].textos['telefone-numero']=setupCache['su-tel'];});}
+if(setupCache['su-endereco']){['landing','planos'].forEach(pg=>{edits[pg].textos['local-endereco']=setupCache['su-endereco'];});}
+if(setupCache['su-insta']){const h=setupCache['su-insta'].startsWith('@')?setupCache['su-insta']:'@'+setupCache['su-insta'];['landing','planos'].forEach(pg=>{edits[pg].textos['insta-handle']=h;edits[pg].links['insta-link']='https://www.instagram.com/'+h.replace('@','');});}
+if(setupCache['su-has-reviews']&&setupCache['su-reviews-code']){['landing','planos'].forEach(pg=>{edits[pg].textos['google-reviews']=setupCache['su-reviews-code'];});}
+// Cores
+if(setupCache['su-cor1']&&setupCache['su-cor2']&&setupCache['su-cor3']){
+const pal=autoPalette(setupCache['su-cor1'],setupCache['su-cor2'],setupCache['su-cor3']);
+['landing','planos'].forEach(pg=>{edits[pg].cores=JSON.parse(JSON.stringify(pal));});
+}
+// Planos
+['plano1','plano2','plano3'].forEach((pk,p)=>{
+for(let f=0;f<3;f++){
+const k='su-'+pk+'-op'+(f+1)+'-preco';
+if(setupCache[k])edits.planos.textos[pk+'-op'+(f+1)+'-preco']=setupCache[k];
+}
+});
+if(setupCache['su-avulso'])edits.planos.textos['avulso']=setupCache['su-avulso'];
+}
+
+function nextSetupSubStep(){
+saveSetupSubStep();
+setupSubStep++;
+document.querySelector('.setup-card').style.animation='none';
+void document.querySelector('.setup-card').offsetHeight;
+document.querySelector('.setup-card').style.animation='scaleIn 250ms ease-out';
+renderStep();
+}
+function prevSetupSubStep(){
+saveSetupSubStep();
+setupSubStep--;
+document.querySelector('.setup-card').style.animation='none';
+void document.querySelector('.setup-card').offsetHeight;
+document.querySelector('.setup-card').style.animation='scaleIn 250ms ease-out';
+renderStep();
+}
+
+function getSetupColor(n){
+const keys=['su-cor1','su-cor2','su-cor3'];
+const cached=setupCache[keys[n-1]];
+if(cached)return cached;
+const palette=autoPalette('#3A2D28','#C17B5E','#FBF7F2');
+const pkeys=['cor-escuro','cor-acento','cor-fundo'];
+const v=edits.landing.cores[pkeys[n-1]];
+return v||palette[pkeys[n-1]]||'#000000';
+}
+
+// Helper: valor do cache ou edits
+function scv(cacheKey, editSource, editKey){
+if(setupCache[cacheKey]!==undefined)return setupCache[cacheKey];
+if(editSource&&editKey)return editSource[editKey]||'';
+return'';
+}
+
+function previewSetupPalette(){
+const c1=document.getElementById('su-cor1')?.value||'#3A2D28';
+const c2=document.getElementById('su-cor2')?.value||'#C17B5E';
+const c3=document.getElementById('su-cor3')?.value||'#FBF7F2';
+const el=document.getElementById('su-paleta-preview');
+if(!el)return;
+const pal=autoPalette(c1,c2,c3);
+const ordem=['cor-fundo','cor-superficie','cor-escuro','cor-medio','cor-acento','cor-texto'];
+const nomes={ 'cor-fundo':'Fundo','cor-superficie':'Cards','cor-escuro':'Escuro','cor-medio':'Botões','cor-acento':'Destaque','cor-texto':'Texto'};
+el.innerHTML=ordem.map(k=>`<div style="width:40px;height:40px;border-radius:6px;background:${pal[k]};border:1px solid #555" title="${nomes[k]}: ${pal[k]}"></div>`).join('');
+}
+
+function sc(key,domFallback){
+// Lê do cache (salvo entre sub-etapas) ou do DOM (sub-etapa atual)
+if(setupCache[key]!==undefined)return setupCache[key];
+if(domFallback!==undefined)return domFallback;
+const el=document.getElementById(key);
+if(!el)return'';
+if(el.type==='checkbox')return el.checked;
+return el.value;
+}
+
+function applySetup(){
+// Salva sub-etapa atual antes de processar
+saveSetupSubStep();
+
+// Nome do estúdio
+const nome=sc('su-nome','').trim();
+if(nome){
+['landing','planos'].forEach(pg=>{
+edits[pg].textos['logo-text']=nome;
+edits[pg].textos['seo-title']=nome;
+edits[pg].textos['footer-texto']='© '+new Date().getFullYear()+' '+nome+' - Todos os direitos reservados.';
+});
+}
+
+// Logo — prioriza dataURL do cache, depois preview, depois URL
+const logoCached=setupCache['img-logo']||setupCache['su-logo-prev'];
+const logoUrl=sc('su-logo-url','');
+if(logoCached){
+['landing','planos'].forEach(pg=>{edits[pg].imagens['logo']=logoCached;edits[pg].imagens['logo-hero']=logoCached;});
+}else if(logoUrl&&!logoUrl.startsWith('[')){
+['landing','planos'].forEach(pg=>{edits[pg].imagens['logo']=logoUrl;edits[pg].imagens['logo-hero']=logoUrl;});
+}
+
+// Favicon — usa logo
+const finalLogo=edits.landing.imagens['logo']||'';
+if(finalLogo&&finalLogo.startsWith('data:')){['landing','planos'].forEach(pg=>{edits[pg].imagens['favicon']=finalLogo;});}
+
+// Cores
+const c1=sc('su-cor1','#3A2D28');
+const c2=sc('su-cor2','#C17B5E');
+const c3=sc('su-cor3','#FBF7F2');
+if(c1&&c2&&c3){
+const pal=autoPalette(c1,c2,c3);
+['landing','planos'].forEach(pg=>{edits[pg].cores=JSON.parse(JSON.stringify(pal));});
+}
+
+// Fotos — uploads já estão nos edits, copiamos de lá + cache
+const fotoKeys=['hero-img-left','hero-img-right','galeria-1','galeria-2','galeria-3','galeria-4','galeria-5','galeria-6'];
+for(let i=0;i<8;i++){
+const cached=setupCache['img-'+fotoKeys[i]];
+if(cached){['landing','planos'].forEach(pg=>{edits[pg].imagens[fotoKeys[i]]=cached;});continue;}
+const v=(sc('su-foto'+i,'')||'').trim();
+if(!v||v.startsWith('['))continue;
+['landing','planos'].forEach(pg=>{edits[pg].imagens[fotoKeys[i]]=v;});
+}
+['hero-img-left','hero-img-right'].forEach(key=>{
+const val=edits.landing.imagens[key];
+if(val&&val.startsWith('data:'))edits.planos.imagens[key]=val;
+});
+
+// Contato
+const wppRaw=sc('su-wpp','');
+const wpp=wppRaw.replace(/\D/g,'');
+if(wpp){
+const wppClean='https://wa.me/'+wpp+'?text=Olá, vim do site e gostaria de mais informações';
+['landing','planos'].forEach(pg=>{
+edits[pg].textos['whatsapp-numero']=wpp;
+edits[pg].links['whatsapp-link']=wppClean;
+edits[pg].links['whatsapp-float-link']=wppClean;
+edits[pg].links['hero-btn-link']=wppClean;
+edits[pg].links['cta-link']=wppClean;
+});
+}
+const telRaw=sc('su-tel','');
+const tel=telRaw.replace(/[^\d()\-\s]/g,'');
+if(tel){
+['landing','planos'].forEach(pg=>{
+edits[pg].textos['telefone-numero']=tel;
+edits[pg].links['telefone-link']='tel:+'+tel.replace(/\D/g,'');
+});
+}
+
+// Localização
+const endereco=sc('su-endereco','').trim();
+if(endereco){['landing','planos'].forEach(pg=>{edits[pg].textos['local-endereco']=endereco;});}
+
+// Instagram
+const insta=sc('su-insta','').trim();
+if(insta){
+const handle=insta.startsWith('@')?insta:'@'+insta;
+['landing','planos'].forEach(pg=>{
+edits[pg].textos['insta-handle']=handle;
+edits[pg].links['insta-link']='https://www.instagram.com/'+handle.replace('@','');
+});
+}
+const mockupCached=setupCache['img-mockup']||setupCache['su-mockup-prev'];
+const mockupUrl=sc('su-mockup-url','').trim();
+if(mockupCached){['landing','planos'].forEach(pg=>{edits[pg].imagens['insta-mockup']=mockupCached;});}
+else if(mockupUrl&&!mockupUrl.startsWith('[')){['landing','planos'].forEach(pg=>{edits[pg].imagens['insta-mockup']=mockupUrl;});}
+
+// Google Reviews
+const hasReviews=sc('su-has-reviews',false);
+if(hasReviews){
+const reviewsCode=sc('su-reviews-code','').trim();
+if(reviewsCode){['landing','planos'].forEach(pg=>{edits[pg].textos['google-reviews']=reviewsCode;});}
+}else{
+['landing','planos'].forEach(pg=>{edits[pg].textos['google-reviews']='';});
+}
+
+// Planos
+const planoNames=['Mensal','Trimestral','Semestral'];
+const planoKeys=['plano1','plano2','plano3'];
+for(let p=0;p<3;p++){
+edits.planos.textos[planoKeys[p]+'-nome']=planoNames[p];
+for(let f=0;f<3;f++){
+const pk=planoKeys[p]+'-op'+(f+1)+'-preco';
+const pv=sc('su-'+pk,'').trim();
+if(pv)edits.planos.textos[pk]=pv;
+const labelKey=planoKeys[p]+'-op'+(f+1)+'-label';
+const freqLabels=['1x na semana - 4 aulas','2x na semana - 8 aulas','3x na semana - 12 aulas'];
+edits.planos.textos[labelKey]=freqLabels[f];
+}
+const obsKey=planoKeys[p]+'-obs';
+const obsTexts=['No plano mensal, as aulas são realizadas no período de 30 dias.','No plano trimestral, as aulas são realizadas no período de 90 dias.','No plano semestral, as aulas são realizadas no período de 180 dias.'];
+edits.planos.textos[obsKey]=obsTexts[p];
+}
+const avulso=document.getElementById('su-avulso')?.value.trim();
+if(avulso)edits.planos.textos['avulso']=avulso;
+
+// Avançar para edição com preview
+setupSubStep=0;
+currentPage='landing';
+currentStep=1;
+renderStep();updateStepsBar();updatePreview();
+}
+
+// --- UPLOAD HELPERS PARA SETUP ---
+function setupUploadLogo(input){
+const file=input.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+const du=e.target.result;
+document.getElementById('su-logo-url').value='[Logo Upload]';
+const prev=document.getElementById('su-logo-prev');if(prev){prev.src=du;prev.style.display='block';}
+edits.landing.imagens['logo']=du;edits.planos.imagens['logo']=du;
+edits.landing.imagens['logo-hero']=du;edits.planos.imagens['logo-hero']=du;
+updatePreview();
+};
+reader.readAsDataURL(file);
+}
+function setupUploadFoto(i, input, key){
+const file=input.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+const du=e.target.result;
+document.getElementById('su-foto'+i).value='[Foto Upload]';
+['landing','planos'].forEach(pg=>{edits[pg].imagens[key]=du;});
+updatePreview();
+};
+reader.readAsDataURL(file);
+}
+function setupUploadMockup(input){
+const file=input.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+const du=e.target.result;
+document.getElementById('su-mockup-url').value='[Mockup Upload]';
+const prev=document.querySelector('#su-mockup-url + label + img');
+if(prev){prev.src=du;prev.style.display='block';}
+['landing','planos'].forEach(pg=>{edits[pg].imagens['insta-mockup']=du;});
+updatePreview();
+};
+reader.readAsDataURL(file);
+}
+
+// --- REMOÇÃO DE FUNDO DA LOGO (Canvas) ---
+function removeLogoBackground(){
+// Prioriza dados do edit, depois preview, depois input
+let logoData=edits.landing.imagens['logo'];
+if(!logoData||logoData.startsWith('[')){
+const prev=document.getElementById('su-logo-prev');
+if(prev&&prev.src&&prev.src.startsWith('data:'))logoData=prev.src;
+}
+if(!logoData||logoData.startsWith('[')){alert('Faça upload da logo primeiro.');return;}
+const img=new Image();
+img.crossOrigin='anonymous';
+img.onload=function(){
+const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
+const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+const data=imgData.data;
+let bgR=0,bgG=0,bgB=0,bgCount=0;
+const sampleEdge=(x,y)=>{
+const i=(y*canvas.width+x)*4;
+bgR+=data[i];bgG+=data[i+1];bgB+=data[i+2];bgCount++;
+};
+// Amostra densa das 4 bordas para detectar cor de fundo
+for(let x=0;x<canvas.width;x+=3){sampleEdge(x,0);sampleEdge(x,canvas.height-1);}
+for(let y=0;y<canvas.height;y+=3){sampleEdge(0,y);sampleEdge(canvas.width-1,y);}
+bgR=Math.round(bgR/bgCount);bgG=Math.round(bgG/bgCount);bgB=Math.round(bgB/bgCount);
+// Remove fundo: pixels próximos da cor detectada → transparentes
+const innerT=35,outerT=50;
+for(let i=0;i<data.length;i+=4){
+const dr=data[i]-bgR,dg=data[i+1]-bgG,db=data[i+2]-bgB;
+const dist=Math.sqrt(dr*dr+dg*dg+db*db);
+if(dist<innerT){data[i+3]=0;}
+else if(dist<outerT){data[i+3]=Math.round(((dist-innerT)/(outerT-innerT))*255);}
+}
+ctx.putImageData(imgData,0,0);
+const newUrl=canvas.toDataURL('image/png');
+edits.landing.imagens['logo']=newUrl;edits.planos.imagens['logo']=newUrl;
+edits.landing.imagens['logo-hero']=newUrl;edits.planos.imagens['logo-hero']=newUrl;
+document.getElementById('su-logo-url').value='[Logo sem fundo]';
+const prev=document.getElementById('su-logo-prev');if(prev){prev.src=newUrl;}
+updatePreview();
+};
+img.src=logoData;
+}
+
+function renderCores(){
+let h='<p class="step-desc">Escolha uma paleta ou ajuste cada cor</p>';
+h+='<div class="colors-row">';
+colorPresets.forEach(p=>{h+=`<div class="color-dot" style="background:${p.colors['cor-escuro']}" title="${p.name}" onclick="applyPreset('${p.name}')"></div>`;});
+h+='</div>';
+colorDefs.forEach(d=>{
+const v=edits[currentPage].cores[d.key]||'#000';
+h+=`<div class="color-pick"><input type="color" value="${v}" data-ckey="${d.key}" onchange="updateColor('${d.key}',this.value)"><span class="cn">${d.label}</span><span class="cv">${v}</span></div>`;
+});
+return h;
+}
+
+function renderTextos(){
+const e=edits[currentPage];let h='<p class="step-desc">Headlines, descrições e conteúdos de texto</p>';
+const exclude=['whatsapp-numero','google-reviews','footer-texto','logo-text'];
+const grouped={};
+Object.keys(e.textos).forEach(k=>{
+if(exclude.includes(k))return;
+const prefix=k.split('-')[0];
+if(!grouped[prefix])grouped[prefix]=[];
+grouped[prefix].push(k);
+});
+Object.keys(grouped).forEach(g=>{
+h+=`<div class="sec-hdr">📌 ${g.toUpperCase()}</div>`;
+grouped[g].forEach(k=>{
+const v=e.textos[k]||'',label=k.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+h+=v.length>60
+?`<div class="fg"><label class="fl">${label}</label><textarea class="fi" data-tkey="${k}" oninput="updateText('${k}',this.value)" rows="2">${esc(v)}</textarea></div>`
+:`<div class="fg"><label class="fl">${label}</label><input class="fi" value="${esc(v)}" data-tkey="${k}" oninput="updateText('${k}',this.value)"></div>`;
+});
+});
+return h;
+}
+
+function renderContato(){
+let h='<p class="step-desc">WhatsApp, telefone, endereço e redes sociais</p>';
+h+=field('whatsapp-numero','WhatsApp (número com DDD)','5511999999999');
+h+=field('telefone-numero','Telefone visível','(11) 90000-0000');
+h+=field('telefone-link','Telefone (link)','tel:+5511900000000');
+h+=field('local-endereco','Endereço completo','Av. Paulista, 1159 - São Paulo - SP');
+h+=field('insta-link','Link do Instagram','https://instagram.com/seuinstagram');
+h+=field('insta-handle','@ do Instagram','@seuinstagram');
+h+=field('footer-texto','Texto do rodapé','© 2026 Sua Empresa - Todos os direitos reservados.');
+return h;
+}
+
+function renderImagens(){
+let h='<p class="step-desc">Upload ou URL das imagens do site</p>';
+const imgs=edits[currentPage].imagens;
+Object.keys(imgs).forEach(k=>{
+if(k.includes('galeria-'))return; // handled separately
+h+=imageField(k,k.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()));
+});
+// Galeria
+if(Object.keys(imgs).some(k=>k.includes('galeria-'))){
+h+='<div class="sec-hdr">📸 Galeria (8 fotos)</div>';
+for(let i=1;i<=8;i++)h+=imageField('galeria-'+i,'Foto '+i);
+}
+return h;
+}
+
+function renderAvaliacoes(){
+let h='<p class="step-desc">Integre avaliações reais do Google no site</p>';
+h+=`<div class="elfsight-guide">
+<strong>⭐ Como obter avaliações do Google:</strong>
+<ol>
+<li>Acesse <a href="https://elfsight.com/google-reviews-widget/" target="_blank">elfsight.com/google-reviews-widget</a></li>
+<li>Clique em <strong>"Create widget"</strong> (grátis)</li>
+<li>Conecte sua conta Google e selecione seu negócio</li>
+<li>Personalize as cores e layout do widget</li>
+<li>Copie o <strong>código embed</strong> gerado</li>
+<li>Cole no campo abaixo 👇</li>
+</ol>
+</div>`;
+h+=`<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea class="fi" data-tkey="google-reviews" oninput="updateText('google-reviews',this.value)" rows="6" placeholder="Cole aqui o código HTML do widget...">${esc(edits[currentPage].textos['google-reviews']||'')}</textarea></div>`;
+return h;
+}
+
+function renderPlanos(){
+let h='<p class="step-desc">Edite o conteúdo da página de Planos: título, seção sobre as aulas, valores e observações.</p>';
+// Atualizar UI da tab de página sem causar recursão
+document.querySelectorAll('.page-tab').forEach(t=>t.classList.toggle('active',t.dataset.page==='planos'));
+document.getElementById('previewLabel').textContent='Página de Planos';
+// currentPage já foi definido como 'planos' pelo goToStep/nextStep/prevStep
+
+// Título da página
+h+='<div class="sec-hdr">📝 Título da Página</div>';
+h+=field('page-title','Título principal','Informações sobre planos e aulas');
+
+// Sobre as aulas
+h+='<div class="sec-hdr">📋 Sobre as Aulas</div>';
+h+=field('info-label','Título da seção','Sobre as aulas');
+h+=field('info-1','Informação 1','Nossas aulas tem a duração de 50 minutos...');
+h+=field('info-2','Informação 2','Trabalhamos com horário fixo e por escala...');
+h+=field('info-3','Informação 3','Oferecemos uma aula experimental...');
+
+// Planos
+h+='<div class="sec-hdr">💎 Valores dos Planos</div>';
+h+=field('planos-label','Título da seção','Sobre os planos');
+['plano1','plano2','plano3'].forEach((p,i)=>{
+const nomes=['Mensal','Trimestral','Semestral'];
+h+=`<p style="font-weight:600;font-size:12px;margin:12px 0 4px;color:var(--secondary)">📌 ${nomes[i]}</p>`;
+h+=field(p+'-nome','Nome do plano',nomes[i]);
+for(let j=1;j<=3;j++){h+=field(p+'-op'+j+'-label','Opção '+j+' - Label','');h+=field(p+'-op'+j+'-preco','Opção '+j+' - Preço','');}
+h+=field(p+'-obs','Observação','');
+});
+h+=field('avulso','Aulas avulsas','Aulas avulsas: <strong>R$180,00</strong> cada aula.<br>Descontos para o pagamento no pix');
+updatePreview();
+return h;
+}
+
+function renderExportar(){
+let h='<p class="step-desc">Baixe os arquivos ou vá para a próxima etapa para publicar online.</p>';
+h+='<p style="font-size:13px;color:var(--dim);margin-bottom:16px">✅ Todas as etapas concluídas! Clique no botão abaixo para baixar os arquivos HTML.</p>';
+h+='<button class="btn btn-e" style="width:100%;padding:14px;font-size:15px" onclick="exportAll()">💾 Exportar Landing Page + Planos</button>';
+h+='<p style="font-size:11px;color:var(--dim);margin-top:12px;text-align:center">Atalho: Ctrl+S</p>';
+return h;
+}
+
+// ==================== PUBLICAR NA VERCEL ====================
+function renderPublicar(){
+const nomeEstudio=(edits.landing.textos['logo-text']||'meu-estudio').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')||'meu-estudio';
+let h='<p class="step-desc">Escolha como publicar seu site:</p>';
+
+// --- OPÇÃO 1: DOMÍNIO PRÓPRIO (PAGO) ---
+h+='<div style="background:rgba(76,67,247,.04);border:1px solid rgba(76,67,247,.15);border-radius:var(--r-card);padding:24px;margin-bottom:20px">';
+h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span style="font-size:20px">🌐</span><span style="font-weight:700;font-size:16px;color:var(--bright)">Domínio Próprio</span><span style="background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;margin-left:auto">RECOMENDADO</span></div>';
+h+='<p style="font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.5">Tenha um endereço profissional como <strong style="color:var(--bright)">nomedoestudio.com</strong>. Ideal para passar credibilidade.</p>';
+
+h+='<div style="background:rgba(255,255,255,.03);border-radius:var(--r);padding:14px 16px;margin-bottom:16px">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;color:var(--text)">💰 Valor</span><span style="font-size:20px;font-weight:700;color:var(--bright)">R$ 79,90<sub style="font-size:10px;font-weight:400;color:var(--dim)">/ano</sub></span></div>';
+h+='<div style="font-size:11px;color:var(--dim);line-height:1.7">✅ Domínio registrado<br>✅ Linkado ao site automaticamente<br>✅ SSL incluso<br>✅ Renovação anual</div>';
+h+='</div>';
+
+h+=`<div class="fg"><label class="fl">Qual domínio você quer?</label><div style="display:flex;gap:8px"><input class="fi" id="pub-domain" placeholder="nomedoestudio.com" oninput="this.value=this.value.replace(/\\s/g,'').toLowerCase()"><button class="btn btn-p btn-sm" onclick="checkDomain()" style="white-space:nowrap">🔍 Buscar</button></div></div>`;
+h+='<div id="pub-domain-result"></div>';
+h+='</div>';
+
+// --- OPÇÃO 2: GRATUITO ---
+h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:24px;margin-bottom:20px">';
+h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span style="font-size:20px">🆓</span><span style="font-weight:700;font-size:16px;color:var(--bright)">Subdomínio Gratuito</span><span style="background:rgba(255,255,255,.06);color:var(--dim);font-size:10px;font-weight:600;padding:3px 10px;border-radius:10px;margin-left:auto">GRÁTIS</span></div>';
+h+='<p style="font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.5">Publique com um subdomínio <strong style="color:var(--secondary)">.vercel.app</strong>. Perfeito para testar ou começar.</p>';
+
+h+=`<div class="fg"><label class="fl">Nome do seu link</label><div style="display:flex;gap:8px"><input class="fi" id="pub-name" value="${esc(nomeEstudio)}" placeholder="nome-do-estudio"><button class="btn btn-s btn-sm" onclick="checkVercelName()" style="white-space:nowrap">🔍 Verificar</button></div></div>`;
+h+=`<p style="font-size:12px;color:var(--secondary);margin-top:4px">🔗 <strong id="pub-preview-url">${nomeEstudio}.vercel.app</strong></p>`;
+h+='<div id="pub-alternatives" style="margin-top:8px"></div>';
+
+h+='<div style="font-size:11px;color:var(--dim);line-height:1.7;margin-top:12px">✅ Landing Page + Planos &nbsp;✅ SSL &nbsp;✅ CDN global</div>';
+
+// Botão publicar grátis
+h+=`<button class="btn btn-p" id="pub-btn" style="width:100%;margin-top:20px;padding:14px;font-size:14px" onclick="publishToVercel()">🚀 Publicar Grátis</button>`;
+h+='</div>';
+
+// Exportar
+h+='<div style="text-align:center"><span style="font-size:11px;color:var(--dim)">ou</span></div>';
+h+='<button class="btn btn-s" style="width:100%;margin-top:8px;padding:10px;font-size:12px" onclick="exportAll()">💾 Baixar Arquivos HTML</button>';
+h+='<div id="pub-result" style="margin-top:16px"></div>';
+
+// Atualiza preview do nome
+h+=`<`+`script>document.getElementById('pub-name').addEventListener('input',function(){var p=document.getElementById('pub-preview-url'),a=document.getElementById('pub-alternatives'),b=document.getElementById('pub-btn'),r=document.getElementById('pub-result');p.textContent=this.value+'.vercel.app';a.innerHTML='';b.textContent='🚀 Publicar na Vercel';b.onclick=function(){publishToVercel();};r.innerHTML='';});<`+`/script>`;
+
+return h;
+}
+
+function toggleVercelSettings(){
+const tok=prompt('🔑 Token da Vercel\n\nCole seu token de acesso pessoal.\nGere um em: vercel.com/account/tokens\n\nTodos os sites serão publicados na sua conta.',localStorage.getItem('vercel_token')||'');
+if(tok!==null){
+if(tok.trim()){localStorage.setItem('vercel_token',tok.trim());alert('✅ Token salvo! Você já pode publicar sites.');}
+else{localStorage.removeItem('vercel_token');alert('Token removido.');}
+renderStep();
+}
+}
+
+async function checkVercelName(){
+const name=document.getElementById('pub-name')?.value.trim();
+if(!name){alert('Digite um nome para o projeto.');return;}
+const btn=document.querySelector('#pub-btn');if(!btn)return;
+btn.textContent='🔍 Verificando...';btn.disabled=true;
+const altDiv=document.getElementById('pub-alternatives');
+try{
+const tok=localStorage.getItem('vercel_token')||'';
+const res=await fetch('https://api.vercel.com/v9/projects/'+encodeURIComponent(name),{
+headers:{'Authorization':'Bearer '+tok}
+});
+if(res.ok){
+// Projeto já existe — nome em uso
+altDiv.innerHTML='<p style="font-size:11px;color:var(--error);margin-top:8px">⚠️ Este nome já está em uso na Vercel.</p><p style="font-size:11px;color:var(--dim);margin-top:4px">Sugestões:</p>';
+const sugs=[name+'-studio',name+'-pilates',name+'-site',name+'-web',name+'-1',name+'-2'];
+altDiv.innerHTML+=sugs.map(s=>`<button class="btn btn-s btn-sm" style="margin:3px" onclick="document.getElementById('pub-name').value='${s}';document.getElementById('pub-preview-url').textContent='${s}.vercel.app';document.getElementById('pub-alternatives').innerHTML='';">${s}.vercel.app</button>`).join('');
+btn.textContent='🚀 Publicar na Vercel';btn.disabled=false;
+}else if(res.status===404||res.status===403){
+// 404 = não existe (bom), 403 = token sem permissão de leitura
+if(res.status===404)altDiv.innerHTML='<p style="font-size:11px;color:var(--green)">✅ Nome disponível!</p>';
+else altDiv.innerHTML='<p style="font-size:11px;color:var(--warning)">⚠️ Sem permissão para verificar. Tente publicar mesmo assim.</p>';
+btn.textContent='🚀 Publicar na Vercel';btn.disabled=false;
+}else{
+const txt=await res.text();
+altDiv.innerHTML='<p style="font-size:11px;color:var(--warning)">Erro ao verificar (HTTP '+res.status+'). Verifique o token.</p>';
+btn.textContent='🚀 Publicar na Vercel';btn.disabled=false;
+}
+}catch(e){
+altDiv.innerHTML='<p style="font-size:11px;color:var(--warning)">Erro de conexão. Verifique sua internet.</p>';
+btn.textContent='🚀 Publicar na Vercel';btn.disabled=false;
+}
+}
+
+function buildPageHTML(page,noindex){
+const e=edits[page];const parser=new DOMParser();const doc=parser.parseFromString(templateData[page],'text/html');
+// Noindex para página de planos (não indexar no Google)
+if(noindex){const meta=doc.createElement('meta');meta.name='robots';meta.content='noindex,nofollow';doc.head.appendChild(meta);}
+// Favicon dinâmico — círculo na cor mais escura da marca
+const corEscura=e.cores['cor-escuro']||'#3A2D28';
+const faviconSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+corEscura+'"/></svg>';
+const faviconURL='data:image/svg+xml,'+encodeURIComponent(faviconSVG);
+const faviconEl=doc.querySelector('link[rel="icon"]');
+if(faviconEl)faviconEl.setAttribute('href',faviconURL);
+let css=':root{';for(const[k,v]of Object.entries(e.cores))css+=`--${k}:${v};`;css+='}';
+let styleEl=doc.getElementById('wb-colors');if(!styleEl){styleEl=doc.createElement('style');styleEl.id='wb-colors';doc.head.appendChild(styleEl);}
+styleEl.textContent=css;
+for(const[k,v]of Object.entries(e.imagens)){if(!v||v.startsWith('['))continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',v);}
+for(const[k,v]of Object.entries(e.imagens)){if(!v||v.startsWith('['))continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${v}")`;});}
+for(const[k,v]of Object.entries(e.textos)){
+const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
+const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
+if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.children.length===0){el.textContent=v;}
+}
+doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k&&e.textos[k])el.innerHTML=e.textos[k];});
+for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
+doc.querySelectorAll('[data-editable],[data-editable-text],[data-editable-bg],[data-editable-html]').forEach(el=>{el.removeAttribute('data-editable');el.removeAttribute('data-editable-text');el.removeAttribute('data-editable-bg');el.removeAttribute('data-editable-html');});
+const s=doc.getElementById('wb-colors');if(s)s.removeAttribute('id');
+return'<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+}
+
+async function publishToVercel(){
+const name=document.getElementById('pub-name')?.value.trim();
+const token=localStorage.getItem('vercel_token');
+if(!name){alert('Digite um nome para o projeto.');return;}
+if(!token){alert('Erro interno: token não encontrado.');return;}
+
+const btn=document.getElementById('pub-btn');
+const resultDiv=document.getElementById('pub-result');
+btn.textContent='⏳ Gerando arquivos...';btn.disabled=true;
+resultDiv.innerHTML='<p style="font-size:12px;color:var(--dim);text-align:center;margin-top:12px">Preparando Landing Page e Página de Planos...</p>';
+
+// Gera HTMLs (texto puro, sem base64) — planos com noindex
+const files=[];
+const landingHTML=buildPageHTML('landing',false);
+const planosHTML=buildPageHTML('planos',true);
+// vercel.json — clean URLs para /planos funcionar
+files.push({file:'vercel.json',data:JSON.stringify({cleanUrls:true,trailingSlash:false})});
+files.push({file:'index.html',data:landingHTML});
+files.push({file:'planos.html',data:planosHTML});
+
+btn.textContent='⏳ Enviando para Vercel...';
+resultDiv.innerHTML='<p style="font-size:12px;color:var(--dim);text-align:center;margin-top:12px">Criando projeto e publicando site...</p>';
+
+try{
+// Passo 1: Criar/atualizar projeto
+await fetch('https://api.vercel.com/v9/projects',{
+method:'POST',
+headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+body:JSON.stringify({name:name,framework:null,gitRepository:{type:'github',repo:null}})
+}).catch(()=>{});
+
+// Passo 2: Criar deployment com target production
+const res=await fetch('https://api.vercel.com/v13/deployments',{
+method:'POST',
+headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+body:JSON.stringify({name:name,files:files,projectSettings:{framework:null},target:'production'})
+});
+
+const json=await res.json();
+
+if(res.ok){
+const baseUrl='https://'+name+'.vercel.app';
+const linkPrincipal=baseUrl;
+const linkPlanos=baseUrl+'/planos';
+resultDiv.innerHTML=`<div style="background:rgba(32,201,151,.08);border:1px solid rgba(32,201,151,.2);border-radius:var(--r-card);padding:24px;text-align:center;margin-top:16px">
+<div style="font-size:40px;margin-bottom:12px">🎉</div>
+<div style="font-weight:700;font-size:16px;color:var(--bright);margin-bottom:20px">Site publicado com sucesso!</div>
+<div style="text-align:left;max-width:400px;margin:0 auto">
+<div style="margin-bottom:16px">
+<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">🏠 Landing Page</div>
+<div style="display:flex;gap:6px;align-items:center">
+<input class="fi" value="${esc(linkPrincipal)}" readonly style="flex:1;font-size:12px;cursor:text" onclick="this.select()" id="pub-link-main">
+<button class="btn btn-s btn-sm" onclick="copyLink('pub-link-main')" style="white-space:nowrap">📋 Copiar</button>
+</div>
+<a href="${linkPrincipal}" target="_blank" style="font-size:11px;color:var(--accent)">Abrir →</a>
+</div>
+<div style="margin-bottom:16px">
+<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">💎 Página de Planos <span style="color:var(--warning);font-size:9px">(não indexado)</span></div>
+<div style="display:flex;gap:6px;align-items:center">
+<input class="fi" value="${esc(linkPlanos)}" readonly style="flex:1;font-size:12px;cursor:text" onclick="this.select()" id="pub-link-planos">
+<button class="btn btn-s btn-sm" onclick="copyLink('pub-link-planos')" style="white-space:nowrap">📋 Copiar</button>
+</div>
+<a href="${linkPlanos}" target="_blank" style="font-size:11px;color:var(--accent)">Abrir →</a>
+</div>
+</div>
+<p style="font-size:10px;color:var(--dim);margin-top:12px">Pode levar até 30s para ficar disponível.</p>
+</div>`;
+btn.textContent='✅ Publicado';btn.className='btn btn-s';btn.disabled=true;
+}else{
+let errMsg=json.error?.message||json.message||'Erro desconhecido';
+if(json.error?.code)errMsg='['+json.error.code+'] '+errMsg;
+resultDiv.innerHTML=`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:16px;margin-top:16px;font-size:12px;color:var(--error)">
+❌ <strong>Erro ${res.status}:</strong> ${esc(errMsg)}<br><br>
+<strong>Possíveis causas:</strong><br>
+• Token inválido ou expirado — gere um novo em vercel.com/account/tokens<br>
+• Nome do projeto já existe em outra conta<br>
+• Tente um nome diferente no campo acima</div>`;
+btn.textContent='🚀 Tentar Novamente';btn.disabled=false;
+}
+}catch(e){
+resultDiv.innerHTML=`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:16px;margin-top:16px;font-size:12px;color:var(--error)">
+❌ <strong>Erro de rede:</strong> ${esc(e.message)}<br><br>
+<strong>Provável causa:</strong> CORS bloqueado pelo navegador.<br>
+Abra o builder pelo servidor local: <strong>start-server.bat</strong></div>`;
+btn.textContent='🚀 Tentar Novamente';btn.disabled=false;
+}
+}
+
+// ==================== FIELD HELPERS ====================
+function field(key,label,placeholder){
+const e=edits[currentPage];let v='';
+if(e.textos[key]!==undefined)v=e.textos[key];
+else if(e.links[key]!==undefined)v=e.links[key];
+return `<div class="fg"><label class="fl">${label}</label><input class="fi" value="${esc(v||'')}" data-tkey="${key}" placeholder="${placeholder||''}" oninput="updateField('${key}',this.value)"></div>`;
+}
+
+function imageField(key,label){
+const v=edits[currentPage].imagens[key]||'';
+let h=`<div class="fg"><label class="fl">${label}</label>`;
+h+=`<div style="display:flex;gap:4px"><input class="fi" value="${esc(v)}" data-ikey="${key}" oninput="updateImage('${key}',this.value)" placeholder="URL da imagem...">`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="uploadImage('${key}',this)"></label></div>`;
+h+=`<img class="img-prev" src="${v}" onerror="this.style.display='none'" onload="this.style.display='block'" ${v?'':'style="display:none"'} data-preview="${key}"></div>`;
+return h;
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ==================== UPDATE FUNCTIONS ====================
+function updateField(key,value){
+// Sincroniza campo nas DUAS páginas
+['landing','planos'].forEach(page=>{
+const e=edits[page];
+if(e.textos[key]!==undefined)e.textos[key]=value;
+if(e.links[key]!==undefined)e.links[key]=value;
+});
+schedulePreview();
+}
+
+function updateText(key,value){
+// Sincroniza texto nas DUAS páginas
+edits.landing.textos[key]=value;
+edits.planos.textos[key]=value;
+schedulePreview();
+}
+
+function updateColor(key,value){
+// Sincroniza cor nas DUAS páginas
+edits.landing.cores[key]=value;
+edits.planos.cores[key]=value;
+const input=document.querySelector(`[data-ckey="${key}"]`);
+if(input){const cv=input.parentElement.querySelector('.cv');if(cv)cv.textContent=value;}
+updatePreview();
+}
+
+function updateImage(key,value){
+// Sincroniza imagem nas DUAS páginas
+edits.landing.imagens[key]=value;
+edits.planos.imagens[key]=value;
+const prev=document.querySelector(`[data-preview="${key}"]`);
+if(prev){prev.src=value;prev.style.display=value?'block':'none';}
+schedulePreview();
+}
+
+function uploadImage(key,input){
+const file=input.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+const dataUrl=e.target.result;
+// Sincroniza upload nas DUAS páginas
+edits.landing.imagens[key]=dataUrl;
+edits.planos.imagens[key]=dataUrl;
+const prev=document.querySelector(`[data-preview="${key}"]`);if(prev){prev.src=dataUrl;prev.style.display='block';}
+const urlInput=document.querySelector(`[data-ikey="${key}"]`);if(urlInput)urlInput.value='[Imagem Upload]';
+updatePreview();
+};
+reader.readAsDataURL(file);
+}
+
+let previewTimer;
+function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(updatePreview,300);}
+
+function applyPreset(name){
+const preset=colorPresets.find(p=>p.name===name);if(!preset)return;
+// Aplica paleta nas DUAS páginas
+edits.landing.cores=JSON.parse(JSON.stringify(preset.colors));
+edits.planos.cores=JSON.parse(JSON.stringify(preset.colors));
+document.querySelectorAll('[data-ckey]').forEach(input=>{
+const v=preset.colors[input.dataset.ckey];if(v){input.value=v;const cv=input.parentElement.querySelector('.cv');if(cv)cv.textContent=v;}
+});
+updatePreview();
+}
+
+function bindColorPickers(){/* no-op, inline onchange handles it */}
+
+// ==================== PREVIEW ====================
+function updatePreview(){
+const raw=templateData[currentPage];if(!raw)return;
+const parser=new DOMParser();const doc=parser.parseFromString(raw,'text/html');
+const e=edits[currentPage];
+let css=':root{';for(const[k,v]of Object.entries(e.cores))css+=`--${k}:${v};`;css+='}';
+let styleEl=doc.getElementById('wb-colors');if(!styleEl){styleEl=doc.createElement('style');styleEl.id='wb-colors';doc.head.appendChild(styleEl);}
+styleEl.textContent=css;
+for(const[k,v]of Object.entries(e.imagens)){if(!v)continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',v);}
+for(const[k,v]of Object.entries(e.imagens)){if(!v)continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${v}")`;});}
+for(const[k,v]of Object.entries(e.textos)){
+const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
+const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
+if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.children.length===0){el.textContent=v;}
+}
+doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k&&e.textos[k])el.innerHTML=e.textos[k];});
+for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
+const html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);
+const iframe=document.getElementById('previewFrame');const old=iframe.src;iframe.src=url;
+if(old.startsWith('blob:'))setTimeout(()=>URL.revokeObjectURL(old),1000);
+}
+
+// ==================== EXPORT ====================
+function exportAll(){
+['landing','planos'].forEach(page=>{
+const html=buildPageHTML(page,page==='planos');
+const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download=page==='landing'?'landing-page.html':'pagina-planos.html';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+}
+
+// ==================== PAGE SWITCH ====================
+function switchPage(page){
+currentPage=page;
+document.querySelectorAll('.page-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===page));
+document.getElementById('previewLabel').textContent=page==='landing'?'Landing Page':'Página de Planos';
+renderStep();updatePreview();
+}
+
+// ==================== PREVIEW SIZE ====================
+function setSize(w,btn){
+const iframe=document.getElementById('previewFrame');
+document.querySelectorAll('.szbtns button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+if(w==='100%'){iframe.style.width='100%';iframe.style.height='100%';}else{iframe.style.width=w;iframe.style.height='100%';}
+}
+
+// ==================== KEYBOARD ====================
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportAll();}});
+
+// ==================== START ====================
+init();
+</script>
+</body>
+</html>

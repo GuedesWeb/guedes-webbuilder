@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<!-- preview: aguarda o fundo WebGL (Three.js) pintar antes do screenshot -->
+<meta content="5000" name="preview-ready-after-ms"/>
+<title>Pulsedesk — Gestão de tarefas sem sobrecarga</title>
+
+<!-- fonts: Geist (corpo) e Plus Jakarta Sans (títulos) -->
+<link href="assets/4bcb63d746dc1754_css2.css" rel="stylesheet"/>
+<link href="assets/b626255d7795be45_css2.css" rel="stylesheet"/>
+
+<!-- css -->
+<!-- classes utilitárias .font-geist / .font-jakarta -->
+<link rel="stylesheet" href="assets/css/fonts.css"/>
+<!-- keyframes animationIn (entrada) e progress-shimmer (barras de progresso) -->
+<link rel="stylesheet" href="assets/css/animations.css"/>
+
+<!-- head-only js: runtime do Tailwind (gera as classes utilitárias em tempo de execução) -->
+<script src="assets/176e894661aa9cdc_3.4.17"></script>
+<!-- head-only js: runtime do Iconify (renderiza os <iconify-icon>) -->
+<script src="assets/758d94838db0cafd_iconify-icon.min.js"></script>
+
+<!-- importmap: resolve os imports de three.js usados pelo fundo WebGL -->
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body class="min-h-screen overflow-x-hidden antialiased selection:bg-cyan-300/20 selection:text-cyan-100 text-slate-100 font-sans bg-[#080c14]" style="font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+<!-- background-layers -->
+<div class="pointer-events-none fixed inset-0 -z-50" style="background: radial-gradient(circle at 50% -10%, rgba(88, 166, 255, 0.16), transparent 36%), radial-gradient(circle at 82% 18%, rgba(103, 232, 249, 0.08), transparent 28%), linear-gradient(180deg, #0b1020 0%, #080c14 42%, #0a0d13 100%);"></div>
+<div class="pointer-events-none fixed inset-0 -z-40 opacity-[0.035]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+
+<div class="mx-auto min-h-screen w-full max-w-[1360px] border-x border-white/[0.06]">
+<div class="pointer-events-none fixed left-1/2 top-0 -z-30 hidden h-full w-full max-w-[1360px] -translate-x-1/2 grid-cols-4 md:grid">
+<div class="border-r border-white/[0.045]"></div>
+<div class="border-r border-white/[0.045]"></div>
+<div class="border-r border-white/[0.045]"></div>
+<div></div>
+</div>
+
+<!-- header -->
+<header class="sticky border-white/[0.06] [animation:animationIn_0.8s_ease-out_0.1s_both] z-50 bg-[#080c14]/70 border-b top-0 backdrop-blur-2xl">
+<nav class="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-5 sm:px-8 lg:px-10">
+<a class="group flex items-center gap-3" href="#">
+<span class="text-base font-semibold text-white tracking-[-0.035em] font-geist">Pulsedesk</span>
+</a>
+<div class="hidden items-center gap-8 md:flex">
+<a class="relative text-sm text-slate-400 transition duration-300 ease-out hover:text-white font-geist" href="#problem">Problema<span class="absolute -bottom-2 left-0 h-px w-0 bg-cyan-200/70 transition-all duration-300 ease-out hover:w-full"></span></a>
+<a class="relative text-sm text-slate-400 transition duration-300 ease-out hover:text-white font-geist" href="#how">Como funciona<span class="absolute -bottom-2 left-0 h-px w-0 bg-cyan-200/70 transition-all duration-300 ease-out hover:w-full"></span></a>
+<a class="relative text-sm text-slate-400 transition duration-300 ease-out hover:text-white font-geist" href="#reviews">Avaliações<span class="absolute -bottom-2 left-0 h-px w-0 bg-cyan-200/70 transition-all duration-300 ease-out hover:w-full"></span></a>
+<a class="relative text-sm text-slate-400 transition duration-300 ease-out hover:text-white font-geist" href="#pricing">Preços<span class="absolute -bottom-2 left-0 h-px w-0 bg-cyan-200/70 transition-all duration-300 ease-out hover:w-full"></span></a>
+</div>
+<a class="hidden rounded-full border border-cyan-200/20 bg-cyan-100 px-4 py-2 text-sm font-medium text-slate-950 shadow-lg shadow-cyan-950/20 transition duration-300 ease-out hover:scale-[1.03] hover:border-cyan-200/35 hover:bg-cyan-50 hover:shadow-cyan-900/25 sm:inline-flex font-geist" href="#pricing">Iniciar teste grátis</a>
+<button aria-label="Abrir menu" class="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-300 md:hidden">
+<iconify-icon height="20" icon="solar:hamburger-menu-linear" width="20"></iconify-icon>
+</button>
+</nav>
+</header>
+
+<main>
+
+<!-- hero -->
+<section class="overflow-hidden sm:px-8 sm:pb-28 sm:pt-28 lg:px-10 lg:pt-24 lg:pb-24 pt-20 pr-5 pb-24 pl-5 relative" id="blueprint">
+<canvas class="absolute inset-0 z-0 pointer-events-none opacity-60 mix-blend-screen w-full h-full" id="webgl-canvas"></canvas>
+<div class="pointer-events-none absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-200/10 blur-3xl"></div>
+<div class="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12 w-full max-w-[1280px] mr-auto ml-auto gap-x-14 gap-y-14 items-center">
+<div class="reveal [animation:animationIn_0.8s_ease-out_0.1s_both] z-10 relative">
+<div class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs text-slate-300 shadow-2xl shadow-black/20 backdrop-blur-xl font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-200 shadow-lg shadow-cyan-200/40"></span>
+Gestão de tarefas para times pequenos que querem clareza rápido
+</div>
+<h1 class="sm:text-6xl lg:text-7xl text-5xl font-medium text-white tracking-tighter font-jakarta max-w-4xl">Gestão de tarefas sem sobrecarga.</h1>
+<p class="mt-7 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg font-geist">O Pulsedesk ajuda times pequenos, startups e freelancers a organizar tarefas, acompanhar prazos e manter o trabalho em um espaço tranquilo, sem configuração complexa nem curva de aprendizado.</p>
+<div class="mt-9 flex flex-col gap-3 sm:flex-row">
+<a class="group inline-flex items-center justify-center gap-2 shadow-cyan-950/30 transition duration-300 ease-out hover:scale-[1.03] hover:bg-cyan-50 hover:shadow-cyan-300/10 text-sm font-semibold text-slate-950 bg-cyan-100 rounded-full pt-3 pr-5 pb-3 pl-5 shadow-2xl font-geist" href="#pricing">
+Iniciar teste grátis
+<iconify-icon class="transition duration-300 ease-out group-hover:translate-x-0.5" height="18" icon="solar:arrow-right-linear" width="18"></iconify-icon>
+</a>
+<a class="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-200 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 ease-out hover:scale-[1.02] hover:border-white/[0.18] hover:bg-white/[0.07] font-geist" href="#how">
+Ver como funciona
+<iconify-icon height="18" icon="solar:checklist-minimalistic-linear" width="18"></iconify-icon>
+</a>
+</div>
+</div>
+<div class="reveal transition-all duration-700 ease-out lg:h-[43rem] group [animation:animationIn_0.8s_ease-out_0.1s_both] w-full h-[34rem] max-w-[42rem] mr-auto ml-auto relative" id="heroObject" style="perspective: 1200px;">
+<div aria-hidden="true" class="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/[0.08] blur-[100px] transition-all duration-500 group-hover:bg-cyan-400/[0.12]"></div>
+<div aria-hidden="true" class="absolute left-[62%] top-[22%] h-44 w-44 -translate-x-1/2 rounded-full bg-emerald-400/[0.06] blur-[80px]"></div>
+<div aria-hidden="true" class="absolute left-1/2 top-[68%] h-48 w-[88%] -translate-x-1/2 rounded-full bg-black/60 blur-3xl"></div>
+<div aria-hidden="true" class="absolute left-1/2 top-[69%] h-28 w-[78%] -translate-x-1/2 rounded-full bg-cyan-950/30 blur-2xl transition-all duration-700 group-hover:w-[82%]" style="transform-style: preserve-3d;"></div>
+<div class="absolute left-1/2 top-1/2 w-[98%] -translate-x-1/2 -translate-y-1/2 transition-transform duration-700 ease-out" style="transform-style: preserve-3d;">
+<div class="animate-float-3d floating-panel rounded-[2rem] border border-white/[0.15] bg-slate-950/70 p-3 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-3xl transition duration-500 ease-out hover:border-cyan-200/30">
+<div class="overflow-hidden rounded-[1.55rem] border border-white/[0.08] bg-[#0b1220]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+<div class="flex items-center justify-between border-b border-white/[0.07] bg-white/[0.02] px-5 py-4">
+<div class="flex items-center gap-3">
+<div>
+<p class="text-xs text-slate-400 font-geist">Workspace Pulsedesk</p>
+<p class="mt-0.5 text-sm font-medium text-slate-100 font-geist">Painel do plano de lançamento</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs text-slate-300 sm:flex transition-colors hover:bg-white/[0.08] font-geist">
+<span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>Ao vivo
+</div>
+<div class="flex -space-x-2 transition-transform hover:-space-x-1">
+<span class="h-7 w-7 rounded-full border-2 border-[#0b1220] bg-cyan-200 shadow-sm"></span>
+<span class="h-7 w-7 rounded-full border-2 border-[#0b1220] bg-slate-300 shadow-sm"></span>
+<span class="h-7 w-7 rounded-full border-2 border-[#0b1220] bg-emerald-300 shadow-sm"></span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-[0.28fr_1fr]">
+<aside class="hidden border-r border-white/[0.07] bg-white/[0.01] p-4 sm:block">
+<div class="space-y-1">
+<div class="flex items-center gap-2 rounded-xl bg-cyan-400/[0.1] px-3 py-2.5 text-xs font-medium text-cyan-200 cursor-pointer transition-colors hover:bg-cyan-400/[0.15] font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)]"></span>Visão geral
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs text-slate-400 cursor-pointer transition-colors hover:bg-white/[0.05] hover:text-slate-200 font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-white/20"></span>Tarefas
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs text-slate-400 cursor-pointer transition-colors hover:bg-white/[0.05] hover:text-slate-200 font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-white/20"></span>Calendário
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs text-slate-400 cursor-pointer transition-colors hover:bg-white/[0.05] hover:text-slate-200 font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-white/20"></span>Relatórios
+</div>
+</div>
+<div class="mt-8 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-4 backdrop-blur-sm">
+<p class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold font-geist">Foco do time</p>
+<div class="mt-4 space-y-3">
+<div class="group/progress">
+<div class="mb-1.5 flex justify-between text-[10px] text-slate-400 group-hover/progress:text-slate-300 transition-colors">
+<span class="font-geist">Design</span><span class="text-cyan-200 font-geist">68%</span>
+</div>
+<div class="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+<div class="h-full w-2/3 rounded-full bg-cyan-300/70 transition-all duration-1000 group-hover/progress:bg-cyan-300"></div>
+</div>
+</div>
+<div class="group/progress">
+<div class="mb-1.5 flex justify-between text-[10px] text-slate-400 group-hover/progress:text-slate-300 transition-colors">
+<span class="font-geist">Build</span><span class="text-emerald-200 font-geist">82%</span>
+</div>
+<div class="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+<div class="h-full w-5/6 rounded-full bg-emerald-300/60 transition-all duration-1000 group-hover/progress:bg-emerald-300"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<main class="p-5">
+<div class="grid gap-3 sm:grid-cols-3">
+<div class="group/stat rounded-2xl border border-cyan-200/20 bg-cyan-400/[0.05] p-4 transition-all hover:bg-cyan-400/[0.08] hover:border-cyan-200/30 cursor-pointer">
+<p class="text-[10px] uppercase tracking-[0.16em] text-cyan-200/80 font-semibold font-geist">Tarefas abertas</p>
+<p class="mt-2 text-2xl text-white tracking-tighter transition-transform group-hover/stat:-translate-y-0.5 font-jakarta font-medium">24</p>
+<p class="mt-1 text-xs text-slate-400 font-geist">6 vencem em breve</p>
+</div>
+<div class="group/stat rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition-all hover:bg-white/[0.05] cursor-pointer">
+<p class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold font-geist">Concluídas</p>
+<p class="mt-2 text-2xl text-white tracking-tighter transition-transform group-hover/stat:-translate-y-0.5 font-jakarta font-medium">38</p>
+<p class="mt-1 text-xs text-emerald-300/80 font-geist">+12 esta semana</p>
+</div>
+<div class="group/stat rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition-all hover:bg-white/[0.05] cursor-pointer">
+<p class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-semibold font-geist">Progresso</p>
+<p class="mt-2 text-2xl text-white tracking-tighter transition-transform group-hover/stat:-translate-y-0.5 font-jakarta font-medium">74%</p>
+<p class="mt-1 text-xs text-cyan-200/80 font-geist">No prazo</p>
+</div>
+</div>
+<div class="mt-4 grid gap-3 lg:grid-cols-[1fr_0.42fr]">
+<div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4">
+<div class="mb-4 flex items-center justify-between">
+<div>
+<p class="text-xs font-medium text-white font-geist">Prioridades de hoje</p>
+<p class="mt-1 text-[11px] text-slate-400 font-geist">Tarefas que precisam de atenção primeiro</p>
+</div>
+<span class="rounded-full bg-white/[0.08] px-2.5 py-1 text-[10px] text-slate-300 font-medium font-geist">4 tarefas</span>
+</div>
+<div class="space-y-2.5">
+<div class="group/task rounded-xl border border-cyan-200/15 bg-cyan-400/[0.05] p-3 transition-colors hover:bg-cyan-400/[0.08] cursor-pointer">
+<div class="flex items-center justify-between gap-3">
+<div>
+<p class="text-xs font-medium text-white group-hover/task:text-cyan-100 transition-colors font-geist">Finalizar fluxo de onboarding</p>
+<p class="mt-1 text-[10px] text-slate-400 font-geist">Revisão de design · Hoje</p>
+</div>
+<span class="rounded-full bg-cyan-400/[0.15] px-2 py-1 text-[10px] font-semibold text-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.15)] font-geist">Alta</span>
+</div>
+</div>
+<div class="group/task rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 transition-colors hover:bg-white/[0.06] cursor-pointer">
+<div class="flex items-center justify-between gap-3">
+<div>
+<p class="text-xs font-medium text-slate-200 group-hover/task:text-white transition-colors font-geist">Atualizar cards do painel</p>
+<p class="mt-1 text-[10px] text-slate-500 font-geist">Produto · Amanhã</p>
+</div>
+<span class="rounded-full bg-white/[0.08] px-2 py-1 text-[10px] text-slate-300 font-geist">Normal</span>
+</div>
+</div>
+<div class="group/task rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 transition-colors hover:bg-white/[0.06] cursor-pointer">
+<div class="flex items-center justify-between gap-3">
+<div>
+<p class="text-xs font-medium text-slate-200 group-hover/task:text-white transition-colors font-geist">Preparar checklist de lançamento</p>
+<p class="mt-1 text-[10px] text-slate-500 font-geist">Marketing · Sexta</p>
+</div>
+<span class="rounded-full bg-emerald-400/[0.12] px-2 py-1 text-[10px] font-semibold text-emerald-300 font-geist">Pronta</span>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 lg:flex lg:flex-col lg:justify-between">
+<div>
+<div class="mb-4 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Saúde do sprint</p>
+<p class="text-xs font-semibold text-cyan-300 font-geist">74%</p>
+</div>
+<div class="flex h-24 items-end gap-1.5">
+<span class="h-8 flex-1 rounded-t-md bg-cyan-400/20 transition-all hover:bg-cyan-400/40 cursor-crosshair"></span>
+<span class="h-12 flex-1 rounded-t-md bg-cyan-400/30 transition-all hover:bg-cyan-400/50 cursor-crosshair"></span>
+<span class="h-10 flex-1 rounded-t-md bg-cyan-400/25 transition-all hover:bg-cyan-400/45 cursor-crosshair"></span>
+<span class="h-16 flex-1 rounded-t-md bg-cyan-400/50 transition-all hover:bg-cyan-400/70 cursor-crosshair shadow-[0_0_15px_rgba(34,211,238,0.2)]"></span>
+<span class="h-14 flex-1 rounded-t-md bg-emerald-400/40 transition-all hover:bg-emerald-400/60 cursor-crosshair"></span>
+<span class="h-20 flex-1 rounded-t-md bg-cyan-400/60 transition-all hover:bg-cyan-400/80 cursor-crosshair"></span>
+</div>
+</div>
+<div class="mt-4 space-y-2">
+<div class="flex items-center justify-between text-[10px] text-slate-400">
+<span class="font-geist">Planejamento</span><span class="font-geist">Concluído</span>
+</div>
+<div class="h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+<div class="h-full w-3/4 rounded-full bg-cyan-300/80"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+<div class="animate-float-3d absolute right-[2%] top-[10%] hidden w-44 rounded-2xl border border-cyan-200/20 bg-[#0b1220]/80 p-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:block transition-transform hover:-translate-y-2 cursor-pointer" style="animation-delay: -1s;">
+<div class="flex items-center justify-between">
+<p class="text-[10px] font-medium uppercase tracking-[0.16em] text-cyan-200/80 font-geist">Foco</p>
+<span class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.8)] animate-pulse"></span>
+</div>
+<p class="mt-3 text-2xl tracking-tighter text-white font-jakarta font-medium">92%</p>
+<div class="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+<div class="h-full w-11/12 rounded-full bg-cyan-300/80 shadow-[0_0_10px_rgba(103,232,249,0.5)]"></div>
+</div>
+</div>
+<div class="animate-float-3d absolute left-[-2%] bottom-[10%] hidden w-52 rounded-2xl border border-emerald-300/20 bg-[#0b1220]/80 p-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] backdrop-blur-xl md:block transition-transform hover:-translate-y-2 cursor-pointer" style="animation-delay: -3s;">
+<div class="flex items-center gap-3">
+<span class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-300/20 bg-emerald-400/[0.1] text-emerald-300 shadow-[0_0_15px_rgba(52,211,153,0.15)]">
+<svg fill="none" height="17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+<div>
+<p class="text-xs font-medium text-white font-geist">Checklist de lançamento</p>
+<p class="mt-0.5 text-[10px] text-slate-400 font-geist">3 tarefas concluídas</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- product-preview -->
+<section class="border-white/[0.06] sm:px-8 lg:px-10 border-t pt-24 pr-5 pb-24 pl-5" id="product">
+<div class="w-full max-w-[1280px] mr-auto ml-auto">
+<div class="reveal grid gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end w-full max-w-[1280px] gap-x-8 gap-y-8" style="perspective: 90rem;">
+<div class="max-w-3xl">
+<p class="text-sm font-medium text-cyan-100 font-geist">01 · Prévia do produto</p>
+<h2 class="mt-4 text-4xl text-white sm:text-5xl lg:text-6xl tracking-tighter leading-[0.95] font-jakarta font-medium">Visualize cada projeto, tarefa e prazo em um único espaço tranquilo.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-base leading-7 text-slate-400 font-geist">Veja como o Pulsedesk reúne prioridades, responsáveis, prazos e progresso para que seu time entenda o que está acontecendo num relance e leve o trabalho adiante com confiança.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex items-center justify-center transition hover:bg-cyan-50 text-sm font-medium text-slate-950 font-geist bg-cyan-100 h-11 rounded-full px-5 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)]" href="#">Ver o produto</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Saiba mais</a>
+</div>
+</div>
+</div>
+<div class="w-full h-auto pt-12 pb-12 relative" style="perspective: 90rem">
+<div class="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/10 blur-3xl"></div>
+<div class="absolute bottom-10 left-1/2 h-40 w-[84%] -translate-x-1/2 rounded-full bg-blue-500/20 blur-3xl"></div>
+<div class="relative origin-center rounded-[2rem] border border-cyan-100/20 bg-slate-950/65 p-3 shadow-2xl shadow-black/60 backdrop-blur-2xl transition duration-500 hover:border-cyan-200/30" style="box-shadow: rgba(0, 0, 0, 0.55) 0 2rem 6rem, rgba(34, 211, 238, 0.12) 0 0 4rem;">
+<div class="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#08111f]/95">
+<div class="grid grid-cols-1 sm:grid-cols-[0.23fr_1fr]">
+<aside class="hidden border-r border-white/10 bg-white/[0.025] p-4 sm:block">
+<div class="mb-6 flex items-center gap-2">
+<span class="text-sm font-medium text-white font-geist">Pulsedesk</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2 rounded-xl bg-cyan-300/10 px-3 py-2 text-xs font-medium text-cyan-100 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect height="9" rx="1" width="7" x="3" y="3"></rect><rect height="5" rx="1" width="7" x="14" y="3"></rect><rect height="9" rx="1" width="7" x="14" y="12"></rect><rect height="5" rx="1" width="7" x="3" y="16"></rect></svg>Visão geral
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Minhas tarefas
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect height="16" rx="2" width="20" x="2" y="4"></rect><path d="m22 7-10 6L2 7"></path></svg>Caixa de entrada
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path></svg>Calendário
+</div>
+<div class="flex items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-400 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Relatórios
+</div>
+</div>
+<div class="mt-24 rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<div class="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-300/10 text-cyan-300">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path></svg>
+</div>
+<p class="text-xs font-medium text-white font-geist">Fazer upgrade do plano</p>
+<p class="mt-1 text-xs leading-5 text-slate-500 font-geist">Desbloqueie recursos e insights avançados.</p>
+</div>
+</aside>
+<div class="overflow-hidden p-5">
+<div class="mb-5 flex items-start justify-between gap-5">
+<div>
+<h2 class="text-xl text-white tracking-tighter font-jakarta font-medium">Bem-vindo de volta, Alex 👋</h2>
+<p class="mt-1 text-xs text-slate-500 font-geist">Veja o que está acontecendo nos seus projetos hoje.</p>
+</div>
+<div class="hidden items-center gap-3 md:flex">
+<div class="flex w-48 items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-slate-500 font-geist">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Buscar...
+</div>
+<span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500 text-white">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+</span>
+</div>
+</div>
+<div class="grid gap-3 sm:grid-cols-4">
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<p class="text-xs font-medium uppercase tracking-[0.14rem] text-slate-500 font-geist">Total de tarefas</p>
+<p class="mt-2 text-2xl text-white tracking-tighter font-jakarta font-medium">128</p>
+<p class="mt-1 text-xs text-emerald-300 font-geist">+12% vs semana passada</p>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<p class="text-xs font-medium uppercase tracking-[0.14rem] text-blue-300 font-geist">Em andamento</p>
+<p class="mt-2 text-2xl text-white tracking-tighter font-jakarta font-medium">42</p>
+<p class="mt-1 text-xs text-emerald-300 font-geist">+8% vs semana passada</p>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<p class="text-xs font-medium uppercase tracking-[0.14rem] text-slate-500 font-geist">Concluídas</p>
+<p class="mt-2 text-2xl text-white tracking-tighter font-jakarta font-medium">86</p>
+<p class="mt-1 text-xs text-emerald-300 font-geist">+18% vs semana passada</p>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<p class="text-xs font-medium uppercase tracking-[0.14rem] text-rose-300 font-geist">Atrasadas</p>
+<p class="mt-2 text-2xl text-white tracking-tighter font-jakarta font-medium">7</p>
+<p class="mt-1 text-xs text-rose-300 font-geist">-5% vs semana passada</p>
+</div>
+</div>
+<div class="mt-3 grid gap-3 xl:grid-cols-[1fr_0.33fr]">
+<div class="grid gap-3 sm:grid-cols-4">
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-3">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">A fazer</p>
+<span class="rounded-full bg-white/10 px-2 py-1 text-xs text-slate-400 font-geist">24</span>
+</div>
+<div class="space-y-2">
+<div class="rounded-xl bg-white/[0.05] p-3">
+<p class="text-xs font-medium text-white font-geist">Refatoração do design system</p>
+<div class="mt-3 flex items-center justify-between">
+<span class="rounded-full bg-cyan-300/10 px-2 py-1 text-xs text-cyan-200 font-geist">UI/UX</span>
+<span class="text-xs text-rose-300 font-geist">Alta</span>
+</div>
+</div>
+<div class="rounded-xl bg-white/[0.04] p-3">
+<p class="text-xs font-medium text-white font-geist">Melhorias no fluxo de onboarding</p>
+<div class="mt-3 h-1.5 rounded-full bg-amber-200/40"></div>
+</div>
+<div class="rounded-xl bg-white/[0.035] p-3">
+<p class="text-xs font-medium text-white font-geist">Corrigir bug da integração do calendário</p>
+<div class="mt-3 h-1.5 rounded-full bg-emerald-200/35"></div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.04] p-3">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-cyan-100 font-geist">Em andamento</p>
+<span class="rounded-full bg-cyan-300/10 px-2 py-1 text-xs text-cyan-100 font-geist">8</span>
+</div>
+<div class="space-y-2">
+<div class="rounded-xl border border-cyan-300/10 bg-cyan-300/[0.055] p-3">
+<p class="text-xs font-medium text-white font-geist">Construir painel de analytics</p>
+<div class="mt-3 flex items-center gap-1">
+<span class="h-5 w-5 rounded-full bg-cyan-300/70"></span>
+<span class="h-5 w-5 rounded-full bg-white/20"></span>
+</div>
+</div>
+<div class="rounded-xl bg-white/[0.04] p-3">
+<p class="text-xs font-medium text-white font-geist">Implementar limite de taxa da API</p>
+<div class="mt-3 h-1.5 rounded-full bg-rose-300/35"></div>
+</div>
+<div class="rounded-xl bg-white/[0.035] p-3">
+<p class="text-xs font-medium text-white font-geist">Auditoria de performance do app mobile</p>
+<div class="mt-3 h-1.5 rounded-full bg-amber-200/35"></div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-3">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Em revisão</p>
+<span class="rounded-full bg-white/10 px-2 py-1 text-xs text-slate-400 font-geist">5</span>
+</div>
+<div class="space-y-2">
+<div class="rounded-xl bg-white/[0.05] p-3">
+<p class="text-xs font-medium text-white font-geist">Redesign do site de marketing</p>
+<div class="mt-3 h-1.5 rounded-full bg-amber-200/35"></div>
+</div>
+<div class="rounded-xl bg-white/[0.04] p-3">
+<p class="text-xs font-medium text-white font-geist">Papéis &amp; permissões de usuário</p>
+<div class="mt-3 h-1.5 rounded-full bg-rose-300/35"></div>
+</div>
+<div class="rounded-xl bg-white/[0.035] p-3">
+<div class="h-2 w-20 rounded-full bg-white/15"></div>
+<div class="mt-3 h-2 w-14 rounded-full bg-white/10"></div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-3">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Concluído</p>
+<span class="rounded-full bg-white/10 px-2 py-1 text-xs text-slate-400 font-geist">18</span>
+</div>
+<div class="space-y-2">
+<div class="rounded-xl bg-white/[0.05] p-3">
+<div class="flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Corrigir problemas de notificação</p>
+<span class="text-emerald-300">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+</div>
+</div>
+<div class="rounded-xl bg-white/[0.04] p-3">
+<div class="flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Atualizar política de privacidade</p>
+<span class="text-emerald-300">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+</div>
+</div>
+<div class="rounded-xl bg-white/[0.035] p-3">
+<div class="h-2 w-24 rounded-full bg-white/15"></div>
+<div class="mt-3 h-2 w-16 rounded-full bg-emerald-200/35"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden space-y-3 xl:block">
+<div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+<p class="mb-4 text-xs font-medium text-white font-geist">Carga de trabalho do time</p>
+<div class="flex h-24 items-end gap-2">
+<span class="h-12 flex-1 rounded-t-lg bg-sky-400/80"></span>
+<span class="h-20 flex-1 rounded-t-lg bg-sky-400"></span>
+<span class="h-14 flex-1 rounded-t-lg bg-sky-400/70"></span>
+<span class="h-20 flex-1 rounded-t-lg bg-sky-400/90"></span>
+<span class="h-[3.25rem] flex-1 rounded-t-lg bg-sky-400/60"></span>
+<span class="h-16 flex-1 rounded-t-lg bg-sky-400/70"></span>
+</div>
+<div class="mt-3 flex justify-between text-xs text-slate-500">
+<span class="font-geist">S</span><span class="font-geist">T</span><span class="font-geist">Q</span><span class="font-geist">Q</span><span class="font-geist">S</span><span class="font-geist">S</span>
+</div>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+<p class="mb-3 text-xs font-medium text-white font-geist">Atividade recente</p>
+<div class="space-y-3">
+<div class="flex gap-2">
+<span class="mt-1 h-2 w-2 rounded-full bg-cyan-300"></span>
+<p class="text-xs leading-5 text-slate-300 font-geist">Refatoração do design system atualizada</p>
+</div>
+<div class="flex gap-2">
+<span class="mt-1 h-2 w-2 rounded-full bg-emerald-300"></span>
+<p class="text-xs leading-5 text-slate-300 font-geist">Limite de taxa da API implementado</p>
+</div>
+<div class="flex gap-2">
+<span class="mt-1 h-2 w-2 rounded-full bg-amber-200"></span>
+<p class="text-xs leading-5 text-slate-300 font-geist">Redesign de marketing concluído</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-3 grid gap-3 md:grid-cols-[0.35fr_0.65fr]">
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Progresso do projeto</p>
+<p class="text-xs text-cyan-200 font-geist">78%</p>
+</div>
+<div class="space-y-3">
+<div>
+<div class="mb-1 flex justify-between text-xs text-slate-400">
+<span class="font-geist">Redesign do site</span><span class="font-geist">78%</span>
+</div>
+<div class="h-1.5 overflow-hidden rounded-full bg-white/10">
+<div class="h-full w-[78%] rounded-full bg-cyan-300 relative overflow-hidden">
+<div class="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/50 to-transparent" style="animation: progress-shimmer 2s infinite linear;"></div>
+</div>
+</div>
+</div>
+<div>
+<div class="mb-1 flex justify-between text-xs text-slate-400">
+<span class="font-geist">App Mobile v2.0</span><span class="font-geist">62%</span>
+</div>
+<div class="h-1.5 overflow-hidden rounded-full bg-white/10">
+<div class="h-full w-[62%] rounded-full bg-blue-400 relative overflow-hidden">
+<div class="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/50 to-transparent" style="animation: progress-shimmer 2s infinite linear 1s;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
+<p class="mb-5 text-xs font-medium text-white font-geist">Linha do tempo de marcos</p>
+<div class="relative flex items-center justify-between">
+<div class="absolute left-4 right-4 top-3 h-px bg-white/15"></div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<span class="h-6 w-6 rounded-full border-2 border-emerald-300 bg-[#08111f]"></span>
+<span class="text-xs text-slate-400 font-geist">Planejamento</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<span class="h-6 w-6 rounded-full border-2 border-emerald-300 bg-[#08111f]"></span>
+<span class="text-xs text-slate-400 font-geist">Design</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<span class="h-6 w-6 rounded-full border-2 border-emerald-200 bg-emerald-200 shadow-lg shadow-emerald-300/30"></span>
+<span class="text-xs text-slate-400 font-geist">Desenvolvimento</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<span class="h-6 w-6 rounded-full border-2 border-slate-600 bg-[#08111f]"></span>
+<span class="text-xs text-slate-400 font-geist">Testes</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<span class="h-6 w-6 rounded-full border-2 border-slate-600 bg-[#08111f]"></span>
+<span class="text-xs text-slate-400 font-geist">Lançamento</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- problem -->
+<section class="overflow-hidden border-white/[0.06] sm:px-8 lg:px-10 border-t pt-24 pr-5 pb-24 pl-5 relative" id="problem">
+<div class="pointer-events-none absolute inset-0 -z-10" style="background: radial-gradient(circle at 50% 12%, rgba(56, 189, 248, 0.1), transparent 34%), linear-gradient(180deg, rgba(8, 12, 20, 0.16), rgba(8, 12, 20, 0.56));"></div>
+<div class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:30rem_30rem]"></div>
+<div class="w-full max-w-[1280px] mr-auto ml-auto">
+<div class="reveal grid gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end w-full max-w-[1280px] gap-x-8 gap-y-8" style="perspective: 90rem;">
+<div class="max-w-4xl">
+<p class="text-base font-medium text-cyan-200 font-geist">02 · O problema</p>
+<h2 class="mt-5 text-5xl text-white sm:text-6xl tracking-tighter leading-tight font-jakarta font-medium">A maioria das ferramentas de projeto deixa o trabalho simples pesado.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-lg leading-8 text-slate-400 font-geist">Times pequenos não precisam de configurações infinitas, painéis lotados ou uma semana de onboarding. Eles precisam de um lugar claro para ver o que importa e levar o trabalho adiante.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex h-11 items-center justify-center rounded-full bg-cyan-100 px-5 text-sm font-medium text-slate-950 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)] transition hover:bg-cyan-50 font-geist" href="#">Ver a solução</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Saiba mais</a>
+</div>
+</div>
+</div>
+<div class="grid gap-6 lg:grid-cols-3 mt-12 gap-x-6 gap-y-6">
+
+<article class="group reveal relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] p-8 shadow-2xl shadow-black/50 backdrop-blur-xl transition duration-300 ease-out hover:-translate-y-1 hover:border-blue-400/30 hover:bg-white/[0.055]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative z-10 h-64 overflow-hidden rounded-2xl border border-cyan-100/10 bg-[#071323]/90 p-4 shadow-inner">
+<div class="absolute -bottom-12 left-1/2 h-32 w-80 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl"></div>
+<div class="relative flex h-full overflow-hidden rounded-xl border border-white/[0.06] bg-[#0b1626] shadow-xl shadow-black/30">
+<div class="flex w-10 flex-col items-center gap-3 border-r border-white/[0.06] bg-white/[0.025] py-3">
+<span class="flex h-6 w-6 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-400/10 text-cyan-300">
+<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+</span>
+<span class="h-6 w-6 rounded-lg bg-white/[0.04]"></span>
+<span class="h-6 w-6 rounded-lg bg-white/[0.04]"></span>
+<span class="h-6 w-6 rounded-lg bg-white/[0.04]"></span>
+<span class="h-6 w-6 rounded-lg bg-white/[0.04]"></span>
+</div>
+<div class="relative flex-1 bg-[#0b1626]">
+<div class="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.015] px-3 py-2">
+<div class="flex items-center gap-2 rounded-lg border border-white/[0.07] bg-black/15 px-2 py-1">
+<svg class="h-3 w-3 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+<span class="text-[9px] text-slate-500 font-geist">Buscar...</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-2 w-2 rounded-full bg-slate-600"></span>
+<span class="h-2 w-2 rounded-full bg-slate-600"></span>
+<span class="h-2 w-2 rounded-full bg-cyan-300/70"></span>
+</div>
+</div>
+<div class="absolute left-3 top-11 z-10 w-36 rounded-xl border border-white/[0.08] bg-[#121e31]/95 p-2.5 shadow-lg shadow-black/25">
+<div class="mb-2 flex items-center justify-between">
+<span class="text-[9px] font-semibold text-slate-200 font-geist">Linha do tempo</span>
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-300/70"></span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
+<div class="h-1.5 w-20 rounded-full bg-cyan-400/35"></div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+<div class="h-1.5 w-14 rounded-full bg-slate-600"></div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+<div class="h-1.5 w-24 rounded-full bg-slate-700"></div>
+</div>
+</div>
+</div>
+<div class="absolute right-3 top-10 z-30 w-24 rounded-xl border border-white/[0.08] bg-[#121e31]/95 p-2.5 shadow-lg shadow-black/25">
+<span class="mb-2 block text-[9px] font-semibold text-slate-200 font-geist">Filtros</span>
+<div class="space-y-1.5 text-[8px] text-slate-400">
+<div class="flex items-center gap-1.5 font-geist">
+<span class="h-2 w-2 rounded bg-cyan-400"></span>Prioridade
+</div>
+<div class="flex items-center gap-1.5 font-geist">
+<span class="h-2 w-2 rounded border border-slate-600"></span>Status
+</div>
+<div class="flex items-center gap-1.5 font-geist">
+<span class="h-2 w-2 rounded border border-slate-600"></span>Responsável
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="relative z-10 mt-8 text-2xl text-white tracking-tight font-jakarta font-medium">Recursos demais</h3>
+<p class="relative z-10 mt-4 text-sm sm:text-base leading-relaxed text-slate-400 font-geist">Painéis lotados de opções tornam difícil ver o que realmente precisa da sua atenção.</p>
+</article>
+
+<article class="group reveal relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] p-8 shadow-2xl shadow-black/50 backdrop-blur-xl transition duration-300 ease-out hover:-translate-y-1 hover:border-blue-400/30 hover:bg-white/[0.055]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative z-10 h-64 overflow-hidden rounded-2xl border border-cyan-100/10 bg-[#071323]/90 p-4 shadow-inner">
+<div class="absolute -bottom-12 left-1/2 h-32 w-80 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl"></div>
+<div class="relative flex h-full gap-2">
+<div class="w-28 rounded-xl border border-white/5 bg-[#0f1b2d] p-3 shadow-xl">
+<div class="mb-3 space-y-2">
+<div class="flex items-center gap-2 px-2 py-1">
+<span class="flex h-4 w-4 items-center justify-center rounded-full bg-cyan-400 text-[9px] font-bold text-slate-900 font-geist">1</span>
+<span class="text-[10px] text-slate-200 font-geist">Criar conta</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1">
+<span class="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[9px] font-medium text-slate-400 font-geist">2</span>
+<span class="text-[10px] text-slate-400 font-geist">Conectar ferramentas</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1">
+<span class="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[9px] font-medium text-slate-400 font-geist">3</span>
+<span class="text-[10px] text-slate-400 font-geist">Importar dados</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1">
+<span class="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[9px] font-medium text-slate-400 font-geist">4</span>
+<span class="text-[10px] text-slate-400 font-geist">Definir permissões</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1">
+<span class="flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-[9px] font-medium text-slate-400 font-geist">5</span>
+<span class="text-[10px] text-slate-400 font-geist">Criar projeto</span>
+</div>
+</div>
+</div>
+<div class="relative -ml-2 flex-1 rounded-2xl border border-white/10 bg-[#121f33] p-5 shadow-2xl shadow-black/80 z-10">
+<div class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-cyan-400/5 to-transparent"></div>
+<div class="relative flex flex-col items-center text-center">
+<h4 class="text-sm font-medium text-white font-geist">Bem-vindo ao seu workspace</h4>
+<div class="mt-4 flex items-center justify-center">
+<div class="h-8 w-8 rounded-full border-2 border-[#121f33] bg-gradient-to-br from-slate-300 to-slate-500 shadow-sm"></div>
+<div class="-ml-2 h-8 w-8 rounded-full border-2 border-[#121f33] bg-gradient-to-br from-amber-200 to-orange-400 shadow-sm"></div>
+<div class="-ml-2 h-8 w-8 rounded-full border-2 border-[#121f33] bg-gradient-to-br from-emerald-200 to-teal-500 shadow-sm"></div>
+<div class="-ml-2 h-8 w-8 rounded-full border-2 border-[#121f33] bg-gradient-to-br from-rose-200 to-red-400 shadow-sm"></div>
+<div class="-ml-2 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#121f33] bg-slate-800 text-slate-300 shadow-sm">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<button class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs font-medium text-cyan-50 shadow-[0_0_15px_rgba(34,211,238,0.15)] transition hover:bg-cyan-400/20 font-geist">
+<span class="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-400 text-slate-900">
+<svg class="h-3 w-3" fill="currentColor" viewbox="0 0 24 24"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l10.42-6.86a1 1 0 0 0 0-1.72L9.5 4.28A1 1 0 0 0 8 5.14Z"></path></svg>
+</span>Iniciar tour
+</button>
+</div>
+</div>
+<div class="ml-3 w-28 rounded-xl border border-white/5 bg-[#0f1b2d] p-3 shadow-xl">
+<div class="mb-3 flex items-center justify-between">
+<span class="text-[9px] font-medium text-white font-geist">Primeiros passos</span>
+<span class="text-[9px] text-slate-500 font-geist">1/5</span>
+</div>
+<div class="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-800">
+<div class="h-full w-1/5 rounded-full bg-cyan-400 shadow-[0_0_5px_#22d3ee]"></div>
+</div>
+<div class="space-y-2.5">
+<div class="flex items-center gap-2">
+<div class="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-cyan-400 text-slate-900">
+<svg class="h-2 w-2" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div class="h-1.5 w-14 rounded-full bg-slate-700"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3.5 w-3.5 rounded-full border border-slate-600"></div>
+<div class="h-1.5 w-16 rounded-full bg-slate-700"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3.5 w-3.5 rounded-full border border-slate-600"></div>
+<div class="h-1.5 w-12 rounded-full bg-slate-700"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3.5 w-3.5 rounded-full border border-slate-600"></div>
+<div class="h-1.5 w-14 rounded-full bg-slate-700"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="relative z-10 mt-8 text-2xl text-white tracking-tight font-jakarta font-medium">Difícil de adotar</h3>
+<p class="relative z-10 mt-4 text-sm sm:text-base leading-relaxed text-slate-400 font-geist">Novos colaboradores deveriam entender o workspace na hora, não esperar treinamento ou documentação.</p>
+</article>
+
+<article class="group reveal relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] p-8 shadow-2xl shadow-black/50 backdrop-blur-xl transition duration-300 ease-out hover:-translate-y-1 hover:border-blue-400/30 hover:bg-white/[0.055]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative z-10 h-64 overflow-hidden rounded-2xl border border-cyan-100/10 bg-[#071323]/90 p-4 shadow-inner">
+<div class="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl"></div>
+<svg class="absolute inset-0 h-full w-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 350 220"><path d="M70 60 Q 120 100 175 110" fill="none" opacity="0.6" stroke="#38bdf8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="1.5"></path><circle cx="175" cy="110" fill="#38bdf8" r="3"></circle><path d="M280 60 Q 230 80 175 110" fill="none" opacity="0.6" stroke="#38bdf8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="1.5"></path><path d="M70 160 Q 120 130 175 110" fill="none" opacity="0.6" stroke="#38bdf8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="1.5"></path><path d="M280 160 Q 230 140 175 110" fill="none" opacity="0.6" stroke="#38bdf8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="1.5"></path><circle cx="70" cy="60" fill="#38bdf8" r="3"></circle><circle cx="280" cy="60" fill="#38bdf8" r="3"></circle><circle cx="70" cy="160" fill="#38bdf8" r="3"></circle><circle cx="280" cy="160" fill="#38bdf8" r="3"></circle></svg>
+<div class="absolute left-2 top-2 w-28 rounded-xl border border-white/10 bg-[#121f33]/95 p-3 shadow-xl z-10">
+<p class="text-[10px] font-medium text-slate-200 mb-2 font-geist">E-mail</p>
+<div class="space-y-1.5">
+<div class="h-1.5 w-full rounded-full bg-slate-700"></div>
+<div class="h-1.5 w-3/4 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<div class="absolute right-2 top-2 w-28 rounded-xl border border-white/10 bg-[#121f33]/95 p-3 shadow-xl z-10">
+<p class="text-[10px] font-medium text-slate-200 mb-2 font-geist">Chat</p>
+<div class="space-y-1.5">
+<div class="h-1.5 w-full rounded-full bg-slate-700"></div>
+<div class="h-1.5 w-2/3 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<div class="absolute left-2 bottom-2 w-28 rounded-xl border border-white/10 bg-[#121f33]/95 p-3 shadow-xl z-10">
+<p class="text-[10px] font-medium text-slate-200 mb-2 font-geist">Documentos</p>
+<div class="space-y-1.5">
+<div class="h-1.5 w-full rounded-full bg-slate-700"></div>
+<div class="h-1.5 w-1/2 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<div class="absolute right-2 bottom-2 w-28 rounded-xl border border-white/10 bg-[#121f33]/95 p-3 shadow-xl z-10">
+<p class="text-[10px] font-medium text-slate-200 mb-2 font-geist">Planilhas</p>
+<div class="space-y-1.5">
+<div class="h-1.5 w-full rounded-full bg-slate-700"></div>
+<div class="h-1.5 w-3/4 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 rounded-xl border border-cyan-400/30 bg-[#121f33] p-3 shadow-2xl shadow-black/60 z-20">
+<p class="text-[10px] font-semibold text-cyan-100 text-center font-geist">Tarefas</p>
+</div>
+</div>
+<h3 class="relative z-10 mt-8 text-2xl text-white tracking-tight font-jakarta font-medium">Trabalho espalhado</h3>
+<p class="relative z-10 mt-4 text-sm sm:text-base leading-relaxed text-slate-400 font-geist">Informações de tarefas se perdem entre e-mails, chats, documentos e planilhas, em vez de ficarem em um só lugar.</p>
+</article>
+
+</div>
+</div>
+</section>
+
+<!-- how-it-works -->
+<section class="relative overflow-hidden border-t border-white/[0.06] px-5 pt-24 pb-24 sm:px-8 lg:px-10" id="how">
+<div class="mx-auto w-full max-w-[1280px]">
+<div class="reveal grid w-full max-w-[1280px] gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+<div class="max-w-3xl">
+<p class="text-sm font-medium text-cyan-100 font-geist">03 · Como funciona</p>
+<h2 class="mt-4 max-w-2xl text-4xl tracking-tighter text-white sm:text-5xl lg:text-6xl font-jakarta font-medium">Adicione tarefas, defina prazos, acompanhe o progresso.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-base leading-7 text-slate-400 font-geist">O Pulsedesk mantém o fluxo principal óbvio. Crie o trabalho, atribua o responsável, escolha uma data e veja cada projeto avançar de A Fazer para Concluído.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex h-11 items-center justify-center rounded-full bg-cyan-100 px-5 text-sm font-medium text-slate-950 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)] transition hover:bg-cyan-50 font-geist" href="#">Explorar o fluxo</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Saiba mais</a>
+</div>
+</div>
+</div>
+<div class="reveal mt-14 p-0">
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-4">
+
+<div class="group relative min-h-[280px] overflow-hidden rounded-3xl border border-blue-300/20 bg-white/[0.035] p-5 shadow-[0_0_0_1px_rgba(147,197,253,0.08),0_18px_55px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/[0.055] hover:shadow-[0_0_0_1px_rgba(147,197,253,0.18),0_0_46px_rgba(59,130,246,0.16),0_22px_70px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.12)]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent"></div>
+<div class="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-70"></div>
+<div class="relative z-10 flex h-full flex-col">
+<p class="inline-flex w-fit rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-blue-200 font-geist">Passo 01</p>
+<h3 class="mt-5 text-lg font-semibold text-white font-geist">Capture a tarefa</h3>
+<p class="mt-2 text-sm leading-6 text-slate-300 font-geist">Adicione tarefas rapidamente apenas com os detalhes que seu time realmente precisa.</p>
+<div class="mt-auto rounded-2xl border border-white/[0.08] bg-[#070d18]/70 p-3 shadow-xl shadow-black/30">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Nova tarefa</p>
+<span class="h-2 w-2 rounded-full bg-blue-400 shadow-[0_0_16px_rgba(96,165,250,0.8)]"></span>
+</div>
+<div class="rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2">
+<p class="text-xs text-slate-500 font-geist">Atualizar a página de preços</p>
+</div>
+<div class="mt-3 grid grid-cols-3 gap-2">
+<div class="flex h-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.04]">
+<svg class="h-4 w-4 text-slate-400" fill="none" viewbox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.5"></path><path d="M4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg>
+</div>
+<div class="flex h-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.04]">
+<svg class="h-4 w-4 text-slate-400" fill="none" viewbox="0 0 24 24"><path d="M20 13.5 13.5 20 4 10.5V4h6.5L20 13.5Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path><path d="M8 8h.01" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg>
+</div>
+<div class="flex h-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.04]">
+<svg class="h-4 w-4 text-slate-400" fill="none" viewbox="0 0 24 24"><path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg>
+</div>
+</div>
+<button class="mt-3 flex w-full items-center justify-between rounded-xl bg-blue-500 px-3 py-2 text-xs font-medium text-white shadow-lg shadow-blue-500/20 font-geist">
+Adicionar tarefa
+<span class="text-base leading-none font-geist">+</span>
+</button>
+</div>
+</div>
+</div>
+
+<div class="group relative min-h-[280px] overflow-hidden rounded-3xl border border-blue-300/20 bg-white/[0.035] p-5 shadow-[0_0_0_1px_rgba(147,197,253,0.08),0_18px_55px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/[0.055] hover:shadow-[0_0_0_1px_rgba(147,197,253,0.18),0_0_46px_rgba(59,130,246,0.16),0_22px_70px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.12)]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent"></div>
+<div class="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-70"></div>
+<div class="relative z-10 flex h-full flex-col">
+<p class="inline-flex w-fit rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-blue-200 font-geist">Passo 02</p>
+<h3 class="mt-5 text-lg font-semibold text-white font-geist">Defina o prazo</h3>
+<p class="mt-2 text-sm leading-6 text-slate-300 font-geist">Datas de entrega e marcadores de prioridade deixam o próximo passo claro.</p>
+<div class="mt-auto rounded-2xl border border-white/[0.08] bg-[#070d18]/70 p-3 shadow-xl shadow-black/30">
+<div class="mb-3 flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Maio 2025</p>
+<div class="flex gap-1">
+<span class="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+<span class="h-1.5 w-1.5 rounded-full bg-slate-600"></span>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[0.62rem] text-slate-500 font-geist">
+<span class="font-geist">S</span><span class="font-geist">T</span><span class="font-geist">Q</span><span class="font-geist">Q</span><span class="font-geist">S</span><span class="font-geist">S</span><span class="font-geist">D</span>
+<span class="py-1 font-geist">12</span>
+<span class="py-1 font-geist">13</span>
+<span class="py-1 font-geist">14</span>
+<span class="rounded-full bg-blue-500 py-1 text-white shadow-lg shadow-blue-500/30 font-geist">15</span>
+<span class="py-1 text-slate-300 font-geist">16</span>
+<span class="py-1 font-geist">17</span>
+<span class="py-1 font-geist">18</span>
+</div>
+<div class="mt-4 flex items-center justify-between rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2">
+<div class="flex items-center gap-2">
+<span class="h-2 w-2 rounded-full bg-amber-400"></span>
+<p class="text-xs text-slate-300 font-geist">Prioridade alta</p>
+</div>
+<svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewbox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</div>
+</div>
+</div>
+</div>
+
+<div class="group relative min-h-[280px] overflow-hidden rounded-3xl border border-blue-300/20 bg-white/[0.035] p-5 shadow-[0_0_0_1px_rgba(147,197,253,0.08),0_18px_55px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/[0.055] hover:shadow-[0_0_0_1px_rgba(147,197,253,0.18),0_0_46px_rgba(59,130,246,0.16),0_22px_70px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.12)]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent"></div>
+<div class="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-70"></div>
+<div class="relative z-10 flex h-full flex-col">
+<p class="inline-flex w-fit rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-blue-200 font-geist">Passo 03</p>
+<h3 class="mt-5 text-lg font-semibold text-white font-geist">Mova o status</h3>
+<p class="mt-2 text-sm leading-6 text-slate-300 font-geist">Use colunas simples: A Fazer, Em Andamento e Concluído.</p>
+<div class="mt-auto grid grid-cols-3 gap-2 rounded-2xl border border-white/[0.08] bg-[#070d18]/70 p-3 shadow-xl shadow-black/30">
+<div class="rounded-xl border border-white/[0.07] bg-white/[0.035] p-2">
+<p class="mb-2 text-[0.55rem] font-semibold uppercase tracking-wide text-slate-500 font-geist">A fazer</p>
+<div class="space-y-2">
+<div class="h-8 rounded-lg bg-white/[0.06] p-2"><div class="h-1.5 w-12 rounded-full bg-slate-600"></div></div>
+<div class="h-8 rounded-lg bg-white/[0.04] p-2"><div class="h-1.5 w-9 rounded-full bg-slate-700"></div></div>
+</div>
+</div>
+<div class="rounded-xl border border-blue-400/20 bg-blue-500/[0.06] p-2">
+<p class="mb-2 text-[0.55rem] font-semibold uppercase tracking-wide text-blue-200 font-geist">Andamento</p>
+<div class="space-y-2">
+<div class="h-8 rounded-lg border border-blue-400/20 bg-blue-500/10 p-2"><div class="h-1.5 w-10 rounded-full bg-blue-300"></div></div>
+<div class="h-8 rounded-lg bg-white/[0.04] p-2"><div class="h-1.5 w-8 rounded-full bg-slate-700"></div></div>
+</div>
+</div>
+<div class="rounded-xl border border-white/[0.07] bg-white/[0.035] p-2">
+<p class="mb-2 text-[0.55rem] font-semibold uppercase tracking-wide text-slate-500 font-geist">Concluído</p>
+<div class="space-y-2">
+<div class="h-8 rounded-lg bg-white/[0.05] p-2"><div class="h-1.5 w-11 rounded-full bg-emerald-400/70"></div></div>
+<div class="h-8 rounded-lg bg-white/[0.035] p-2"><div class="h-1.5 w-7 rounded-full bg-slate-700"></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="group relative min-h-[280px] overflow-hidden rounded-3xl border border-blue-300/20 bg-white/[0.035] p-5 shadow-[0_0_0_1px_rgba(147,197,253,0.08),0_18px_55px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] transition duration-300 hover:-translate-y-1 hover:border-blue-300/40 hover:bg-white/[0.055] hover:shadow-[0_0_0_1px_rgba(147,197,253,0.18),0_0_46px_rgba(59,130,246,0.16),0_22px_70px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.12)]">
+<div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-500/[0.10] via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
+<div class="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/60 to-transparent"></div>
+<div class="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-70"></div>
+<div class="relative z-10 flex h-full flex-col">
+<p class="inline-flex w-fit rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-blue-200 font-geist">Passo 04</p>
+<h3 class="mt-5 text-lg font-semibold text-white font-geist">Mantenha as atualizações juntas</h3>
+<p class="mt-2 text-sm leading-6 text-slate-300 font-geist">Atribua responsáveis e adicione comentários leves sem configuração extra.</p>
+<div class="mt-auto rounded-2xl border border-white/[0.08] bg-[#070d18]/70 p-3 shadow-xl shadow-black/30">
+<div class="mb-3 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="h-7 w-7 rounded-full border-2 border-[#070d18] bg-gradient-to-br from-blue-300 to-indigo-500"></div>
+<div class="h-7 w-7 rounded-full border-2 border-[#070d18] bg-gradient-to-br from-amber-300 to-rose-500"></div>
+<div class="h-7 w-7 rounded-full border-2 border-[#070d18] bg-gradient-to-br from-emerald-300 to-cyan-500"></div>
+</div>
+<div class="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.05] text-sm text-slate-300 font-geist">+</div>
+</div>
+<div class="space-y-2">
+<div class="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
+<div class="flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Alex</p>
+<p class="text-[0.65rem] text-slate-500 font-geist">há 2 min</p>
+</div>
+<p class="mt-1 text-xs leading-5 text-slate-400 font-geist">Atualizou o texto da página inicial.</p>
+</div>
+<div class="rounded-xl border border-white/[0.07] bg-white/[0.04] p-3">
+<div class="flex items-center justify-between">
+<p class="text-xs font-medium text-white font-geist">Priya</p>
+<p class="text-[0.65rem] text-slate-500 font-geist">há 5 min</p>
+</div>
+<p class="mt-1 text-xs leading-5 text-slate-400 font-geist">Ficou ótimo. Vamos publicar.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<!-- benefits -->
+<section class="border-white/[0.06] overflow-hidden sm:px-8 lg:px-10 font-sans border-t pt-24 pr-5 pb-24 pl-5 relative" id="benefits">
+<div class="relative mx-auto w-full max-w-[1280px] z-10">
+<div class="reveal grid w-full max-w-[1280px] gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+<div class="max-w-3xl">
+<p class="text-[13px] font-medium text-slate-400 font-geist">04 · Principais benefícios</p>
+<h2 class="mt-4 text-4xl text-white sm:text-[56px] leading-[1.1] tracking-tight font-jakarta font-medium">Tudo o que os times precisam,<br/>nada contra o que precisem lutar.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-[17px] leading-relaxed text-slate-400 font-geist">O Pulsedesk foi feito para entendimento rápido, uso diário ágil e visibilidade tranquila dos projetos.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex h-11 items-center justify-center rounded-full bg-cyan-100 px-5 text-sm font-medium text-slate-950 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)] transition hover:bg-cyan-50 font-geist" href="#">Ver benefícios</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Saiba mais</a>
+</div>
+</div>
+</div>
+<div class="mt-16 grid gap-6 lg:grid-cols-4">
+
+<div class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="absolute inset-0 rounded-[2rem] border border-white/10 pointer-events-none group-hover:border-white/20 transition-colors"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative h-40 w-full mb-8 flex items-center justify-center">
+<div class="absolute w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
+<svg class="relative z-10" fill="none" height="120" viewbox="0 0 120 120" width="120" xmlns="http://www.w3.org/2000/svg"><defs><filter height="140%" id="glowClarity" width="140%" x="-20%" y="-20%"><fegaussianblur result="blur" stddeviation="4"></fegaussianblur><fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite></filter></defs><path d="M60 30 C60 50, 50 60, 30 60 C50 60, 60 70, 60 90 C60 70, 70 60, 90 60 C70 60, 60 50, 60 30 Z" fill="#93C5FD" filter="url(#glowClarity)"></path><path d="M60 35 C60 50, 52 60, 35 60 C52 60, 60 70, 60 85 C60 70, 68 60, 85 60 C68 60, 60 50, 60 35 Z" fill="#FFFFFF"></path><path d="M85 40 C85 45, 82 48, 77 48 C82 48, 85 51, 85 56 C85 51, 88 48, 93 48 C88 48, 85 45, 85 40 Z" fill="#E0F2FE" filter="url(#glowClarity)"></path><path d="M35 75 C35 78, 33 80, 30 80 C33 80, 35 82, 35 85 C35 82, 37 80, 40 80 C37 80, 35 78, 35 75 Z" fill="#BAE6FD" filter="url(#glowClarity)"></path><path d="M20 70 A 45 45 0 0 0 90 40" stroke="rgba(255,255,255,0.1)" stroke-dasharray="2 4" stroke-linecap="round" stroke-width="1.5"></path></svg>
+</div>
+<span class="text-[11px] font-semibold tracking-widest text-blue-400 uppercase font-geist">Clareza</span>
+<h3 class="mt-3 text-[22px] text-white font-jakarta font-medium">Sem curva de aprendizado</h3>
+<p class="mt-3 text-[15px] leading-relaxed text-slate-400 font-geist">Um workspace simples que seu time entende em minutos.</p>
+</div>
+
+<div class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="absolute inset-0 rounded-[2rem] border border-white/10 pointer-events-none group-hover:border-white/20 transition-colors"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative h-40 w-full mb-8 flex items-center justify-center">
+<div class="absolute w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+<svg class="relative z-10" fill="none" height="120" viewbox="0 0 140 120" width="140" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="gradSpeed" x1="0%" x2="100%" y1="0%" y2="100%"><stop offset="0%" stop-color="#1E3A8A"></stop><stop offset="100%" stop-color="#0F172A"></stop></lineargradient><filter id="glowSpeed"><fegaussianblur result="blur" stddeviation="3"></fegaussianblur><fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite></filter></defs><line stroke="rgba(147, 197, 253, 0.5)" stroke-linecap="round" stroke-width="2" x1="20" x2="70" y1="50" y2="50"></line><line filter="url(#glowSpeed)" stroke="rgba(147, 197, 253, 0.8)" stroke-linecap="round" stroke-width="2" x1="30" x2="65" y1="60" y2="60"></line><line stroke="rgba(147, 197, 253, 0.3)" stroke-linecap="round" stroke-width="2" x1="10" x2="75" y1="70" y2="70"></line><circle cx="90" cy="60" fill="url(#gradSpeed)" r="24" stroke="rgba(147, 197, 253, 0.4)" stroke-width="2"></circle><circle cx="90" cy="60" fill="none" filter="url(#glowSpeed)" opacity="0.5" r="24" stroke="#93C5FD" stroke-width="1"></circle><path d="M92 45 L82 62 L89 62 L87 75 L98 57 L91 57 Z" fill="#E0F2FE" filter="url(#glowSpeed)"></path><circle cx="50" cy="45" fill="#93C5FD" filter="url(#glowSpeed)" r="1.5"></circle><circle cx="40" cy="75" fill="#93C5FD" r="1"></circle></svg>
+</div>
+<span class="text-[11px] font-semibold tracking-widest text-blue-400 uppercase font-geist">Velocidade</span>
+<h3 class="mt-3 text-[22px] text-white font-jakarta font-medium">Leve por padrão</h3>
+<p class="mt-3 text-[15px] leading-relaxed text-slate-400 font-geist">Crie, atualize e revise o trabalho sem fluxos lentos e pesados.</p>
+</div>
+
+<div class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="absolute inset-0 rounded-[2rem] border border-white/10 pointer-events-none group-hover:border-white/20 transition-colors"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative h-40 w-full mb-8 flex items-center justify-center">
+<div class="absolute w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
+<svg class="relative z-10" fill="none" height="120" viewbox="0 0 120 120" width="120" xmlns="http://www.w3.org/2000/svg"><defs><filter id="glowFocus"><fegaussianblur result="blur" stddeviation="2.5"></fegaussianblur><fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite></filter></defs><circle cx="60" cy="60" r="45" stroke="rgba(255,255,255,0.05)" stroke-width="1.5"></circle><circle cx="60" cy="60" r="32" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"></circle><circle cx="60" cy="60" r="18" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"></circle><circle cx="60" cy="60" fill="#93C5FD" filter="url(#glowFocus)" r="8"></circle><circle cx="60" cy="60" fill="#FFFFFF" r="4"></circle><circle cx="82" cy="38" fill="#BAE6FD" filter="url(#glowFocus)" r="3"></circle><circle cx="28" cy="60" fill="#E0F2FE" r="2"></circle><circle cx="75" cy="99" fill="#93C5FD" r="1.5"></circle></svg>
+</div>
+<span class="text-[11px] font-semibold tracking-widest text-blue-400 uppercase font-geist">Foco</span>
+<h3 class="mt-3 text-[22px] text-white font-jakarta font-medium">Um único lugar compartilhado</h3>
+<p class="mt-3 text-[15px] leading-relaxed text-slate-400 font-geist">Tarefas, projetos, prazos e atualizações ficam conectados.</p>
+</div>
+
+<div class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="absolute inset-0 rounded-[2rem] border border-white/10 pointer-events-none group-hover:border-white/20 transition-colors"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative h-40 w-full mb-8 flex items-center justify-center">
+<div class="absolute w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+<svg class="relative z-10" fill="none" height="120" viewbox="0 0 120 120" width="120" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="shieldGrad" x1="50%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#1E293B" stop-opacity="0.8"></stop><stop offset="100%" stop-color="#0F172A" stop-opacity="0.9"></stop></lineargradient><filter id="glowTrust"><fegaussianblur result="blur" stddeviation="3"></fegaussianblur><fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite></filter></defs><ellipse cx="60" cy="95" fill="none" rx="35" ry="10" stroke="rgba(147, 197, 253, 0.2)" stroke-width="1.5"></ellipse><ellipse cx="60" cy="95" fill="rgba(147, 197, 253, 0.1)" filter="url(#glowTrust)" rx="25" ry="6"></ellipse><path d="M20 20 L100 20 M20 40 L100 40 M20 60 L100 60 M20 80 L100 80" stroke="rgba(255,255,255,0.03)" stroke-width="1"></path><path d="M30 10 L30 90 M50 10 L50 90 M70 10 L70 90 M90 10 L90 90" stroke="rgba(255,255,255,0.03)" stroke-width="1"></path><path d="M60 25 L35 35 V55 C35 75 50 90 60 95 C70 90 85 75 85 55 V35 L60 25 Z" fill="url(#shieldGrad)" filter="url(#glowTrust)" stroke="#60A5FA" stroke-linejoin="round" stroke-width="2"></path><path d="M60 30 L40 38 V55 C40 70 52 83 60 88 C68 83 80 70 80 55 V38 L60 30 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"></path><path d="M50 58 L57 65 L70 50" filter="url(#glowTrust)" stroke="#BAE6FD" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[11px] font-semibold tracking-widest text-blue-400 uppercase font-geist">Confiança</span>
+<h3 class="mt-3 text-[22px] text-white font-jakarta font-medium">Responsabilidade clara</h3>
+<p class="mt-3 text-[15px] leading-relaxed text-slate-400 font-geist">Todo mundo sabe o que é seu e o que precisa de atenção em seguida.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- reviews -->
+<section class="overflow-hidden border-white/[0.06] sm:px-8 lg:px-10 font-sans border-t pt-24 pr-5 pb-24 pl-5 relative" id="reviews">
+<div class="absolute top-1/2 left-[20%] -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="relative z-10 mx-auto grid w-full max-w-[1280px] gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+<div class="reveal lg:mt-10">
+<p class="text-[13px] font-medium text-slate-400 font-geist">05 · Prova social</p>
+<h2 class="mt-4 text-4xl text-white sm:text-[56px] leading-[1.1] tracking-tight font-jakarta font-medium">Feito para times<br/>que querem que o trabalho<br/>pareça óbvio.</h2>
+<p class="mt-6 text-[17px] leading-relaxed text-slate-400 max-w-[400px] font-geist">O Pulsedesk dá aos times em crescimento uma forma mais tranquila de coordenar projetos sem adotar um sistema operacional pesado.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex h-11 items-center justify-center rounded-full bg-cyan-100 px-5 text-sm font-medium text-slate-950 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)] transition hover:bg-cyan-50 font-geist" href="#">Ler histórias</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Começar</a>
+</div>
+</div>
+<div class="flex flex-col gap-5">
+
+<div class="group relative flex flex-col sm:flex-row gap-6 rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 sm:p-8 border border-white/10">
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] text-blue-200 shadow-[inset_0_0_20px_rgba(147,197,253,0.05)]">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+</div>
+<div class="flex-1">
+<h3 class="text-[22px] text-white font-jakarta font-medium">Mais de 1.200 times pequenos</h3>
+<p class="mt-2 text-[15px] leading-relaxed text-slate-400 font-geist">Usam o Pulsedesk para manter tarefas, responsáveis e prazos visíveis sem complicar o processo.</p>
+<div class="mt-6 flex items-center gap-4">
+<div class="flex -space-x-3">
+<img alt="Usuário" class="w-8 h-8 rounded-full border-2 border-[#12161f] object-cover relative z-[4]" src="assets/46d532f33f5ae429_100.jpg"/>
+<img alt="Usuário" class="w-8 h-8 rounded-full border-2 border-[#12161f] object-cover relative z-[3]" src="assets/07b0c78f5d884bc5_100.jpg"/>
+<img alt="Usuário" class="w-8 h-8 rounded-full border-2 border-[#12161f] object-cover relative z-[2]" src="assets/5eccb6dd8c3d7b1b_100.jpg"/>
+<img alt="Usuário" class="w-8 h-8 rounded-full border-2 border-[#12161f] object-cover relative z-[1]" src="assets/b593935ecc8730c1_100.jpg"/>
+<div class="w-8 h-8 rounded-full border-2 border-[#12161f] bg-[#1e293b] text-[#93c5fd] text-[10px] font-medium flex items-center justify-center relative z-[0] font-geist">+1,2K</div>
+</div>
+<div class="h-[2px] flex-1 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIxIiBmaWxsPSJyZ2JhKDE0NywgMTk3LCAyNTMsIDAuMykiLz48L3N2Zz4=')] bg-repeat-x opacity-50"></div>
+</div>
+</div>
+</div>
+
+<div class="group relative flex flex-col sm:flex-row gap-6 rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 sm:p-8 border border-white/10 overflow-hidden">
+<div class="absolute bottom-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+<svg class="absolute bottom-0 right-0 w-full h-full object-cover" viewbox="0 0 200 100"><path d="M0,100 C50,80 100,120 200,40 L200,100 Z" fill="none" stroke="#3b82f6" stroke-dasharray="2 4" stroke-width="0.5"></path><path d="M0,100 C60,70 120,110 200,20 L200,100 Z" fill="none" stroke="#3b82f6" stroke-dasharray="2 4" stroke-width="0.5"></path><path d="M0,100 C70,60 140,100 200,0 L200,100 Z" fill="none" stroke="#3b82f6" stroke-dasharray="2 4" stroke-width="0.5"></path></svg>
+</div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] shadow-[inset_0_0_20px_rgba(147,197,253,0.05)]">
+<svg class="text-blue-400" fill="currentColor" height="24" viewbox="0 0 24 24" width="24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"></path></svg>
+</div>
+<img alt="Maya Chen" class="w-10 h-10 rounded-full border border-white/10 object-cover mt-2" src="assets/7c61df640bc5483d_100.jpg"/>
+</div>
+<div class="flex-1 relative z-10 pt-2">
+<h3 class="text-[22px] text-white leading-tight font-jakarta font-medium">“Nosso time inteiro entendeu logo no primeiro dia.”</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist"><span class="text-blue-400 font-medium font-geist">Maya Chen</span>, Líder de Estúdio — um workspace leve substituiu três ferramentas dispersas.</p>
+</div>
+</div>
+
+<div class="group relative flex flex-col sm:flex-row gap-6 rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-6 sm:p-8 border border-white/10">
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.02] text-blue-200 shadow-[inset_0_0_20px_rgba(147,197,253,0.05)]">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+</div>
+<div class="flex-1 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-[320px]">
+<h3 class="text-[22px] text-white font-jakarta font-medium">Menos tempo gerenciando a ferramenta</h3>
+<p class="mt-2 text-[15px] leading-relaxed text-slate-400 font-geist">Os times passam mais tempo fazendo o trabalho e menos tempo mantendo quadros complicados.</p>
+</div>
+<div class="relative w-[140px] h-[60px] shrink-0 self-start md:self-auto mt-4 md:mt-0">
+<div class="absolute -top-10 left-4 rounded-lg border border-white/10 bg-[#1e293b]/80 backdrop-blur-sm px-2.5 py-1.5 flex flex-col items-start shadow-xl">
+<span class="text-[11px] font-semibold text-emerald-400 flex items-center gap-1 font-geist">↑ 32%</span>
+<span class="text-[9px] text-slate-400 font-geist">Tempo economizado</span>
+</div>
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 40"><path d="M0,35 L20,30 L40,32 L60,18 L80,22 L100,5" fill="none" stroke="#3b82f6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M0,35 L20,30 L40,32 L60,18 L80,22 L100,5 L100,40 L0,40 Z" fill="url(#chartGradient)" opacity="0.3"></path><circle class="drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]" cx="100" cy="5" fill="#60a5fa" r="3"></circle><defs><lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#3b82f6"></stop><stop offset="100%" stop-color="transparent"></stop></lineargradient></defs></svg>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- pricing -->
+<section class="border-white/[0.06] overflow-hidden sm:px-8 lg:px-10 font-sans border-t pt-24 pr-5 pb-24 pl-5 relative" id="pricing">
+<div class="pointer-events-none absolute left-1/2 top-0 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="pointer-events-none absolute inset-0 opacity-[0.035]" style="background-image: linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 28rem 28rem;"></div>
+<div class="z-10 w-full max-w-[1280px] mr-auto ml-auto relative">
+<div class="reveal grid w-full max-w-[1280px] gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+<div class="max-w-3xl">
+<p class="text-[13px] font-medium text-slate-400 font-geist">06 · Preços</p>
+<h2 class="mt-4 text-4xl leading-[1.1] tracking-tight text-white sm:text-[56px] font-jakarta font-medium">Planos simples para times que querem clareza.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-[17px] leading-relaxed text-slate-400 font-geist">Comece grátis e faça upgrade quando seu time precisar de mais projetos, relatórios e controles de colaboração.</p>
+<div class="mt-7 inline-flex rounded-full border border-white/[0.12] bg-white/[0.04] p-1 backdrop-blur-xl">
+<button class="h-10 rounded-full bg-cyan-100 px-5 text-sm font-medium text-slate-950 shadow-[0_12px_35px_rgba(0,0,0,0.28)] transition font-geist">Mensal</button>
+<button class="h-10 rounded-full px-5 text-sm font-medium text-slate-300 transition hover:text-white font-geist">Anual</button>
+</div>
+</div>
+</div>
+<div class="mt-16 grid gap-6 lg:grid-cols-3">
+
+<article class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="flex items-start justify-between gap-6">
+<div>
+<p class="text-[11px] font-semibold uppercase tracking-widest text-blue-400 font-geist">Starter</p>
+<h3 class="mt-3 text-[24px] tracking-tight text-white font-jakarta font-medium">Para se organizar</h3>
+</div>
+<span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-400 font-geist">Grátis</span>
+</div>
+<div class="mt-8">
+<div class="flex items-end gap-2">
+<span class="text-5xl tracking-tight text-white font-jakarta font-medium">R$0</span>
+<span class="pb-2 text-sm text-slate-500 font-geist">/ mês</span>
+</div>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">Um workspace tranquilo para indivíduos e times pequenos começando seus primeiros projetos.</p>
+</div>
+<a class="mt-8 inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-200 transition duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] font-geist" href="#cta">Começar grátis</a>
+<div class="mt-8 h-px w-full bg-white/[0.08]"></div>
+<ul class="mt-8 space-y-4 text-[15px] leading-6 text-slate-400">
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Até 3 projetos</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Quadros de tarefas simples</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Datas de entrega e responsáveis</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Resumo de atividade semanal</li>
+</ul>
+</article>
+
+<article class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-blue-500/[0.16] via-white/[0.06] to-transparent p-8 shadow-2xl shadow-blue-950/20 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-blue-300/30 transition-colors group-hover:border-blue-200/40"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-200/70 to-transparent"></div>
+<div class="flex items-start justify-between gap-6">
+<div>
+<p class="text-[11px] font-semibold uppercase tracking-widest text-blue-300 font-geist">Pro</p>
+<h3 class="mt-3 text-[24px] tracking-tight text-white font-jakarta font-medium">Para times focados</h3>
+</div>
+<span class="rounded-full border border-blue-300/20 bg-blue-400/10 px-3 py-1 text-xs font-medium text-blue-200 font-geist">Popular</span>
+</div>
+<div class="mt-8">
+<div class="flex items-end gap-2">
+<span class="text-5xl tracking-tight text-white font-jakarta font-medium">R$12</span>
+<span class="pb-2 text-sm text-slate-400 font-geist">/ usuário / mês</span>
+</div>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-300 font-geist">Tudo o que times pequenos precisam para planejar o trabalho, manter o alinhamento e entregar com consistência.</p>
+</div>
+<a class="mt-8 inline-flex items-center justify-center rounded-full bg-cyan-100 px-5 py-3 text-sm font-semibold text-slate-950 shadow-2xl shadow-cyan-950/20 transition duration-300 ease-out hover:bg-cyan-50 font-geist" href="#cta">Iniciar teste de 14 dias</a>
+<div class="mt-8 h-px w-full bg-blue-200/15"></div>
+<ul class="mt-8 space-y-4 text-[15px] leading-6 text-slate-300">
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-300/15 text-blue-200"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Projetos ilimitados</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-300/15 text-blue-200"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Visualizações de linha do tempo e calendário</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-300/15 text-blue-200"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Etiquetas de prioridade e filtros</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-300/15 text-blue-200"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Comentários e menções da equipe</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-300/15 text-blue-200"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Relatórios de progresso</li>
+</ul>
+</article>
+
+<article class="group relative flex flex-col rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="flex items-start justify-between gap-6">
+<div>
+<p class="text-[11px] font-semibold uppercase tracking-widest text-blue-400 font-geist">Business</p>
+<h3 class="mt-3 text-[24px] tracking-tight text-white font-jakarta font-medium">Para times em crescimento</h3>
+</div>
+<span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-400 font-geist">Escala</span>
+</div>
+<div class="mt-8">
+<div class="flex items-end gap-2">
+<span class="text-5xl tracking-tight text-white font-jakarta font-medium">R$29</span>
+<span class="pb-2 text-sm text-slate-500 font-geist">/ usuário / mês</span>
+</div>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">Controles avançados e visibilidade para times que coordenam múltiplos projetos.</p>
+</div>
+<a class="mt-8 inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-200 transition duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] font-geist" href="#cta">Falar com vendas</a>
+<div class="mt-8 h-px w-full bg-white/[0.08]"></div>
+<ul class="mt-8 space-y-4 text-[15px] leading-6 text-slate-400">
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Tudo do plano Pro</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Permissões de administrador</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Relatórios de portfólio</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Suporte prioritário</li>
+<li class="flex gap-3 font-geist"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-300"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 9 17l-5-5"></path></svg></span>Onboarding personalizado</li>
+</ul>
+</article>
+
+</div>
+<div class="text-center border-white/10 border rounded-[2rem] mt-10 pt-6 pr-6 pb-6 pl-6">
+<p class="text-[15px] leading-relaxed text-slate-400 font-geist">Todos os planos incluem workspaces seguros, tarefas ilimitadas e uma interface tranquila que seu time aprende em minutos.</p>
+</div>
+</div>
+</section>
+
+<!-- faq -->
+<section class="border-white/[0.06] overflow-hidden sm:px-8 lg:px-10 font-sans border-t pt-24 pr-5 pb-24 pl-5 relative" id="faq">
+<div class="pointer-events-none absolute left-1/2 top-0 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="pointer-events-none absolute inset-0 opacity-[0.035]" style="background-image: linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 28rem 28rem;"></div>
+<div class="relative z-10 mx-auto w-full max-w-[1280px]">
+<div class="reveal grid w-full max-w-[1280px] gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+<div class="max-w-3xl">
+<p class="text-[13px] font-medium text-slate-400 font-geist">07 · Perguntas frequentes</p>
+<h2 class="mt-4 text-4xl leading-[1.1] tracking-tight text-white sm:text-[56px] font-jakarta font-medium">Perguntas que os times fazem antes de começar.</h2>
+</div>
+<div class="lg:ml-auto lg:max-w-md">
+<p class="text-[17px] leading-relaxed text-slate-400 font-geist">Tudo o que você precisa saber para configurar o Pulsedesk, convidar seu time e manter os projetos organizados.</p>
+<div class="mt-7 flex flex-wrap gap-3">
+<a class="inline-flex h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-medium text-slate-950 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_18px_50px_rgba(0,0,0,0.35)] transition hover:bg-cyan-50 font-geist" href="#">Ver perguntas</a>
+<a class="inline-flex h-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-5 text-sm font-medium text-white backdrop-blur-xl transition hover:bg-white/[0.08] font-geist" href="#">Fale conosco</a>
+</div>
+</div>
+</div>
+<div class="mt-16 grid gap-6 lg:grid-cols-2">
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/20 bg-blue-400/10 text-blue-200">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.82 1c0 2-3 2.25-3 4"></path><path d="M12 17h.01"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">Em quanto tempo meu time pode começar a usar o Pulsedesk?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">A maioria dos times cria seu primeiro workspace, adiciona um projeto e convida colaboradores em poucos minutos. O fluxo é intencionalmente simples, então não há um longo processo de configuração.</p>
+</div>
+</div>
+</article>
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/20 bg-blue-400/10 text-blue-200">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">O Pulsedesk é feito para indivíduos ou times?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">Ambos. Freelancers podem usá-lo para gerenciar trabalho pessoal de clientes, enquanto times podem coordenar tarefas, responsáveis, prazos, comentários e progresso de projetos em um único lugar compartilhado.</p>
+</div>
+</div>
+</article>
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-blue-500/[0.12] via-white/[0.05] to-transparent p-8 shadow-2xl shadow-blue-950/20 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-blue-300/25 transition-colors group-hover:border-blue-200/40"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-200/70 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/25 bg-blue-300/15 text-blue-100">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">Podemos personalizar projetos e fluxos de trabalho?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-300 font-geist">Sim. Você pode organizar o trabalho com projetos, status de tarefas, responsáveis, prioridades, datas de entrega e notas sem transformar o workspace em um sistema complicado.</p>
+</div>
+</div>
+</article>
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-blue-500/[0.12] via-white/[0.05] to-transparent p-8 shadow-2xl shadow-blue-950/20 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-blue-300/25 transition-colors group-hover:border-blue-200/40"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-200/70 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/25 bg-blue-300/15 text-blue-100">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">O Pulsedesk pode substituir planilhas e anotações dispersas?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-300 font-geist">Para acompanhamento de tarefas e coordenação de projetos, sim. O Pulsedesk mantém responsabilidades, prazos, atualizações e progresso visíveis para que os times não precisem caçar informação entre abas.</p>
+</div>
+</div>
+</article>
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/20 bg-blue-400/10 text-blue-200">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">Nosso workspace é seguro?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">O Pulsedesk foi projetado em torno de workspaces seguros e acesso claro para o seu time. Você controla quem é convidado e em quais projetos colabora.</p>
+</div>
+</div>
+</article>
+
+<article class="group relative rounded-[2rem] bg-gradient-to-b from-white/[0.05] to-transparent p-8 transition duration-300 ease-out hover:-translate-y-1">
+<div class="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/10 transition-colors group-hover:border-white/20"></div>
+<div class="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent"></div>
+<div class="relative flex gap-5">
+<span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-blue-300/20 bg-blue-400/10 text-blue-200">
+<svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+</span>
+<div>
+<h3 class="text-[22px] tracking-tight text-white font-jakarta font-medium">O que acontece se precisarmos de mais capacidade depois?</h3>
+<p class="mt-4 text-[15px] leading-relaxed text-slate-400 font-geist">Você pode começar pequeno e expandir quando seu time precisar de mais projetos, relatórios, controles de colaboração ou suporte. O Pulsedesk foi feito para escalar sem adicionar bagunça.</p>
+</div>
+</div>
+</article>
+
+</div>
+<div class="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 text-center">
+<p class="text-[15px] leading-relaxed text-slate-400 font-geist">Ainda tem dúvidas? Inicie um teste grátis ou fale com o time para ver como o Pulsedesk se encaixa no seu fluxo de trabalho.</p>
+</div>
+</div>
+</section>
+
+<!-- cta -->
+<section class="sm:px-8 lg:px-10 lg:pt-24 pt-24 pr-5 pb-24 pl-5" id="cta">
+<div class="reveal overflow-hidden border-white/[0.08] shadow-cyan-950/20 sm:px-10 sm:py-10 lg:px-12 lg:py-12 bg-[#0d1422]/70 w-full max-w-[1280px] border rounded-[2rem] mr-auto ml-auto pt-8 pr-6 pb-8 pl-6 relative shadow-2xl backdrop-blur-2xl">
+<div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"></div>
+<div class="pointer-events-none absolute -bottom-28 left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+<div class="max-w-3xl">
+<div class="inline-flex items-center gap-2 rounded-full border border-cyan-100/10 bg-cyan-100/[0.04] px-3 py-1">
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-200"></span>
+<p class="text-xs font-medium tracking-wide text-cyan-100 font-geist">Comece em minutos</p>
+</div>
+<h2 class="mt-5 text-3xl tracking-tighter text-white sm:text-4xl lg:text-5xl font-jakarta font-medium">Dê ao seu time um lugar claro para gerenciar o trabalho.</h2>
+<p class="mt-5 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base font-geist">Sem cartão de crédito. Crie seu primeiro projeto, convide seu time e veja cada prazo em um único espaço tranquilo.</p>
+</div>
+<div class="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+<a class="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-100 px-6 py-3 text-sm font-semibold text-slate-950 shadow-2xl shadow-cyan-950/30 transition duration-300 ease-out hover:scale-[1.03] hover:bg-cyan-50 font-geist" href="#pricing">
+Iniciar teste grátis
+<iconify-icon height="18" icon="solar:arrow-right-linear" width="18"></iconify-icon>
+</a>
+<a class="inline-flex items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] px-6 py-3 text-sm font-medium text-slate-200 transition duration-300 ease-out hover:bg-white/[0.06] hover:text-white font-geist" href="#how">Ver como funciona</a>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+
+<!-- footer -->
+<footer class="overflow-hidden border-white/[0.06] sm:px-8 sm:py-16 lg:pl-10 lg:pr-10 lg:pt-20 lg:pb-10 border-t pt-20 pr-10 pb-10 pl-10 relative">
+<div class="pointer-events-none absolute left-1/2 top-0 h-px w-[70%] -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-100/20 to-transparent"></div>
+<div class="pointer-events-none absolute -right-32 top-20 h-80 w-80 rounded-full bg-cyan-300/10 blur-3xl"></div>
+<div class="pointer-events-none absolute -left-32 bottom-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="relative mx-auto w-full max-w-[1280px]">
+<div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+<div>
+<p class="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-100/10 bg-cyan-100/[0.04] px-3 py-1 text-xs font-medium tracking-wide text-cyan-100 font-geist">
+<span class="h-1.5 w-1.5 rounded-full bg-cyan-200"></span>Comece em minutos
+</p>
+<h2 class="max-w-5xl text-6xl leading-none tracking-tighter text-white sm:text-7xl lg:text-8xl font-jakarta font-medium">Vamos colocar o trabalho sob controle.</h2>
+</div>
+<div class="max-w-xl lg:justify-self-end">
+<p class="text-2xl leading-tight tracking-tight text-slate-400 sm:text-3xl font-jakarta font-medium">Um único espaço tranquilo para tarefas, prazos e foco do time.</p>
+<div class="mt-8 flex flex-col gap-3 sm:flex-row">
+<a class="inline-flex items-center justify-center gap-3 rounded-full bg-cyan-100 px-6 py-4 text-base font-medium text-slate-950 shadow-2xl shadow-cyan-950/30 transition duration-300 ease-out hover:scale-[1.03] hover:bg-cyan-50 font-geist" href="#pricing">
+Iniciar teste grátis
+<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</a>
+<a class="inline-flex items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-base font-medium text-slate-200 transition duration-300 ease-out hover:bg-white/[0.06] hover:text-white font-geist" href="#how">Ver o produto</a>
+</div>
+</div>
+</div>
+<div class="mt-16 grid gap-12 border-t border-white/[0.06] pt-12 sm:mt-20 sm:grid-cols-2 lg:mt-24 lg:grid-cols-[1.2fr_0.6fr_0.6fr_0.6fr] lg:gap-16">
+<div class="max-w-sm">
+<a class="inline-flex items-center gap-3" href="#">
+<span class="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-100/10 bg-cyan-100/[0.06] text-cyan-100">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path></svg>
+</span>
+<span class="text-xl tracking-tight text-white font-jakarta font-medium">Pulsedesk</span>
+</a>
+<p class="mt-5 text-sm leading-6 text-slate-500 font-geist">Um espaço de projeto simples para times pequenos, startups e freelancers que querem menos bagunça e mais clareza.</p>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 font-geist">Páginas</p>
+<nav class="mt-5 flex flex-col gap-3">
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#how">Produto</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#pricing">Preços</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#reviews">Clientes</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#problem">Sobre</a>
+</nav>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 font-geist">Recursos</p>
+<nav class="mt-5 flex flex-col gap-3">
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Central de ajuda</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Privacidade</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Termos</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Contato</a>
+</nav>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 font-geist">Redes sociais</p>
+<nav class="mt-5 flex flex-col gap-3">
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Twitter (X)</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Instagram</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">LinkedIn</a>
+<a class="text-sm text-slate-300 transition hover:text-cyan-100 font-geist" href="#">Dribbble</a>
+</nav>
+</div>
+</div>
+<div class="mt-12 flex flex-col justify-between gap-5 border-t border-white/[0.06] pt-8 text-sm text-slate-500 sm:flex-row sm:items-center">
+<p class="font-geist">© 2026 Pulsedesk. Todos os direitos reservados.</p>
+<div class="flex flex-wrap gap-x-4 gap-y-2 font-geist">
+<a class="transition hover:text-slate-300 font-geist" href="#how">Feito para times focados</a>
+<a class="transition hover:text-slate-300 font-geist" href="#pricing">Comece grátis</a>
+<a class="transition hover:text-slate-300 font-geist" href="#">Privacidade</a>
+</div>
+</div>
+</div>
+</footer>
+
+</div>
+
+<!-- js -->
+<!-- scroll-reveal das seções + parallax 3D do mockup do herói -->
+<script src="assets/js/reveal-and-parallax.js"></script>
+<!-- fundo WebGL animado (Three.js) renderizado no #webgl-canvas do herói -->
+<script type="module" src="assets/js/webgl-background.js"></script>
+
+</body>
+</html>
