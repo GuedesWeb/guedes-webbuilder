@@ -662,6 +662,7 @@ btn.style.display='none';
 
 localStorage.setItem('asaas_payment_id',PAYMENT_ID);
 localStorage.setItem('asaas_client_slug',nomeSlug);
+localStorage.setItem('asaas_session_start',Date.now()); // Só aceita pagamentos após este momento
 
 area.innerHTML='<div style="background:rgba(76,67,247,.06);border:1px solid rgba(76,67,247,.15);border-radius:var(--r-card);padding:28px 24px;text-align:center">'+
 '<div style="font-size:48px;margin-bottom:16px">💳</div>'+
@@ -706,7 +707,8 @@ let msg='';
 // Chama nossa API interna (serverless function) que consulta o Asaas no backend
 // Sem CORS, sem token exposto no frontend
 try{
-const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(paymentId));
+const since=localStorage.getItem('asaas_session_start')||'0';
+const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(paymentId)+'&since='+since);
 if(res.ok){
 const json=await res.json();
 pago=json.pago;

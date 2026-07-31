@@ -33,9 +33,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Extrai o parâmetro "link" da query string
+    // Extrai os parâmetros da query string
     const url = new URL(req.url, 'http://localhost');
     const paymentLinkId = url.searchParams.get('link');
+    const sinceTs = parseInt(url.searchParams.get('since') || '0', 10);
 
     // Validação: apenas caracteres seguros
     if (!paymentLinkId || !/^[a-zA-Z0-9_-]+$/.test(paymentLinkId)) {
@@ -82,14 +83,20 @@ module.exports = async function handler(req, res) {
     const todosPagamentos = json.data || [];
 
     // Filtra APENAS pagamentos efetivamente recebidos/confirmados
-    // Status que NÃO liberam acesso: PENDING, OVERDUE, REFUNDED, CANCELED, etc.
+    // E apenas pagamentos criados DEPOIS que o cliente iniciou a sessão (parâmetro since)
+    // Isso evita que pagamentos antigos do mesmo link fixo sejam detectados
     const statusValidos = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
     const pagamentos = todosPagamentos.filter(function (p) {
-      return statusValidos.indexOf(p.status) >= 0;
+      if (statusValidos.indexOf(p.status) < 0) return false;
+      if (sinceTs > 0 && p.dateCreated) {
+        var dataPagamento = new Date(p.dateCreated).getTime();
+        if (dataPagamento <= sinceTs) return false;
+      }
+      return true;
     });
     const pago = pagamentos.length > 0;
 
-    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + todosPagamentos.length + ' total, ' + pagamentos.length + ' confirmados');
+    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + todosPagamentos.length + ' total, ' + pagamentos.length + ' confirmados (since: ' + new Date(sinceTs).toISOString() + ')');
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
