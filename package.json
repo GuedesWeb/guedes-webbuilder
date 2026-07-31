@@ -1,0 +1,8 @@
+{
+  "name": "guedes-webbuilder",
+  "version": "1.0.0",
+  "description": "WebBuilder com pagamento integrado via Asaas",
+  "engines": {
+    "node": ">=18.x"
+  }
+}

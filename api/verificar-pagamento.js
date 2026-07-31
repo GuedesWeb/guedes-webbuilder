@@ -13,7 +13,7 @@
 
 const ASAAS_API_BASE = 'https://api.asaas.com/v3';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS — permite chamadas do frontend
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -21,12 +21,15 @@ export default async function handler(req, res) {
 
   // Preflight CORS
   if (req.method === 'OPTIONS') {
-    return res.status(204).end();
+    res.statusCode = 204;
+    return res.end();
   }
 
   // Apenas GET
   if (req.method !== 'GET') {
-    return res.status(405).json({ erro: 'Método não permitido. Use GET.' });
+    res.statusCode = 405;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ erro: 'Método não permitido. Use GET.' }));
   }
 
   try {
@@ -36,18 +39,22 @@ export default async function handler(req, res) {
 
     // Validação: apenas caracteres seguros
     if (!paymentLinkId || !/^[a-zA-Z0-9_-]+$/.test(paymentLinkId)) {
-      return res.status(400).json({ erro: 'Parâmetro "link" inválido ou ausente.' });
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ erro: 'Parâmetro "link" inválido ou ausente.' }));
     }
 
     // Token do Asaas — definido como variável de ambiente no painel da Vercel
     const token = process.env.ASAAS_TOKEN;
     if (!token) {
       console.error('[verificar-pagamento] ASAAS_TOKEN não configurado.');
-      return res.status(500).json({ pago: false, erro: 'Configuração do servidor ausente.' });
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ pago: false, erro: 'Configuração do servidor ausente.' }));
     }
 
     // Consulta pagamentos confirmados no link
-    const apiUrl = `${ASAAS_API_BASE}/payments?paymentLink=${encodeURIComponent(paymentLinkId)}&status=RECEIVED&status=CONFIRMED&limit=5`;
+    const apiUrl = ASAAS_API_BASE + '/payments?paymentLink=' + encodeURIComponent(paymentLinkId) + '&status=RECEIVED&status=CONFIRMED&limit=5';
     console.log('[verificar-pagamento] Consultando Asaas...');
 
     const apiRes = await fetch(apiUrl, {
@@ -60,32 +67,40 @@ export default async function handler(req, res) {
 
     if (!apiRes.ok) {
       const errText = await apiRes.text();
-      console.error(`[verificar-pagamento] Asaas HTTP ${apiRes.status}: ${errText}`);
-      return res.status(200).json({
+      console.error('[verificar-pagamento] Asaas HTTP ' + apiRes.status + ': ' + errText);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
         pago: false,
-        erro: `API Asaas retornou HTTP ${apiRes.status}`,
-      });
+        erro: 'API Asaas retornou HTTP ' + apiRes.status,
+      }));
     }
 
     const json = await apiRes.json();
     const pagamentos = json.data || [];
     const pago = pagamentos.length > 0;
 
-    console.log(`[verificar-pagamento] Link ${paymentLinkId}: ${pagamentos.length} pagamento(s)`);
+    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + pagamentos.length + ' pagamento(s)');
 
-    return res.status(200).json({
-      pago,
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({
+      pago: pago,
       total: pagamentos.length,
-      pagamentos: pagamentos.map(p => ({
-        id: p.id,
-        valor: p.value,
-        status: p.status,
-        data: p.paymentDate || p.confirmedDate || p.dateCreated,
-        forma: p.billingType,
-      })),
-    });
+      pagamentos: pagamentos.map(function (p) {
+        return {
+          id: p.id,
+          valor: p.value,
+          status: p.status,
+          data: p.paymentDate || p.confirmedDate || p.dateCreated,
+          forma: p.billingType,
+        };
+      }),
+    }));
   } catch (err) {
     console.error('[verificar-pagamento] Erro interno:', err.message);
-    return res.status(200).json({ pago: false, erro: 'Erro interno ao verificar.' });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ pago: false, erro: 'Erro interno ao verificar.' }));
   }
-}
+};
