@@ -53,8 +53,10 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ pago: false, erro: 'Configuração do servidor ausente.' }));
     }
 
-    // Consulta pagamentos confirmados no link
-    const apiUrl = ASAAS_API_BASE + '/payments?paymentLink=' + encodeURIComponent(paymentLinkId) + '&status=RECEIVED&status=CONFIRMED&limit=5';
+    // Busca TODOS os pagamentos do link (sem filtrar por status na query)
+    // A filtragem por status é feita no nosso código para garantir segurança
+    // Motivo: a API do Asaas pode não suportar múltiplos valores no param "status"
+    const apiUrl = ASAAS_API_BASE + '/payments?paymentLink=' + encodeURIComponent(paymentLinkId) + '&limit=20';
     console.log('[verificar-pagamento] Consultando Asaas...');
 
     const apiRes = await fetch(apiUrl, {
@@ -77,16 +79,24 @@ module.exports = async function handler(req, res) {
     }
 
     const json = await apiRes.json();
-    const pagamentos = json.data || [];
+    const todosPagamentos = json.data || [];
+
+    // Filtra APENAS pagamentos efetivamente recebidos/confirmados
+    // Status que NÃO liberam acesso: PENDING, OVERDUE, REFUNDED, CANCELED, etc.
+    const statusValidos = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
+    const pagamentos = todosPagamentos.filter(function (p) {
+      return statusValidos.indexOf(p.status) >= 0;
+    });
     const pago = pagamentos.length > 0;
 
-    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + pagamentos.length + ' pagamento(s)');
+    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + todosPagamentos.length + ' total, ' + pagamentos.length + ' confirmados');
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({
       pago: pago,
       total: pagamentos.length,
+      todosStatus: todosPagamentos.map(function (p) { return p.status; }),
       pagamentos: pagamentos.map(function (p) {
         return {
           id: p.id,
