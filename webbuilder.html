@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -635,17 +635,21 @@ h+='<div style="flex:1"><p style="font-size:13px;font-weight:600;color:var(--bri
 h+='<span style="font-size:18px">→</span>';
 h+='</div></a>';
 
-// Verifica se já pagou
-const pagamentoOK=localStorage.getItem('pagamento_ok_'+nomeSlug);
-if(pagamentoOK){
-h+='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px"><p style="font-size:12px;color:var(--green)">✅ Pagamento confirmado! Você já pode continuar.</p></div>';
-h+='<button class="btn btn-p" onclick="goToStep(1)" style="width:100%;padding:16px;font-size:15px">🚀 Ir para Pré-Configuração →</button>';
-}else{
-h+='<button class="btn btn-p" onclick="startPayment()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
-h+='<div id="payment-area" style="margin-top:12px"></div>';
+	// Sempre mostra o botao de pagamento inicialmente
+	// A verificação real é feita via API (nunca confia só no localStorage)
+	h+='<div id="boasvindas-pay-section">';
+	h+='<button class="btn btn-p" onclick="startPayment()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
+	h+='<div id="payment-area" style="margin-top:12px"></div>';
+	h+='</div>';
+	h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:8px">Após o pagamento, você será guiado por 4 etapas simples</p>';
+
+
+	// Verifica pagamento via API em segundo plano (sem depender de cache)
+	setTimeout(function(){ verificarPagamentoAoCarregar(nomeSlug); }, 500);
+
+
+	return h;
 }
-h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:8px">Após o pagamento, você será guiado por 4 etapas simples</p>';
-return h;
 }
 
 const PAYMENT_LINK='https://www.asaas.com/c/4y3wfuhg6v76a6mt';
@@ -743,6 +747,29 @@ statusBox.innerHTML='<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
 '<p style="font-size:10px;color:var(--dim);margin-top:6px">🔍 Tentativa #'+tentativas+' | '+msg+'</p>';
 }
 }
+}
+
+// Verificação silenciosa ao carregar a página — não confia em cache
+async function verificarPagamentoAoCarregar(nomeSlug){
+	var paymentId = localStorage.getItem("asaas_payment_id") || PAYMENT_ID;
+	var since = localStorage.getItem("asaas_session_start") || "0";
+	try {
+		var res = await fetch("/api/verificar-pagamento?link=" + encodeURIComponent(paymentId) + "&since=" + since);
+		if (res.ok) {
+			var json = await res.json();
+			if (json.pago) {
+				localStorage.setItem("pagamento_ok_" + nomeSlug, "true");
+				var section = document.getElementById("boasvindas-pay-section");
+				if (section) {
+					section.innerHTML = '<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px"><p style="font-size:12px;color:var(--green)">✅ Pagamento confirmado! Você já pode continuar.</p></div>' +
+					'<button class="btn btn-p" onclick="goToStep(1)" style="width:100%;padding:16px;font-size:15px">🚀 Ir para Pré-Configuração →</button>';
+				}
+				if (window._pollInterval) { clearInterval(window._pollInterval); window._pollInterval = null; }
+			} else {
+				localStorage.removeItem("pagamento_ok_" + nomeSlug);
+			}
+		}
+	} catch (e) {}
 }
 
 async function checkPayment(nome){
