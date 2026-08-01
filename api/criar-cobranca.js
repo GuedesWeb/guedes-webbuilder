@@ -46,6 +46,7 @@ module.exports = async function handler(req, res) {
     var nome = (parsed.nome || '').trim();
     var email = (parsed.email || '').trim();
     var studio = (parsed.studio || nome).trim();
+    var cpfCnpj = (parsed.cpfCnpj || '').replace(/\D/g, '');
 
     if (!nome || nome.length < 2) {
       res.statusCode = 400;
@@ -65,6 +66,7 @@ module.exports = async function handler(req, res) {
     console.log('[criar-cobranca] Criando cliente: ' + nome + (email ? ' <' + email + '>' : ''));
     var customerBody = { name: nome, notificationDisabled: true };
     if (email) customerBody.email = email;
+    if (cpfCnpj) customerBody.cpfCnpj = cpfCnpj;
 
     var customerRes = await fetch(ASAAS_API_BASE + '/customers', {
       method: 'POST',

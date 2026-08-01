@@ -642,6 +642,7 @@ h+='</div></a>';
 	h+='<input class="fi" id="cad-nome" placeholder="Seu nome completo" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:12px">';
 	h+='<input class="fi" id="cad-studio" placeholder="Nome do estúdio / negócio" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:12px">';
 	h+='<input class="fi" type="email" id="cad-email" placeholder="Seu melhor email" style="width:100%;margin-bottom:14px;padding:10px 12px;font-size:12px">';
+		h+='<input class="fi" id="cad-cpfcnpj" placeholder="CPF ou CNPJ (obrigatório para nota fiscal)" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:12px">';
 	h+='<button class="btn btn-p" onclick="iniciarPagamento()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
 	h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:6px" id="cad-msg"></p>';
 	h+='</div>';
@@ -667,12 +668,14 @@ async function iniciarPagamento(){
 var nome = document.getElementById('cad-nome').value.trim();
 var studio = document.getElementById('cad-studio').value.trim();
 var email = document.getElementById('cad-email').value.trim();
+var cpfCnpj = document.getElementById('cad-cpfcnpj').value.replace(/\D/g,'');
 var msg = document.getElementById('cad-msg');
 var btn = document.getElementById('btn-start-pay');
 
 if (!nome || nome.length < 2) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe seu nome completo.</span>'; return; }
 if (!studio || studio.length < 2) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe o nome do estúdio.</span>'; return; }
 if (!email || !email.includes('@')) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe um email válido.</span>'; return; }
+if (!cpfCnpj || cpfCnpj.length < 11) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe seu CPF (11 dígitos) ou CNPJ (14 dígitos).</span>'; return; }
 
 if (btn) { btn.textContent = '⏳ Enviando...'; btn.disabled = true; }
 if (msg) msg.innerHTML = '<span style=\"color:var(--dim)\">⏳ Validando seus dados...</span>';
@@ -682,13 +685,14 @@ edits.landing.textos['logo-text'] = studio;
 localStorage.setItem('cad_nome', nome);
 localStorage.setItem('cad_studio', studio);
 localStorage.setItem('cad_email', email);
+localStorage.setItem('cad_cpfcnpj', cpfCnpj);
 
 // Envia para o webhook do n8n (não bloqueia o fluxo se falhar)
 try {
 await fetch(WEBHOOK_URL, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ nome: nome, studio: studio, email: email, data: new Date().toISOString() })
+body: JSON.stringify({ nome: nome, studio: studio, email: email, cpfCnpj: cpfCnpj, data: new Date().toISOString() })
 });
 if (msg) msg.innerHTML = '<span style=\"color:var(--green)\">✅ Dados validados! Gerando cobrança...</span>';
 } catch(e) {
@@ -696,13 +700,14 @@ if (msg) msg.innerHTML = '<span style=\"color:var(--dim)\">⏳ Gerando cobrança
 }
 
 // Prossegue para pagamento com os dados coletados
-startPayment(nome, studio, email);
+startPayment(nome, studio, email, cpfCnpj);
 }
 
-async function startPayment(nomeCliente, nomeStudio, emailCliente){
+async function startPayment(nomeCliente, nomeStudio, emailCliente, cpfCnpjCliente){
 var nomeCliente = nomeCliente || localStorage.getItem('cad_nome') || 'Cliente';
 var nomeStudio = nomeStudio || localStorage.getItem('cad_studio') || edits.landing.textos['logo-text'] || 'Cliente';
 var emailCliente = emailCliente || localStorage.getItem('cad_email') || '';
+var cpfCnpjCliente = cpfCnpjCliente || localStorage.getItem('cad_cpfcnpj') || '';
 var nomeSlug=slugify(nomeStudio);
 var area=document.getElementById('payment-area');
 var btn=document.getElementById('btn-start-pay');
@@ -719,7 +724,7 @@ try{
 var cobRes=await fetch('/api/criar-cobranca',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({nome:nomeCliente,studio:nomeStudio,email:emailCliente})
+body:JSON.stringify({nome:nomeCliente,studio:nomeStudio,email:emailCliente,cpfCnpj:cpfCnpjCliente})
 });
 var cobJson=await cobRes.json();
 
