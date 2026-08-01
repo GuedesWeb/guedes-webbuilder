@@ -3,6 +3,10 @@
     "api/verificar-pagamento.js": {
       "memory": 256,
       "maxDuration": 10
+    },
+    "api/criar-cobranca.js": {
+      "memory": 256,
+      "maxDuration": 15
     }
   }
 }

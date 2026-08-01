@@ -663,32 +663,64 @@ const area=document.getElementById('payment-area');
 const btn=document.getElementById('btn-start-pay');
 btn.style.display='none';
 
-localStorage.setItem('asaas_payment_id',PAYMENT_ID);
 localStorage.setItem('asaas_client_slug',nomeSlug);
-localStorage.setItem('asaas_session_start',Date.now()); // Só aceita pagamentos após este momento
 
-area.innerHTML='<div style="background:rgba(76,67,247,.06);border:1px solid rgba(76,67,247,.15);border-radius:var(--r-card);padding:28px 24px;text-align:center">'+
-'<div style="font-size:48px;margin-bottom:16px">💳</div>'+
+// Mostra loading enquanto cria cobrança
+area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:14px;color:var(--dim)">⏳ Gerando cobrança PIX...</p></div>';
+
+try{
+// Chama API para criar cobrança individual
+var cobRes=await fetch('/api/criar-cobranca',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({nome:nomeRaw})
+});
+var cobJson=await cobRes.json();
+
+if(cobRes.ok&&cobJson.paymentId){
+localStorage.setItem('asaas_payment_id',cobJson.paymentId);
+localStorage.setItem('asaas_session_start',Date.now());
+
+var pixHtml='';
+if(cobJson.pixCopiaECola){
+pixHtml='<div style="background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px">'+
+'<p style="font-size:11px;color:var(--dim);margin-bottom:8px">📋 Chave PIX (copia e cola):</p>'+
+'<textarea id="pix-copy-paste" readonly style="width:100%;height:50px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:4px;color:var(--bright);font-size:10px;padding:8px;resize:none;font-family:monospace" onclick="this.select()">'+esc(cobJson.pixCopiaECola)+'</textarea>'+
+'<button class="btn btn-s btn-sm" onclick="var t=document.getElementById(\'pix-copy-paste\');t.select();document.execCommand(\'copy\');this.textContent=\'✅ Copiado!\'" style="width:100%;margin-top:6px">📋 Copiar Chave PIX</button>'+
+'</div>';
+}
+
+if(cobJson.invoiceUrl){
+pixHtml+='<a href="'+esc(cobJson.invoiceUrl)+'" target="_blank" class="btn btn-p" style="width:100%;padding:14px;font-size:14px;margin-bottom:8px">💳 Pagar pelo Site do Asaas →</a>';
+}
+
+area.innerHTML='<div style="background:rgba(76,67,247,.06);border:1px solid rgba(76,67,247,.15);border-radius:var(--r-card);padding:24px 20px;text-align:center">'+
+'<div style="font-size:40px;margin-bottom:12px">📱</div>'+
 '<p style="font-size:16px;font-weight:700;color:var(--bright);margin-bottom:4px">Investimento R$300,00</p>'+
-'<p style="font-size:12px;color:var(--dim);margin-bottom:20px">Pague por PIX, boleto ou cartão para continuar</p>'+
-'<a href="'+PAYMENT_LINK+'" target="_blank" class="btn btn-p" style="width:100%;padding:16px;font-size:15px;margin-bottom:16px">💳 Ir para Pagamento →</a>'+
-'<p style="font-size:10px;color:var(--dim);margin-bottom:20px">O link abrirá em nova aba. A confirmação é <strong>automática</strong> — não precisa voltar aqui.</p>'+
-'<div id="payment-status-box" style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:16px;margin-bottom:16px">'+
-'<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
-'<p style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:6px">Aguardando pagamento...</p>'+
-'<p style="font-size:11px;color:var(--dim);line-height:1.6">Verificamos a cada <strong style="color:var(--bright)">10 segundos</strong>. PIX confirma em até 30s após o pagamento.</p>'+
-'<p style="font-size:10px;color:var(--dim);margin-top:6px" id="poll-debug"></p>'+
+'<p style="font-size:12px;color:var(--dim);margin-bottom:16px">Escaneie o QR code ou copie a chave PIX</p>'+
+pixHtml+
+'<div id="payment-status-box" style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:12px;margin-bottom:10px">'+
+'<p style="font-size:18px;margin-bottom:6px">⏳</p>'+
+'<p style="font-size:12px;font-weight:600;color:var(--bright);margin-bottom:4px">Aguardando pagamento...</p>'+
+'<p style="font-size:10px;color:var(--dim);line-height:1.5">Verificamos a cada <strong style="color:var(--bright)">10 segundos</strong>. PIX confirma em até 30s.</p>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:4px" id="poll-debug"></p>'+
 '</div>'+
-'<button class="btn btn-s btn-sm" onclick="verificarPagamento()" id="btn-verify" style="width:100%;padding:14px;font-weight:700;margin-bottom:6px">🔍 Verificar Agora</button>'+
-'<button class="btn btn-s btn-sm" onclick="confirmarViaWhatsApp()" style="width:100%;padding:10px;font-size:11px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.15);color:var(--green)">💬 Já paguei — Confirmar via WhatsApp</button>'+
-'<p style="font-size:10px;color:var(--dim);margin-top:10px">Dúvidas? <a href="https://wa.me/5538998760323" target="_blank">Fale no WhatsApp</a></p>'+
+'<button class="btn btn-s btn-sm" onclick="verificarPagamento()" id="btn-verify" style="width:100%;padding:12px;font-weight:700;margin-bottom:4px">🔍 Verificar Agora</button>'+
+'<button class="btn btn-s btn-sm" onclick="confirmarViaWhatsApp()" style="width:100%;padding:8px;font-size:10px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.15);color:var(--green)">💬 Já paguei — Confirmar via WhatsApp</button>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:8px">Dúvidas? <a href="https://wa.me/5538998760323" target="_blank">Fale no WhatsApp</a></p>'+
 '</div>';
 
-// Inicia verificação automática a cada 10 segundos
+// Polling automático
 if(window._pollInterval)clearInterval(window._pollInterval);
 window._pollInterval=setInterval(verificarPagamento,10000);
-// Primeira verificação após 5s
 setTimeout(verificarPagamento,5000);
+
+}else{
+area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:13px;color:var(--error)">❌ '+(cobJson.erro||'Erro ao gerar cobrança')+'</p><button class="btn btn-s btn-sm" onclick="startPayment()" style="margin-top:10px">Tentar Novamente</button></div>';
+}
+}catch(e){
+area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:13px;color:var(--error)">❌ Erro de conexão ao gerar cobrança</p><button class="btn btn-s btn-sm" onclick="startPayment()" style="margin-top:10px">Tentar Novamente</button></div>';
+}
 }
 
 function confirmarViaWhatsApp(){
@@ -710,8 +742,7 @@ let msg='';
 // Chama nossa API interna (serverless function) que consulta o Asaas no backend
 // Sem CORS, sem token exposto no frontend
 try{
-const since=localStorage.getItem('asaas_session_start')||'0';
-const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(paymentId)+'&since='+since);
+const res=await fetch('/api/verificar-pagamento?id='+encodeURIComponent(paymentId));
 if(res.ok){
 const json=await res.json();
 pago=json.pago;
@@ -750,10 +781,10 @@ statusBox.innerHTML='<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
 
 // Verificação silenciosa ao carregar a página — não confia em cache
 async function verificarPagamentoAoCarregar(nomeSlug){
-	var paymentId = localStorage.getItem("asaas_payment_id") || PAYMENT_ID;
-	var since = localStorage.getItem("asaas_session_start") || "0";
+	var paymentId = localStorage.getItem("asaas_payment_id");
+	if (!paymentId) return; // sem cobrança ativa, não faz nada
 	try {
-		var res = await fetch("/api/verificar-pagamento?link=" + encodeURIComponent(paymentId) + "&since=" + since);
+		var res = await fetch("/api/verificar-pagamento?id=" + encodeURIComponent(paymentId));
 		if (res.ok) {
 			var json = await res.json();
 			if (json.pago) {
@@ -776,7 +807,7 @@ const linkId=localStorage.getItem('payment_link_id_'+nome)||'';
 const area=document.getElementById('payment-area');
 area.innerHTML='<p style="font-size:11px;color:var(--dim);text-align:center">🔍 Verificando pagamento...</p>';
 try{
-const res=await fetch('/api/verificar-pagamento?link='+encodeURIComponent(linkId));
+const res=await fetch('/api/verificar-pagamento?id='+encodeURIComponent(linkId));
 if(res.ok){
 const json=await res.json();
 if(json.pago){

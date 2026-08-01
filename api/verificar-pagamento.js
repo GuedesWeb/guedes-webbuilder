@@ -1,31 +1,32 @@
 /**
  * Vercel Serverless Function — Verificar Pagamento Asaas
  *
- * Endpoint: GET /api/verificar-pagamento?link=PAYMENT_LINK_ID
+ * Endpoints:
+ *   GET /api/verificar-pagamento?id=pay_XXX   → consulta cobrança específica
+ *   GET /api/verificar-pagamento?link=XXX      → consulta link de pagamento (legado)
  *
- * Intermediário seguro entre o frontend e a API do Asaas.
- * A API do Asaas bloqueia CORS do navegador → esta function resolve.
  * O token fica em variável de ambiente (NUNCA no frontend).
  *
  * Variável de ambiente necessária:
  *   ASAAS_TOKEN — token de acesso da API Asaas
  */
 
-const ASAAS_API_BASE = 'https://api.asaas.com/v3';
+var ASAAS_API_BASE = 'https://api.asaas.com/v3';
+
+// Status que significam "pagamento efetivamente recebido"
+var STATUS_PAGO = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
 
 module.exports = async function handler(req, res) {
-  // CORS — permite chamadas do frontend
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight CORS
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
     return res.end();
   }
 
-  // Apenas GET
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json');
@@ -33,87 +34,100 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Extrai os parâmetros da query string
-    const url = new URL(req.url, 'http://localhost');
-    const paymentLinkId = url.searchParams.get('link');
-    const sinceTs = parseInt(url.searchParams.get('since') || '0', 10);
+    var url = new URL(req.url, 'http://localhost');
+    var paymentId = url.searchParams.get('id');
+    var paymentLinkId = url.searchParams.get('link');
 
-    // Validação: apenas caracteres seguros
-    if (!paymentLinkId || !/^[a-zA-Z0-9_-]+$/.test(paymentLinkId)) {
-      res.statusCode = 400;
-      res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ erro: 'Parâmetro "link" inválido ou ausente.' }));
-    }
-
-    // Token do Asaas — definido como variável de ambiente no painel da Vercel
-    const token = process.env.ASAAS_TOKEN;
+    var token = process.env.ASAAS_TOKEN;
     if (!token) {
-      console.error('[verificar-pagamento] ASAAS_TOKEN não configurado.');
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ pago: false, erro: 'Configuração do servidor ausente.' }));
     }
 
-    // Busca TODOS os pagamentos do link (sem filtrar por status na query)
-    // A filtragem por status é feita no nosso código para garantir segurança
-    // Motivo: a API do Asaas pode não suportar múltiplos valores no param "status"
-    const apiUrl = ASAAS_API_BASE + '/payments?paymentLink=' + encodeURIComponent(paymentLinkId) + '&limit=20';
-    console.log('[verificar-pagamento] Consultando Asaas...');
+    // --- Modo 1: Cobrança individual (recomendado) ---
+    if (paymentId) {
+      if (!/^[a-zA-Z0-9_]+$/.test(paymentId)) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ erro: 'Parâmetro "id" inválido.' }));
+      }
 
-    const apiRes = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'access_token': token,
-        'Content-Type': 'application/json',
-      },
-    });
+      var apiUrl = ASAAS_API_BASE + '/payments/' + encodeURIComponent(paymentId);
+      console.log('[verificar-pagamento] Consultando cobrança: ' + paymentId);
 
-    if (!apiRes.ok) {
-      const errText = await apiRes.text();
-      console.error('[verificar-pagamento] Asaas HTTP ' + apiRes.status + ': ' + errText);
+      var apiRes = await fetch(apiUrl, {
+        headers: { 'access_token': token, 'Content-Type': 'application/json' },
+      });
+
+      if (!apiRes.ok) {
+        console.error('[verificar-pagamento] Asaas HTTP ' + apiRes.status);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ pago: false, erro: 'Erro ao consultar cobrança.' }));
+      }
+
+      var payment = await apiRes.json();
+      var pago = STATUS_PAGO.indexOf(payment.status) >= 0;
+
+      console.log('[verificar-pagamento] Cobrança ' + paymentId + ': ' + payment.status + (pago ? ' (PAGO)' : ''));
+
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({
-        pago: false,
-        erro: 'API Asaas retornou HTTP ' + apiRes.status,
+        pago: pago,
+        status: payment.status,
+        valor: payment.value,
+        forma: payment.billingType,
+        data: payment.paymentDate || payment.confirmedDate || payment.dateCreated,
       }));
     }
 
-    const json = await apiRes.json();
-    const todosPagamentos = json.data || [];
-
-    // Filtra APENAS pagamentos efetivamente recebidos/confirmados
-    // E apenas pagamentos criados DEPOIS que o cliente iniciou a sessão (parâmetro since)
-    // Isso evita que pagamentos antigos do mesmo link fixo sejam detectados
-    const statusValidos = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
-    const pagamentos = todosPagamentos.filter(function (p) {
-      if (statusValidos.indexOf(p.status) < 0) return false;
-      if (sinceTs > 0 && p.dateCreated) {
-        var dataPagamento = new Date(p.dateCreated).getTime();
-        if (dataPagamento <= sinceTs) return false;
+    // --- Modo 2: Link de pagamento (legado) ---
+    if (paymentLinkId) {
+      if (!/^[a-zA-Z0-9_-]+$/.test(paymentLinkId)) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ erro: 'Parâmetro "link" inválido.' }));
       }
-      return true;
-    });
-    const pago = pagamentos.length > 0;
 
-    console.log('[verificar-pagamento] Link ' + paymentLinkId + ': ' + todosPagamentos.length + ' total, ' + pagamentos.length + ' confirmados (since: ' + new Date(sinceTs).toISOString() + ')');
+      var sinceTs = parseInt(url.searchParams.get('since') || '0', 10);
+      var linkApiUrl = ASAAS_API_BASE + '/payments?paymentLink=' + encodeURIComponent(paymentLinkId) + '&limit=20';
+      console.log('[verificar-pagamento] Consultando link: ' + paymentLinkId);
 
-    res.statusCode = 200;
+      var linkRes = await fetch(linkApiUrl, {
+        headers: { 'access_token': token, 'Content-Type': 'application/json' },
+      });
+
+      if (!linkRes.ok) {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ pago: false, erro: 'Erro ao consultar link.' }));
+      }
+
+      var linkJson = await linkRes.json();
+      var todos = linkJson.data || [];
+      var pagamentos = todos.filter(function (p) {
+        if (STATUS_PAGO.indexOf(p.status) < 0) return false;
+        if (sinceTs > 0 && p.dateCreated) {
+          if (new Date(p.dateCreated).getTime() <= sinceTs) return false;
+        }
+        return true;
+      });
+
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
+        pago: pagamentos.length > 0,
+        total: pagamentos.length,
+        status: pagamentos.length > 0 ? pagamentos[0].status : null,
+      }));
+    }
+
+    // Nenhum parâmetro
+    res.statusCode = 400;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({
-      pago: pago,
-      total: pagamentos.length,
-      todosStatus: todosPagamentos.map(function (p) { return p.status; }),
-      pagamentos: pagamentos.map(function (p) {
-        return {
-          id: p.id,
-          valor: p.value,
-          status: p.status,
-          data: p.paymentDate || p.confirmedDate || p.dateCreated,
-          forma: p.billingType,
-        };
-      }),
-    }));
+    return res.end(JSON.stringify({ erro: 'Informe "id" ou "link".' }));
   } catch (err) {
     console.error('[verificar-pagamento] Erro interno:', err.message);
     res.statusCode = 200;
