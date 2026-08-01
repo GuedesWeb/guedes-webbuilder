@@ -78,21 +78,22 @@ module.exports = async function handler(req, res) {
     if (!customerRes.ok) {
       var errText = await customerRes.text();
       console.error('[criar-cobranca] Erro ao criar cliente: ' + errText);
+      var errMsg = errText;
+      try { var errJson = JSON.parse(errText); errMsg = (errJson.errors && errJson.errors[0] && errJson.errors[0].description) || errText; } catch(e) {}
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ erro: 'Erro ao criar cliente no Asaas.' }));
+      return res.end(JSON.stringify({ erro: 'Erro ao criar cliente: ' + errMsg }));
     }
 
     var customer = await customerRes.json();
     console.log('[criar-cobranca] Cliente criado: ' + customer.id);
 
     // 2. Cria a cobrança PIX
-    // Data de vencimento: hoje + 1 dia
-    var amanha = new Date();
-    amanha.setDate(amanha.getDate() + 1);
-    var dueDate = amanha.getFullYear() + '-' +
-      String(amanha.getMonth() + 1).padStart(2, '0') + '-' +
-      String(amanha.getDate()).padStart(2, '0');
+    // Data de vencimento: hoje (PIX deve ser mesma data)
+    var hoje = new Date();
+    var dueDate = hoje.getFullYear() + '-' +
+      String(hoje.getMonth() + 1).padStart(2, '0') + '-' +
+      String(hoje.getDate()).padStart(2, '0');
 
     console.log('[criar-cobranca] Criando cobrança PIX para ' + customer.id);
 
@@ -115,9 +116,11 @@ module.exports = async function handler(req, res) {
     if (!paymentRes.ok) {
       var payErrText = await paymentRes.text();
       console.error('[criar-cobranca] Erro ao criar cobrança: ' + payErrText);
+      var payErrMsg = payErrText;
+      try { var payErrJson = JSON.parse(payErrText); payErrMsg = (payErrJson.errors && payErrJson.errors[0] && payErrJson.errors[0].description) || payErrText; } catch(e) {}
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ erro: 'Erro ao criar cobrança no Asaas.' }));
+      return res.end(JSON.stringify({ erro: 'Erro ao criar cobrança: ' + payErrMsg }));
     }
 
     var payment = await paymentRes.json();
