@@ -44,6 +44,9 @@ module.exports = async function handler(req, res) {
     }
 
     var nome = (parsed.nome || '').trim();
+    var email = (parsed.email || '').trim();
+    var studio = (parsed.studio || nome).trim();
+
     if (!nome || nome.length < 2) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'application/json');
@@ -59,17 +62,17 @@ module.exports = async function handler(req, res) {
     }
 
     // 1. Cria o cliente no Asaas
-    console.log('[criar-cobranca] Criando cliente: ' + nome);
+    console.log('[criar-cobranca] Criando cliente: ' + nome + (email ? ' <' + email + '>' : ''));
+    var customerBody = { name: nome, notificationDisabled: true };
+    if (email) customerBody.email = email;
+
     var customerRes = await fetch(ASAAS_API_BASE + '/customers', {
       method: 'POST',
       headers: {
         'access_token': token,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        name: nome,
-        notificationDisabled: true,
-      }),
+      body: JSON.stringify(customerBody),
     });
 
     if (!customerRes.ok) {
@@ -104,7 +107,7 @@ module.exports = async function handler(req, res) {
         billingType: 'PIX',
         value: 300,
         dueDate: dueDate,
-        description: 'Desenvolvimento de site - ' + nome,
+        description: 'Site - ' + studio,
         postalService: false,
       }),
     });

@@ -635,35 +635,81 @@ h+='<div style="flex:1"><p style="font-size:13px;font-weight:600;color:var(--bri
 h+='<span style="font-size:18px">→</span>';
 h+='</div></a>';
 
-	// Sempre mostra o botao de pagamento inicialmente
-	// A verificação real é feita via API (nunca confia só no localStorage)
-	h+='<div id="boasvindas-pay-section">';
-	h+='<button class="btn btn-p" onclick="startPayment()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
-	h+='<div id="payment-area" style="margin-top:12px"></div>';
+	// Formulário de cadastro antes do pagamento
+	h+='<div id="boasvindas-pay-section" style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;margin-bottom:10px">';
+	h+='<p style="font-size:13px;font-weight:600;color:var(--bright);margin-bottom:4px">📋 Seus dados</p>';
+	h+='<p style="font-size:10px;color:var(--dim);margin-bottom:14px">Preencha para continuar com o pagamento</p>';
+	h+='<input class="fi" id="cad-nome" placeholder="Seu nome completo" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:12px">';
+	h+='<input class="fi" id="cad-studio" placeholder="Nome do estúdio / negócio" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:12px">';
+	h+='<input class="fi" type="email" id="cad-email" placeholder="Seu melhor email" style="width:100%;margin-bottom:14px;padding:10px 12px;font-size:12px">';
+	h+='<button class="btn btn-p" onclick="iniciarPagamento()" id="btn-start-pay" style="width:100%;padding:16px;font-size:15px">💳 Pagar R$300 e Começar →</button>';
+	h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:6px" id="cad-msg"></p>';
 	h+='</div>';
+	h+='<div id="payment-area" style="margin-top:12px"></div>';
 	h+='<p style="font-size:10px;color:var(--dim);text-align:center;margin-top:8px">Após o pagamento, você será guiado por 4 etapas simples</p>';
 
 
 	// Verifica pagamento via API em segundo plano (sem depender de cache)
 	setTimeout(function(){ verificarPagamentoAoCarregar(nomeSlug); }, 500);
 
-
 	return h;
 }
 
 const PAYMENT_LINK='https://www.asaas.com/c/4y3wfuhg6v76a6mt';
 const PAYMENT_ID='4y3wfuhg6v76a6mt'; // ID do link de pagamento
+const WEBHOOK_URL='https://n8n.guedesia.com.br/webhook/4285d0e7-18f2-4f07-8412-4ea931443eb3';
 
 function slugify(s){return(s||'cliente').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')||'cliente';}
 
-async function startPayment(){
-const nomeRaw=edits.landing.textos['logo-text']||'Cliente';
-const nomeSlug=slugify(nomeRaw);
-const area=document.getElementById('payment-area');
-const btn=document.getElementById('btn-start-pay');
-btn.style.display='none';
+
+// Coleta dados do formulário, envia para webhook e inicia pagamento
+async function iniciarPagamento(){
+var nome = document.getElementById('cad-nome').value.trim();
+var studio = document.getElementById('cad-studio').value.trim();
+var email = document.getElementById('cad-email').value.trim();
+var msg = document.getElementById('cad-msg');
+var btn = document.getElementById('btn-start-pay');
+
+if (!nome || nome.length < 2) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe seu nome completo.</span>'; return; }
+if (!studio || studio.length < 2) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe o nome do estúdio.</span>'; return; }
+if (!email || !email.includes('@')) { if(msg) msg.innerHTML = '<span style=\"color:var(--error)\">⚠️ Informe um email válido.</span>'; return; }
+
+if (btn) { btn.textContent = '⏳ Enviando...'; btn.disabled = true; }
+if (msg) msg.innerHTML = '<span style=\"color:var(--dim)\">⏳ Validando seus dados...</span>';
+
+// Salva os dados para uso no setup e na cobrança
+edits.landing.textos['logo-text'] = studio;
+localStorage.setItem('cad_nome', nome);
+localStorage.setItem('cad_studio', studio);
+localStorage.setItem('cad_email', email);
+
+// Envia para o webhook do n8n (não bloqueia o fluxo se falhar)
+try {
+await fetch(WEBHOOK_URL, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ nome: nome, studio: studio, email: email, data: new Date().toISOString() })
+});
+if (msg) msg.innerHTML = '<span style=\"color:var(--green)\">✅ Dados validados! Gerando cobrança...</span>';
+} catch(e) {
+if (msg) msg.innerHTML = '<span style=\"color:var(--dim)\">⏳ Gerando cobrança...</span>';
+}
+
+// Prossegue para pagamento com os dados coletados
+startPayment(nome, studio, email);
+}
+
+async function startPayment(nomeCliente, nomeStudio, emailCliente){
+var nomeCliente = nomeCliente || localStorage.getItem('cad_nome') || 'Cliente';
+var nomeStudio = nomeStudio || localStorage.getItem('cad_studio') || edits.landing.textos['logo-text'] || 'Cliente';
+var emailCliente = emailCliente || localStorage.getItem('cad_email') || '';
+var nomeSlug=slugify(nomeStudio);
+var area=document.getElementById('payment-area');
+var btn=document.getElementById('btn-start-pay');
+if(btn)btn.style.display='none';
 
 localStorage.setItem('asaas_client_slug',nomeSlug);
+edits.landing.textos['logo-text']=nomeStudio;
 
 // Mostra loading enquanto cria cobrança
 area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:14px;color:var(--dim)">⏳ Gerando cobrança PIX...</p></div>';
@@ -673,7 +719,7 @@ try{
 var cobRes=await fetch('/api/criar-cobranca',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({nome:nomeRaw})
+body:JSON.stringify({nome:nomeCliente,studio:nomeStudio,email:emailCliente})
 });
 var cobJson=await cobRes.json();
 
