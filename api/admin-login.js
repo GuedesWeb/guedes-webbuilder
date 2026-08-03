@@ -1,31 +1,48 @@
 /**
- * POST /api/admin-login
- * Autentica o administrador e retorna um token de sessão.
+ * POST /api/admin-login — autentica e retorna token JWT
+ * O token é auto-contido (assinado com HMAC) — funciona sem estado entre funções.
  *
  * Variáveis de ambiente:
- *   ADMIN_EMAIL    — email do admin
- *   ADMIN_PASSWORD — senha do admin
+ *   ADMIN_EMAIL / ADMIN_PASSWORD — credenciais
  *
  * Body: { "email": "...", "password": "..." }
- * Retorna: { "token": "...", "expires": "..." }
+ * Retorna: { "token": "..." }
  */
 
 var crypto = require('crypto');
 
-function gerarToken() {
-  return 'adm_' + crypto.randomBytes(32).toString('hex');
+// Segredo para assinar tokens (derivado da senha admin + salt fixo)
+function getSecret() {
+  return crypto.createHash('sha256').update('guedes-wb-' + (process.env.ADMIN_PASSWORD || '')).digest();
 }
 
-// Armazena tokens válidos em memória (reseta a cada deploy — admin faz login de novo)
-var tokensValidos = {};
+// Cria token: base64(json).assinatura
+function criarToken(email) {
+  var payload = {
+    email: email,
+    exp: Date.now() + (8 * 60 * 60 * 1000), // 8 horas
+  };
+  var payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64');
+  var sig = crypto.createHmac('sha256', getSecret()).update(payloadB64).digest('base64');
+  return payloadB64 + '.' + sig;
+}
 
-// Limpa tokens expirados a cada 5 minutos
-setInterval(function () {
-  var agora = Date.now();
-  Object.keys(tokensValidos).forEach(function (t) {
-    if (tokensValidos[t] < agora) delete tokensValidos[t];
-  });
-}, 300000);
+// Valida token — retorna true se válido
+function validarToken(token) {
+  try {
+    var parts = token.split('.');
+    if (parts.length !== 2) return false;
+    var payloadB64 = parts[0];
+    var sig = parts[1];
+    var expectedSig = crypto.createHmac('sha256', getSecret()).update(payloadB64).digest('base64');
+    if (sig !== expectedSig) return false;
+    var payload = JSON.parse(Buffer.from(payloadB64, 'base64').toString('utf8'));
+    if (payload.exp < Date.now()) return false;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,7 +67,7 @@ module.exports = async function handler(req, res) {
     if (!adminEmail || !adminPass) {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ erro: 'Credenciais de admin não configuradas no servidor.' }));
+      return res.end(JSON.stringify({ erro: 'Credenciais de admin não configuradas. Configure ADMIN_EMAIL e ADMIN_PASSWORD na Vercel.' }));
     }
 
     if (email !== adminEmail || password !== adminPass) {
@@ -59,12 +76,10 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ erro: 'Email ou senha incorretos.' }));
     }
 
-    var token = gerarToken();
-    tokensValidos[token] = Date.now() + (8 * 60 * 60 * 1000); // 8 horas
-
+    var token = criarToken(email);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ token: token, expiresIn: '8h' }));
+    return res.end(JSON.stringify({ token: token }));
   } catch (err) {
     console.error('[admin-login] Erro:', err.message);
     res.statusCode = 500;
@@ -73,7 +88,5 @@ module.exports = async function handler(req, res) {
   }
 };
 
-// Exporta para uso em outros endpoints (verificar token)
-module.exports.validarToken = function (token) {
-  return token && tokensValidos[token] && tokensValidos[token] > Date.now();
-};
+// Exporta para admin-leads.js poder validar
+module.exports.validarToken = validarToken;
