@@ -502,7 +502,7 @@ function prevStep(){
 // ==================== RENDER STEP ====================
 function renderStep(){
 const pc=document.getElementById('panelContent');const s=STEPS[currentStep];
-let h=`<div class="step-title">${s.icon} Etapa ${currentStep+1}: ${s.label}</div>`;
+let h=s.id==='boasvindas'?'':'<div class="step-title">'+s.icon+' Etapa '+(currentStep+1)+': '+s.label+'</div>';
 switch(s.id){
 case 'boasvindas':h+=renderBoasvindas();break;
 case 'setup':h+=renderSetup();break;
@@ -585,9 +585,9 @@ return h;
 function renderBoasvindas(){
 const nomeSlug=slugify(edits.landing.textos['logo-text']||'cliente');
 let h='';
-h+='<div style="text-align:center;margin-bottom:16px;position:relative">';
-h+='<img src="assets/SELO-DOM-1.webp" alt="Selo de Qualidade" style="position:absolute;top:-28px;left:-22px;width:95px;height:95px;object-fit:contain;z-index:5">';
-h+='<span style="font-size:40px">👋</span></div>';
+h+='<div style="text-align:center;margin-bottom:20px">';
+h+='<img src="assets/Group 8.svg" alt="Guedes" style="max-width:220px;height:auto;margin-bottom:8px">';
+h+='</div>';
 h+='<div class="step-title" style="text-align:center;font-size:22px">Seu site profissional em minutos</div>';
 h+='<p class="step-desc" style="text-align:center">Desenvolva você mesmo seu site com um template validado, adaptado à identidade do seu negócio.</p>';
 
