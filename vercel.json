@@ -11,6 +11,18 @@
     "api/criar-cobranca.js": {
       "memory": 256,
       "maxDuration": 15
+    },
+    "api/salvar-lead.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/admin-login.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/admin-leads.js": {
+      "memory": 256,
+      "maxDuration": 10
     }
   }
 }

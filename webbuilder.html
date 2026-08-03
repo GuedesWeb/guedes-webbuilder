@@ -699,6 +699,15 @@ if (msg) msg.innerHTML = '<span style=\"color:var(--green)\">✅ Dados validados
 if (msg) msg.innerHTML = '<span style=\"color:var(--dim)\">⏳ Gerando cobrança...</span>';
 }
 
+// Salva lead no painel admin (paralelo, nao bloqueia)
+try {
+fetch('/api/salvar-lead', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({ nome: nome, studio: studio, email: email, cpfCnpj: cpfCnpj })
+});
+} catch(e) {}
+
 // Prossegue para pagamento com os dados coletados
 startPayment(nome, studio, email, cpfCnpj);
 }
