@@ -1,4 +1,8 @@
 {
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/webbuilder.html" }
+  ],
   "functions": {
     "api/verificar-pagamento.js": {
       "memory": 256,
