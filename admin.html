@@ -1,149 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>Painel — Guedes WebBuilder</title>
-<style>
-:root {
-  --bg: #06060c;
-  --surface: #0d0d18;
-  --surface2: #111122;
-  --border: #1a1a30;
-  --text: #b0b5cc;
-  --bright: #f0f0fa;
-  --dim: #5a5f78;
-  --brand: #2942F2;
-  --brand-dim: rgba(41,66,242,.12);
-  --brand-hover: #3b52f5;
-  --green: #1ec490;
-  --green-bg: rgba(30,196,144,.10);
-  --orange: #f59e0b;
-  --orange-bg: rgba(245,158,11,.10);
-  --red: #ef4444;
-  --r: 10px;
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
-/* ── LOGIN ── */
-.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:44px 36px;width:100%;max-width:420px;box-shadow:0 0 0 1px rgba(255,255,255,.02),0 20px 60px rgba(0,0,0,.4)}
-.login-card .logo-wrap{text-align:center;margin-bottom:32px}
-.login-card .logo-wrap img{max-width:180px;height:auto}
-.login-card h2{font-size:18px;font-weight:600;color:var(--bright);text-align:center;letter-spacing:-.01em;margin-bottom:6px}
-.login-card .sub{font-size:13px;color:var(--dim);text-align:center;margin-bottom:28px;line-height:1.5}
-.login-card label{display:block;font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.login-card input{width:100%;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-size:14px;margin-bottom:16px;transition:border .2s;font-family:var(--font)}
-.login-card input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-dim)}
-.login-card button{width:100%;padding:14px;background:var(--brand);border:none;border-radius:var(--r);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;font-family:var(--font);letter-spacing:.01em}
-.login-card button:hover{background:var(--brand-hover)}
-.login-err{color:var(--red);font-size:12px;text-align:center;margin-top:14px;min-height:18px}
-
-/* ── DASHBOARD ── */
-.dash{max-width:1280px;margin:0 auto;padding:32px 24px;display:none}
-.dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.dash-top .brand{display:flex;align-items:center;gap:14px}
-.dash-top .brand img{height:26px;width:auto}
-.dash-top .brand h1{font-size:17px;font-weight:600;color:var(--bright);letter-spacing:-.01em}
-.dash-top .brand span{font-size:11px;color:var(--dim);background:var(--surface2);padding:3px 10px;border-radius:20px;border:1px solid var(--border)}
-.dash-top button{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:var(--r);font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--font)}
-.dash-top button:hover{background:var(--border);color:var(--bright)}
-
-/* ── STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;position:relative;overflow:hidden}
-.stat-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
-.stat-card.total::after{background:var(--brand)}
-.stat-card.pago::after{background:var(--green)}
-.stat-card.pendente::after{background:var(--orange)}
-.stat-card .val{font-size:36px;font-weight:700;color:var(--bright);letter-spacing:-.02em;line-height:1}
-.stat-card .lbl{font-size:12px;color:var(--dim);margin-top:6px;font-weight:500}
-
-/* ── TOOLBAR ── */
-.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.toolbar h2{font-size:14px;font-weight:600;color:var(--bright);letter-spacing:-.01em}
-.toolbar button{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:var(--r);font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--font)}
-.toolbar button:hover{background:var(--brand);border-color:var(--brand);color:#fff}
-
-/* ── TABLE ── */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.tbl{width:100%;border-collapse:collapse}
-.tbl thead th{text-align:left;padding:13px 18px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);font-weight:600;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}
-.tbl tbody td{padding:14px 18px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
-.tbl tbody tr:hover{background:rgba(255,255,255,.015)}
-.tbl .nome{font-weight:600;color:var(--bright)}
-.tbl .studio{font-weight:500;color:var(--bright)}
-.tbl .meta{font-size:11px;color:var(--dim)}
-.tbl .pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.01em}
-.tbl .pill.ok{background:var(--green-bg);color:var(--green)}
-.tbl .pill.wait{background:var(--orange-bg);color:var(--orange)}
-
-.empty-state{text-align:center;padding:60px 20px;color:var(--dim)}
-.empty-state .icon{font-size:40px;margin-bottom:12px;opacity:.4}
-.empty-state p{font-size:13px;line-height:1.6}
-</style>
-</head>
-<body>
-
-<!-- LOGIN -->
-<div id="login-screen" class="login-wrap">
-<div class="login-card">
-<div class="logo-wrap"><img src="assets/Group 8.svg" alt="Guedes"></div>
-<h2>Acessar painel</h2>
-<p class="sub">Área restrita para gerenciamento de projetos</p>
-<label>Email</label>
-<input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
-<label>Senha</label>
-<input type="password" id="login-pass" placeholder="Sua senha" onkeydown="if(event.key==='Enter')login()" autocomplete="current-password">
-<button onclick="login()">Entrar</button>
-<p class="login-err" id="login-erro"></p>
-</div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dash-screen" class="dash">
-<header class="dash-top">
-<div class="brand">
-<img src="assets/Group 8.svg" alt="Guedes">
-<h1>Painel</h1>
-<span>Admin</span>
-</div>
-<button onclick="logout()">Sair</button>
-</header>
-
-<div class="stats-grid" id="stats"></div>
-
-<div class="toolbar">
-<h2>Projetos recentes</h2>
-<button onclick="carregarLeads()">Atualizar</button>
-</div>
-
-<div class="table-wrap" id="tabela-container">
-<div class="empty-state"><div class="icon">—</div><p>Carregando dados...</p></div>
-</div>
-</div>
-
-<script>
-var token = localStorage.getItem('admin_token');
-if (token) { verificarToken(); }
-
-async function login() {
-var email = document.getElementById('login-email').value.trim();
-var pass = document.getElementById('login-pass').value.trim();
-var erro = document.getElementById('login-erro');
-erro.textContent = '';
-if (!email || !pass) { erro.textContent = 'Preencha todos os campos.'; return; }
-
-try {
-var res = await fetch('/api/admin-login', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ email: email, password: pass })
-});
 var json = await res.json();
+
+	// Se a API retornou erro (ex: KV nao configurado)
+	if (json.erro) {
+	container.innerHTML = '<div class="empty-state"><div class="icon">—</div><p>' + esc(json.erro) + '<br><span style="font-size:11px">Verifique se KV_REST_API_URL e KV_REST_API_TOKEN estao configurados na Vercel.</span></p></div>';
+	document.getElementById('stats').innerHTML =
+	'<div class="stat-card total"><div class="val">—</div><div class="lbl">Total de projetos</div></div>' +
+	'<div class="stat-card pago"><div class="val">—</div><div class="lbl">Confirmados</div></div>' +
+	'<div class="stat-card pendente"><div class="val">—</div><div class="lbl">Aguardando pagamento</div></div>';
+	return;
+	}
+
+	var total = json.total || 0;
+	var pagos = json.pagos || 0;
+	var pendentes = json.pendentes || 0;
+
+	document.getElementById('stats').innerHTML =
+	'<div class="stat-card total"><div class="val">' + total + '</div><div class="lbl">Total de projetos</div></div>' +
+	'<div class="stat-card pago"><div class="val">' + pagos + '</div><div class="lbl">Confirmados</div></div>' +
+	'<div class="stat-card pendente"><div class="val">' + pendentes + '</div><div class="lbl">Aguardando pagamento</div></div>';var json = await res.json();
 if (res.ok && json.token) {
 token = json.token;
 localStorage.setItem('admin_token', token);
