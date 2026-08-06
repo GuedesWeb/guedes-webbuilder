@@ -187,6 +187,8 @@ const STEPS=[
 let currentPage='landing',currentStep=0,setupSubStep=0,setupCache={};
 let templateData={landing:null,planos:null};
 let edits={landing:{cores:{},imagens:{},textos:{},links:{}},planos:{cores:{},imagens:{},textos:{},links:{}}};
+let customCode={head:'',bodyStart:'',footer:''};
+let isAdmin=false;
 
 const colorDefs=[
 {key:'cor-fundo',label:'Fundo da página'},
@@ -419,19 +421,24 @@ if(v.length<=7)return'('+v.substring(0,2)+') '+v.substring(2);
 return'('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7,11);
 }
 
+// ==================== ADMIN CHECK ====================
+async function checkAdminMode(){
+var t=localStorage.getItem('admin_token');
+if(!t)return;
+try{var r=await fetch('/api/admin-leads',{headers:{'Authorization':'Bearer '+t}});if(r.ok)isAdmin=true;}catch(e){}
+}
+
 // ==================== INIT ====================
 function init(){
-// Token Vercel — configure seu token manualmente ou via variável de ambiente
-// Para deploy automático, gere um token em: https://vercel.com/account/tokens
-// Token Asaas — agora gerenciado pela serverless function (api/verificar-pagamento.js)
-// Não armazenamos mais o token no frontend por segurança.
 if(typeof TEMPLATES==='undefined'){alert('templates-data.js não encontrado!');return}
 templateData.landing=TEMPLATES.get('landing');templateData.planos=TEMPLATES.get('planos');
 if(!templateData.landing||!templateData.planos){alert('Erro nos templates!');return}
 edits.landing.cores=JSON.parse(JSON.stringify(defaults.landing));
 edits.planos.cores=JSON.parse(JSON.stringify(defaults.planos));
 parseFields('landing');parseFields('planos');
-buildStepsBar();renderStep();updatePreview();
+buildStepsBar();
+checkAdminMode().then(function(){if(isAdmin)renderStep();});
+renderStep();updatePreview();
 }
 
 function parseFields(page){
@@ -588,6 +595,23 @@ let h='';
 h+='<div style="text-align:center;margin-bottom:20px">';
 h+='<img src="assets/Group 8.svg" alt="Guedes" style="max-width:220px;height:auto;margin-bottom:8px">';
 h+='</div>';
+
+// ── MODO ADMIN ──
+if(isAdmin){
+h+='<div style="background:rgba(41,66,242,.08);border:1px solid rgba(41,66,242,.2);border-radius:var(--r-card);padding:20px;margin-bottom:16px;text-align:center">';
+h+='<span style="background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:10px">🔑 MODO ADMIN</span>';
+h+='<p style="font-size:14px;font-weight:700;color:var(--bright);margin-top:12px;margin-bottom:4px">Criar site para cliente</p>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:14px;line-height:1.5">Configure sem pagamento. Ao final, copie o HTML ou publique.</p>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+h+='<input class="fi" id="cad-nome" placeholder="Nome do cliente">';
+h+='<input class="fi" id="cad-studio" placeholder="Nome do estúdio">';
+h+='</div>';
+h+='<input class="fi" type="email" id="cad-email" placeholder="Email do cliente" style="margin-bottom:10px">';
+h+='<button class="btn btn-p" onclick="adminComecar()" style="width:100%;padding:14px;font-size:14px">🚀 Começar a Configurar →</button>';
+h+='</div>';
+return h;
+}
+
 h+='<div class="step-title" style="text-align:center;font-size:22px">Seu site profissional em minutos</div>';
 h+='<p class="step-desc" style="text-align:center">Desenvolva você mesmo seu site com um template validado, adaptado à identidade do seu negócio.</p>';
 
@@ -781,6 +805,17 @@ area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:
 }catch(e){
 area.innerHTML='<div style="text-align:center;padding:20px"><p style="font-size:13px;color:var(--error)">❌ Erro de conexão ao gerar cobrança</p><button class="btn btn-s btn-sm" onclick="startPayment()" style="margin-top:10px">Tentar Novamente</button></div>';
 }
+}
+
+function adminComecar(){
+var n=document.getElementById('cad-nome').value.trim();
+var s=document.getElementById('cad-studio').value.trim();
+var e=document.getElementById('cad-email').value.trim();
+if(!n||!s||!e){alert('Preencha nome, estúdio e email.');return;}
+localStorage.setItem('cad_nome',n);localStorage.setItem('cad_studio',s);localStorage.setItem('cad_email',e);
+localStorage.setItem('pagamento_ok_admin','true');
+edits.landing.textos['logo-text']=s;
+goToStep(1);
 }
 
 function confirmarViaWhatsApp(){
@@ -1460,6 +1495,27 @@ h+='<div style="font-size:11px;color:var(--dim);line-height:1.7;margin-top:12px"
 h+=`<button class="btn btn-p" id="pub-btn" style="width:100%;margin-top:20px;padding:14px;font-size:14px" onclick="publishToVercel()">🚀 Publicar Grátis</button>`;
 h+='</div>';
 
+// ⚙️ Código Customizado
+h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:16px;margin-bottom:16px">';
+h+='<p style="font-weight:700;font-size:12px;color:var(--bright);margin-bottom:4px">⚙️ Código Customizado</p>';
+h+='<p style="font-size:10px;color:var(--dim);margin-bottom:10px">Scripts, pixels, widgets. Inserido em ambas as páginas.</p>';
+h+='<div class="fg"><label class="fl">🧠 Head (antes de &lt;/head&gt;)</label><textarea class="fi" id="cc-head" placeholder="&lt;script&gt;...&lt;/script&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.head=this.value"></textarea></div>';
+h+='<div class="fg"><label class="fl">📦 Início do Body</label><textarea class="fi" id="cc-body" placeholder="&lt;noscript&gt;...&lt;/noscript&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.bodyStart=this.value"></textarea></div>';
+h+='<div class="fg"><label class="fl">👣 Footer (antes de &lt;/body&gt;)</label><textarea class="fi" id="cc-footer" placeholder="&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.footer=this.value"></textarea></div>';
+h+='</div>';
+
+// Admin: Copiar HTML
+if(isAdmin){
+h+='<div style="background:rgba(41,66,242,.06);border:1px solid rgba(41,66,242,.15);border-radius:var(--r);padding:14px;margin-bottom:12px">';
+h+='<p style="font-size:11px;font-weight:600;color:var(--bright);margin-bottom:8px">📋 Copiar HTML</p>';
+h+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
+h+='<button class="btn btn-s btn-sm" onclick="adminCopiarHTML(\'landing\')" style="flex:1">📄 Landing</button>';
+h+='<button class="btn btn-s btn-sm" onclick="adminCopiarHTML(\'planos\')" style="flex:1">💎 Planos</button>';
+h+='<button class="btn btn-s btn-sm" onclick="adminCopiarHTML(\'ambos\')" style="flex:1">📦 Ambos</button>';
+h+='</div><div id="admin-copy-msg" style="margin-top:6px;font-size:10px"></div>';
+h+='</div>';
+}
+
 // Exportar
 h+='<div style="text-align:center"><span style="font-size:11px;color:var(--dim)">ou</span></div>';
 h+='<button class="btn btn-s" style="width:100%;margin-top:8px;padding:10px;font-size:12px" onclick="exportAll()">💾 Baixar Arquivos HTML</button>';
@@ -1537,7 +1593,11 @@ doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribut
 for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
 doc.querySelectorAll('[data-editable],[data-editable-text],[data-editable-bg],[data-editable-html]').forEach(el=>{el.removeAttribute('data-editable');el.removeAttribute('data-editable-text');el.removeAttribute('data-editable-bg');el.removeAttribute('data-editable-html');});
 const s=doc.getElementById('wb-colors');if(s)s.removeAttribute('id');
-return'<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+let html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+if(customCode.head)html=html.replace('<!-- CUSTOM_HEAD -->',customCode.head);
+if(customCode.bodyStart)html=html.replace('<!-- CUSTOM_BODY_START -->',customCode.bodyStart);
+if(customCode.footer)html=html.replace('<!-- CUSTOM_FOOTER -->',customCode.footer);
+return html;
 }
 
 async function publishToVercel(){
@@ -1731,10 +1791,27 @@ if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.
 }
 doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k&&e.textos[k])el.innerHTML=e.textos[k];});
 for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
-const html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+let html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+if(customCode.head)html=html.replace('<!-- CUSTOM_HEAD -->',customCode.head);
+if(customCode.bodyStart)html=html.replace('<!-- CUSTOM_BODY_START -->',customCode.bodyStart);
+if(customCode.footer)html=html.replace('<!-- CUSTOM_FOOTER -->',customCode.footer);
 const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);
 const iframe=document.getElementById('previewFrame');const old=iframe.src;iframe.src=url;
 if(old.startsWith('blob:'))setTimeout(()=>URL.revokeObjectURL(old),1000);
+}
+
+// Admin: copiar HTML
+async function adminCopiarHTML(pag){
+var m=document.getElementById('admin-copy-msg');
+try{
+var html='';
+if(pag==='ambos'){html='=== LANDING PAGE (index.html) ===\n\n'+buildPageHTML('landing',false)+'\n\n=== PLANOS (planos.html) ===\n\n'+buildPageHTML('planos',true)+'\n\n=== vercel.json ===\n\n'+JSON.stringify({cleanUrls:true,trailingSlash:false},null,2);}
+else{html=buildPageHTML(pag,pag==='planos');}
+await navigator.clipboard.writeText(html);
+var nome=pag==='ambos'?'Ambos':(pag==='landing'?'Landing':'Planos');
+m.innerHTML='<span style="color:var(--green)">✅ '+nome+' copiado! ('+Math.round(html.length/1024)+' KB)</span>';
+setTimeout(function(){m.innerHTML='';},3000);
+}catch(e){m.innerHTML='<span style="color:var(--error)">❌ '+esc(e.message)+'</span>';}
 }
 
 // ==================== EXPORT ====================

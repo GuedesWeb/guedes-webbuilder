@@ -193,8 +193,10 @@ ul{list-style:none}
 .wpp-float:hover{transform:scale(1.1)}
 .wpp-float svg{width:26px;height:26px;fill:#fff}
 </style>
+<!-- CUSTOM_HEAD -->
 </head>
 <body>
+<!-- CUSTOM_BODY_START -->
 
 <!-- WhatsApp número (oculto, editar na aba Textos) -->
 <span data-editable="whatsapp-numero" style="display:none">5538998760323</span>
@@ -418,6 +420,7 @@ function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length)
 setInterval(()=>goTo((cur+1)%slides.length),4000);
 })();
 </script>
+<!-- CUSTOM_FOOTER -->
 </body>
 </html>
 `,
@@ -543,8 +546,10 @@ ul{list-style:none}
 .wpp-float:hover{transform:scale(1.1)}
 .wpp-float svg{width:26px;height:26px;fill:#fff}
 </style>
+<!-- CUSTOM_HEAD -->
 </head>
 <body>
+<!-- CUSTOM_BODY_START -->
 
 <!-- WhatsApp número -->
 <span data-editable="whatsapp-numero" style="display:none">5538998760323</span>
@@ -635,6 +640,7 @@ var whatsUrl='https://wa.me/'+num+'?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20gos
 document.querySelectorAll('[data-editable="cta-link"],[data-editable="whatsapp-float-link"]').forEach(function(a){a.href=whatsUrl});
 })();
 </script>
+<!-- CUSTOM_FOOTER -->
 </body>
 </html>
 `,

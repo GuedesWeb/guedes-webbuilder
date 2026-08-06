@@ -116,6 +116,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <div class="stats-grid" id="stats"></div>
 
+<!-- CRIAR ACESSO -->
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="document.getElementById('ca-form').style.display=document.getElementById('ca-form').style.display==='none'?'block':'none'">
+<h2 style="font-size:13px;font-weight:600;color:var(--bright)">🔑 Criar Acesso para Cliente</h2>
+<span style="font-size:10px;color:var(--dim)">▼</span>
+</div>
+<div id="ca-form" style="display:none;margin-top:14px">
+<p style="font-size:11px;color:var(--dim);margin-bottom:12px">Gera credenciais para o cliente editar o site. Sem necessidade de pagamento.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<input id="ca-nome" placeholder="Nome do cliente" style="padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-size:12px;font-family:var(--font)">
+<input id="ca-email" type="email" placeholder="Email do cliente" style="padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-size:12px;font-family:var(--font)">
+<input id="ca-studio" placeholder="Nome do estúdio" style="padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-size:12px;font-family:var(--font)">
+<input id="ca-cpfcnpj" placeholder="CPF/CNPJ (opcional)" style="padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--bright);font-size:12px;font-family:var(--font)">
+</div>
+<button onclick="criarAcesso()" id="ca-btn" style="margin-top:10px;padding:10px 20px;background:var(--brand);border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">Gerar Credenciais</button>
+<div id="ca-result" style="margin-top:12px"></div>
+</div>
+</div>
+
 <div class="toolbar">
 <h2>Projetos recentes</h2>
 <button onclick="carregarLeads()">Atualizar</button>
@@ -234,6 +253,42 @@ container.innerHTML = '<div class="empty-state"><div class="icon">—</div><p>N�
 function esc(s) {
 if (!s) return '';
 return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function criarAcesso(){
+var nome=document.getElementById('ca-nome').value.trim();
+var email=document.getElementById('ca-email').value.trim();
+var studio=document.getElementById('ca-studio').value.trim();
+var cpfCnpj=document.getElementById('ca-cpfcnpj').value.replace(/\D/g,'');
+var btn=document.getElementById('ca-btn');
+var r=document.getElementById('ca-result');
+
+if(!nome||!email||!studio){r.innerHTML='<p style="color:var(--red);font-size:11px">Preencha nome, email e estúdio.</p>';return;}
+
+btn.textContent='Gerando...';btn.disabled=true;
+
+try{
+var res=await fetch('/api/admin-criar-acesso',{
+method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({nome:nome,email:email,studio:studio,cpfCnpj:cpfCnpj})
+});
+var j=await res.json();
+if(res.ok){
+r.innerHTML='<div style="background:rgba(30,196,144,.06);border:1px solid rgba(30,196,144,.15);border-radius:var(--r);padding:14px;margin-top:8px">'+
+'<p style="color:var(--green);font-weight:600;font-size:12px;margin-bottom:10px">✅ Acesso criado!</p>'+
+'<p style="font-size:10px;color:var(--dim)">📧 <b style="color:var(--bright)">'+esc(j.email)+'</b></p>'+
+'<p style="font-size:10px;color:var(--dim)">🔒 <b style="color:var(--bright)">'+esc(j.senha)+'</b></p>'+
+'<p style="font-size:10px;color:var(--dim);margin-top:4px">O cliente acessa pelo <b>/cms</b> com esses dados.</p>'+
+'</div>';
+document.getElementById('ca-nome').value='';
+document.getElementById('ca-email').value='';
+document.getElementById('ca-studio').value='';
+document.getElementById('ca-cpfcnpj').value='';
+}else{
+r.innerHTML='<p style="color:var(--red);font-size:11px;margin-top:8px">'+esc(j.erro||'Erro')+'</p>';
+}
+}catch(e){r.innerHTML='<p style="color:var(--red);font-size:11px;margin-top:8px">Erro: '+esc(e.message)+'</p>';}
+btn.textContent='Gerar Credenciais';btn.disabled=false;
 }
 </script>
 </body>
