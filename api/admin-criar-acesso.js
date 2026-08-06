@@ -44,17 +44,8 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ erro: 'Email, nome e estúdio obrigatórios.' }));
     }
 
-    var slug = auth.slugify(studio);
-    // Evitar colisão de slug
-    var colisao = await kv.cmd('GET', 'site:' + slug);
-    if (colisao) {
-      var existente = typeof colisao === 'string' ? JSON.parse(colisao) : colisao;
-      if (existente.email !== email) {
-        var n = 2;
-        while (await kv.cmd('GET', 'site:' + slug + '-' + n)) n++;
-        slug = slug + '-' + n;
-      }
-    }
+    // Slug único: nome + timestamp curto
+    var slug = auth.slugify(studio) + '-' + Date.now().toString(36);
 
     var senha = auth.gerarSenha();
     var hash = auth.hashSenha(senha);

@@ -1,8 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/webbuilder.html" },
-    { "source": "/cms", "destination": "/cms.html" }
+    { "source": "/", "destination": "/webbuilder.html" }
   ],
   "functions": {
     "api/verificar-pagamento.js": {
