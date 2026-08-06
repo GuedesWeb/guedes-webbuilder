@@ -1,7 +1,8 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/webbuilder.html" }
+    { "source": "/", "destination": "/webbuilder.html" },
+    { "source": "/cms", "destination": "/cms.html" }
   ],
   "functions": {
     "api/verificar-pagamento.js": {
@@ -27,6 +28,18 @@
     "api/admin-criar-acesso.js": {
       "memory": 256,
       "maxDuration": 10
+    },
+    "api/client-auth.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/client-site.js": {
+      "memory": 256,
+      "maxDuration": 10
+    },
+    "api/client-publish.js": {
+      "memory": 512,
+      "maxDuration": 30
     }
   }
 }
