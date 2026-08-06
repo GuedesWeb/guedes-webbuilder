@@ -400,11 +400,36 @@ function renderImagens(){
 var e=edits[currentPage];var keys=Object.keys(e.imagens||{}).sort();
 var h='<div class="panel-title">🖼️ Imagens</div>';
 if(keys.length===0)return h+'<p style="font-size:11px;color:var(--dim);text-align:center;padding:24px">Nenhuma imagem.</p>';
-for(var i=0;i<keys.length;i++){var k=keys[i],v=e.imagens[k]||'',l=k.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});h+='<div class="fg"><label class="fl">'+esc(l)+'</label><input class="fi" value="'+esc(v)+'" placeholder="URL da imagem" oninput="onImg(\''+k+'\',this.value)" style="font-size:10px"></div>';}
+for(var i=0;i<keys.length;i++){var k=keys[i],v=e.imagens[k]||'',l=k.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+h+='<div class="fg"><label class="fl">'+esc(l)+'</label>';
+h+='<div style="display:flex;gap:4px">';
+h+='<input class="fi" id="img-url-'+k+'" value="'+esc(v)+'" placeholder="URL da imagem" oninput="onImg(\''+k+'\',this.value)" style="font-size:10px;flex:1">';
+h+='<label class="btn btn-s btn-sm" style="cursor:pointer;white-space:nowrap;font-size:9px;flex-shrink:0">📁 <input type="file" accept="image/*" style="display:none" onchange="uploadImg(\''+k+'\',this)"></label>';
+h+='</div>';
+if(v&&v[0]!=='[')h+='<img src="'+esc(v)+'" style="width:100%;max-height:80px;object-fit:contain;background:rgba(0,0,0,.3);border-radius:4px;margin-top:4px;border:1px solid var(--border)" onerror="this.style.display=\'none\'">';
+h+='</div>';}
 return h;
 }
 
 function onImg(k,v){edits[currentPage].imagens[k]=v;updatePreview();}
+
+function uploadImg(k,input){
+var f=input.files[0];if(!f)return;
+var reader=new FileReader();
+reader.onload=function(e){
+var img=new Image();img.onload=function(){
+var c=document.createElement('canvas');var mw=1200,mh=1200;
+var w=img.width,h=img.height;
+if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
+c.width=w;c.height=h;
+c.getContext('2d').drawImage(img,0,0,w,h);
+var dataUrl=c.toDataURL('image/jpeg',0.8);
+edits[currentPage].imagens[k]=dataUrl;
+var urlInput=document.getElementById('img-url-'+k);if(urlInput)urlInput.value=dataUrl;
+updatePreview();renderPanel();
+};img.src=e.target.result;
+};reader.readAsDataURL(f);
+}
 
 function renderLinks(){
 var e=edits[currentPage];var lk=Object.keys(e.links||{}).sort();
