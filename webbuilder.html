@@ -876,6 +876,7 @@ statusBox.innerHTML='<p style="font-size:20px;margin-bottom:8px">⏳</p>'+
 
 // Verificação silenciosa ao carregar a página — não confia em cache
 async function verificarPagamentoAoCarregar(nomeSlug){
+		if (isAdmin) return;
 	var paymentId = localStorage.getItem("asaas_payment_id");
 	if (!paymentId) return; // sem cobrança ativa, não faz nada
 	try {
