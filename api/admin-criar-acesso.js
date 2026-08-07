@@ -44,8 +44,7 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ erro: 'Email, nome e estúdio obrigatórios.' }));
     }
 
-    // Slug único: nome + timestamp curto
-    var slug = auth.slugify(studio) + '-' + Date.now().toString(36);
+    var slug = auth.slugify(studio);
 
     var senha = auth.gerarSenha();
     var hash = auth.hashSenha(senha);

@@ -153,6 +153,7 @@ Recebeu credenciais do Guedes?<br>Entre aqui para gerenciar seu site.
 <div class="panel-content" id="panelContent"></div>
 <div class="panel-footer">
 <button class="btn btn-s btn-sm" onclick="cmsSalvar()">💾 Salvar</button>
+<button class="btn btn-s btn-sm" onclick="cmsBaixar()">📥 Baixar</button>
 <button class="btn btn-p" onclick="cmsPublicar()" id="btn-publish">🚀 Publicar</button>
 </div>
 </div>
@@ -251,6 +252,12 @@ function buildHTML(page,noindex){
 var e=edits[page];if(!e)return'';
 var p=new DOMParser();var d=p.parseFromString(templateData[page],'text/html');
 if(noindex){var m=d.createElement('meta');m.name='robots';m.content='noindex,nofollow';d.head.appendChild(m);}
+
+// Favicon dinâmico
+var corEscura=(e.cores&&e.cores['cor-escuro'])||'#3A2D28';
+var favSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="'+corEscura+'"/></svg>';
+var favUrl='data:image/svg+xml,'+encodeURIComponent(favSvg);
+var favEl=d.querySelector('link[rel="icon"]');if(favEl)favEl.setAttribute('href',favUrl);
 
 var c=e.cores||{};
 var css=':root{';
@@ -423,7 +430,7 @@ var w=img.width,h=img.height;
 if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
 c.width=w;c.height=h;
 c.getContext('2d').drawImage(img,0,0,w,h);
-var dataUrl=c.toDataURL('image/jpeg',0.8);
+var dataUrl=c.toDataURL('image/webp',0.8);
 edits[currentPage].imagens[k]=dataUrl;
 var urlInput=document.getElementById('img-url-'+k);if(urlInput)urlInput.value=dataUrl;
 updatePreview();renderPanel();
@@ -493,6 +500,25 @@ if(r.ok){btn.textContent='✅ Publicado!';if(j.url){document.getElementById('das
 else{btn.textContent='🚀 Publicar';toast(j.erro||'Erro',true);}
 }catch(e){btn.textContent='🚀 Publicar';toast('Erro: '+e.message,true);}
 btn.disabled=false;
+}
+
+// ── DOWNLOAD ──
+function cmsBaixar(){
+var name=(siteData&&siteData.studio)||slug||'site';
+var landingHTML=buildHTML('landing',false);
+var planosHTML=buildHTML('planos',true);
+var vercelJSON=JSON.stringify({cleanUrls:true,trailingSlash:false},null,2);
+downloadFile('index.html',landingHTML);
+setTimeout(function(){downloadFile('planos.html',planosHTML);},200);
+setTimeout(function(){downloadFile('vercel.json',vercelJSON);},400);
+toast('HTMLs baixados!');
+}
+function downloadFile(nome,conteudo){
+var b=new Blob([conteudo],{type:'text/html'});
+var u=URL.createObjectURL(b);
+var a=document.createElement('a');a.href=u;a.download=nome;
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+setTimeout(function(){URL.revokeObjectURL(u);},1000);
 }
 
 // ── TOAST ──
