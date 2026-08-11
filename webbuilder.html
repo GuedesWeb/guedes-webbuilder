@@ -1582,8 +1582,9 @@ if(faviconEl)faviconEl.setAttribute('href',faviconURL);
 let css=':root{';for(const[k,v]of Object.entries(e.cores))css+=`--${k}:${v};`;css+='}';
 let styleEl=doc.getElementById('wb-colors');if(!styleEl){styleEl=doc.createElement('style');styleEl.id='wb-colors';doc.head.appendChild(styleEl);}
 styleEl.textContent=css;
-for(const[k,v]of Object.entries(e.imagens)){if(!v||v.startsWith('['))continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',v);}
-for(const[k,v]of Object.entries(e.imagens)){if(!v||v.startsWith('['))continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${v}")`;});}
+	const otherPage=page==="landing"?"planos":"landing";const imOther=(edits[otherPage]&&edits[otherPage].imagens)||{};
+for(const[k,v]of Object.entries(e.imagens)){let val=v;if(!val||val.startsWith('[')){val=imOther[k];}if(!val||val.startsWith('['))continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',val);}
+for(const[k,v]of Object.entries(e.imagens)){let val2=v;if(!val2||val2.startsWith('[')){val2=imOther[k];}if(!val2||val2.startsWith('['))continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${val2}")`;});}
 for(const[k,v]of Object.entries(e.textos)){
 const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
 const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
@@ -1782,8 +1783,9 @@ const e=edits[currentPage];
 let css=':root{';for(const[k,v]of Object.entries(e.cores))css+=`--${k}:${v};`;css+='}';
 let styleEl=doc.getElementById('wb-colors');if(!styleEl){styleEl=doc.createElement('style');styleEl.id='wb-colors';doc.head.appendChild(styleEl);}
 styleEl.textContent=css;
-for(const[k,v]of Object.entries(e.imagens)){if(!v)continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',v);}
-for(const[k,v]of Object.entries(e.imagens)){if(!v)continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${v}")`;});}
+	const otherPage2=currentPage==="landing"?"planos":"landing";const imOther2=(edits[otherPage2]&&edits[otherPage2].imagens)||{};
+for(const[k,v]of Object.entries(e.imagens)){let val=v;if(!val){val=imOther2[k];}if(!val)continue;const imgEl=doc.querySelector(`[data-editable="${k}"]`);if(imgEl&&imgEl.tagName==='IMG')imgEl.setAttribute('src',val);}
+for(const[k,v]of Object.entries(e.imagens)){let val2=v;if(!val2){val2=imOther2[k];}if(!val2)continue;doc.querySelectorAll(`[data-editable-bg="${k}"]`).forEach(el=>{el.style.backgroundImage=`url("${val2}")`;});}
 for(const[k,v]of Object.entries(e.textos)){
 const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
 const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
