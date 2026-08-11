@@ -45,7 +45,7 @@ module.exports = async function handler(req, res) {
       var body = '';
       req.on('data', function (c) { body += c; });
       await new Promise(function (r) { req.on('end', r); });
-      if (body.length > 500000) { res.statusCode = 413; res.setHeader('Content-Type', 'application/json'); return res.end(JSON.stringify({ erro: 'Dados muito grandes.' })); }
+      if (body.length > 10000000) { res.statusCode = 413; res.setHeader('Content-Type', 'application/json'); return res.end(JSON.stringify({ erro: 'Dados muito grandes. Limite de 10MB.' })); }
 
       var d = JSON.parse(body);
       var rawExisting = await kv.cmd('GET', 'site:' + payload.slug);

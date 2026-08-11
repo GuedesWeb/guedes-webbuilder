@@ -701,9 +701,12 @@ async function cmsSalvar(){
 if(!token)return;
 try{
 var r=await fetch('/api/client-site',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({edits:edits,customCode:customCode})});
-if(r.ok)toast('Salvo!');
-}catch(e){}
-}
+	if(r.ok){toast('Salvo! ✅');return;}
+	var j=await r.json().catch(function(){return{};});
+	if(r.status===413)toast('Arquivo muito grande! Reduza as imagens.',true);
+	else toast(j.erro||'Erro ao salvar (' + r.status + ')',true);
+	}catch(e){toast('Erro de conexao ao salvar.',true);}
+	}
 
 // ── PUBLISH ──
 async function cmsPublicar(){
