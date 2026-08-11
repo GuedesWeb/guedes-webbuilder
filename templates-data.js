@@ -111,8 +111,8 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 /* "ALÉM DISSO..." */
 .aulas-section{background:var(--cor-superficie)}
 .aulas-title{text-align:center;font-size:clamp(24px,3.5vw,36px);font-weight:500;color:var(--cor-escuro);margin-bottom:40px}
-.aulas-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;gap:0}
-.aulas-grid img{width:100%;height:300px;object-fit:cover}
+.aulas-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;gap:0;align-items:stretch}
+.aulas-grid img{width:100%;height:100%;object-fit:cover;display:block;min-height:300px}
 .aulas-texto{background:var(--cor-escuro);color:#fff;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .aulas-texto h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;margin-bottom:6px}
 .aulas-texto p{font-size:13px;line-height:1.7;opacity:.9}
