@@ -450,8 +450,8 @@ function onColor(k,v){edits.landing.cores[k]=v;edits.planos.cores[k]=v;updatePre
 function applyPreset(name){var p=colorPresets.find(function(x){return x.name===name;});if(!p)return;for(var i=0;i<colorDefs.length;i++){var k=colorDefs[i].key;if(p.c[k]){edits.landing.cores[k]=p.c[k];edits.planos.cores[k]=p.c[k];}}updatePreview();renderPanel();}
 
 function renderImagens(){
-var e=edits[currentPage];var keys=Object.keys(e.imagens||{}).sort();
-var h='<div class="panel-title">🖼️ Imagens</div>';
+var e=edits[currentPage];var keys=Object.keys(e.imagens||{}).filter(function(k){return k.indexOf('depo-')!==0&&k.indexOf('gal-')!==0;}).sort();
+var h='<div class="panel-title">🖼️ Imagens</div><p style=\'font-size:9px;color:var(--dim);margin-bottom:8px\'>💬 Depoimentos e 📸 Galeria tem abas próprias.</p>';
 if(keys.length===0)return h+'<p style="font-size:11px;color:var(--dim);text-align:center;padding:24px">Nenhuma imagem.</p>';
 for(var i=0;i<keys.length;i++){var k=keys[i],v=e.imagens[k]||'',l=k.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
 h+='<div class="fg"><label class="fl">'+esc(l)+'</label>';
