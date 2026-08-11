@@ -966,7 +966,7 @@ h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif
 }
 	h+='<div class="sec-hdr">📸 Galeria do Estudio</div>';
 	h+='<p style="font-size:11px;color:var(--dim);margin-bottom:10px">Selecione <b style="color:var(--bright)">varias fotos de uma vez</b>. Max. 20.</p>';
-	h+='<label class="btn btn-p" style="cursor:pointer;width:100%;padding:14px;font-size:13px;margin-bottom:8px">📁 Selecionar Fotos (multi)<input type="file" accept="image/*,.heic,.heif" multiple style="display:none" onchange="setupBulkGaleria(this)"></label>';
+	h+='<label class="btn btn-p" style="cursor:pointer;width:100%;padding:14px;font-size:13px;margin-bottom:8px">📁 Selecionar Fotos (multi)<input type="file" accept="image/*,.heic,.heif" style="display:none" onchange="setupBulkGaleria(this)"></label>';
 	h+='<div id="setup-galeria-preview" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px"></div>';
 	var galCount=parseInt(edits.landing.textos['gal-count']||'0');
 	if(galCount>0){h+='<p style="font-size:10px;color:var(--green);margin-top:4px">✅ '+galCount+' foto(s) carregada(s)</p>';}
@@ -986,22 +986,30 @@ h+=`<div class="fg"><label class="fl">Print do perfil (mockup)</label>`;
 h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-mockup-url" value="${esc(mockupVal)}" placeholder="URL ou upload...">`;
 h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="setupUploadMockup(this)"></label></div>`;
 h+=`<img class="img-prev" src="${esc(mockupVal)}" onerror="this.style.display='none'" onload="this.style.display='block'" ${mockupVal?'':'style="display:none"'}></div>`;
-// --- GOOGLE REVIEWS ---
-const hasReviews=edits.landing.textos['google-reviews']||'';
-h+='<div class="sec-hdr">⭐ Avaliações do Google</div>';
-h+='<label style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;margin-bottom:12px" onclick="toggleReviewsGuide()">';
-h+=`<input type="checkbox" id="su-has-reviews" ${hasReviews?'checked':''} style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer" onchange="event.stopPropagation();toggleReviewsGuide()">`;
-h+='<span style="font-size:13px;color:var(--text)">Meu estúdio tem avaliações no Google</span></label>';
-h+=`<div id="su-reviews-guide" style="display:${hasReviews?'block':'none'}">`;
-h+=`<div class="elfsight-guide">`;
-h+='<strong>⭐ Como obter o código do Google Reviews:</strong><ol>';
-h+='<li>Acesse <a href="https://elfsight.com/google-reviews-widget/" target="_blank">elfsight.com/google-reviews-widget</a></li>';
-h+='<li>Clique em <strong>"Create widget"</strong> (grátis)</li>';
-h+='<li>Conecte sua conta Google e selecione seu negócio</li>';
-h+='<li>Personalize e copie o <strong>código embed</strong></li>';
-h+='<li>Cole no campo abaixo 👇</li></ol></div>';
-h+=`<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea class="fi" id="su-reviews-code" rows="4" placeholder="Cole aqui o código HTML do widget...">${esc(hasReviews)}</textarea></div></div>`;
-}
+	// --- DEPOIMENTOS (Upload de Prints) ---
+	h+='<div class="sec-hdr">💬 Depoimentos</div>';
+	h+='<p style="font-size:11px;color:var(--dim);margin-bottom:10px">Prints do WhatsApp, Instagram, Google. <b style="color:var(--bright)">Adicione um por vez</b>. Aparecem em slider automatico.</p>';
+	var depoCount=parseInt(edits.landing.textos["depo-count"]||"0");
+	h+='<div id="setup-depo-thumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+	var hasDepo=false;
+	for(var i=0;i<15;i++){
+		var v=edits.landing.imagens["depo-"+i]||"";
+		if(v&&v.length>10){hasDepo=true;
+			h+="<div style=\"position:relative;width:72px;height:72px;flex-shrink:0\">";
+			h+="<img src=\""+esc(v)+"\" style=\"width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border)\">";
+			h+="<button onclick=\"setupRemoveDepo("+i+")\" style=\"position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--error);color:#fff;border:none;cursor:pointer;font-size:11px;line-height:20px;text-align:center;padding:0\">✕</button>";
+			h+="</div>";
+		}
+	}
+	if(!hasDepo)h+='<p style="font-size:11px;color:var(--dim);text-align:center;padding:16px;width:100%">Nenhum depoimento ainda.</p>';
+	h+='</div>';
+	if(depoCount<15){
+		h+='<label class="btn btn-p" style="cursor:pointer;width:100%;padding:14px;font-size:13px">📁 Adicionar Depoimento<input type="file" accept="image/*,.heic,.heif" style="display:none" onchange="setupAddDepo(this)"></label>';
+	}else{
+		h+='<p style="font-size:10px;color:var(--warning);text-align:center">Limite de 15 imagens.</p>';
+	}
+		h+="<p style=\"font-size:9px;color:var(--dim);text-align:center;margin-top:4px\">"+depoCount+" de 15 imagens</p>";
+	}
 
 else if(setupSubStep===3){
 // --- PLANOS ---
@@ -1283,6 +1291,37 @@ processNext();
 }
 
 // --- UPLOAD HELPERS PARA SETUP ---
+function setupAddDepo(input){
+	var file=input.files[0];if(!file)return;
+	var curCount=parseInt(edits.landing.textos["depo-count"]||"0");
+	if(curCount>=15){alert("Limite de 15 depoimentos.");return;}
+	var idx=curCount;
+	processFileToWebP(file,function(dataUrl){
+		edits.landing.imagens["depo-"+idx]=dataUrl;
+		edits.planos.imagens["depo-"+idx]=dataUrl;
+		edits.landing.textos["depo-count"]=String(curCount+1);
+		edits.planos.textos["depo-count"]=String(curCount+1);
+		updatePreview();renderStep();
+	},function(err){alert(err);});
+}
+
+function setupRemoveDepo(index){
+	delete edits.landing.imagens["depo-"+index];
+	delete edits.planos.imagens["depo-"+index];
+	for(var i=index;i<14;i++){
+		var next=edits.landing.imagens["depo-"+(i+1)];
+		if(next&&next.length>10){
+			edits.landing.imagens["depo-"+i]=next;
+			edits.planos.imagens["depo-"+i]=next;
+		}else{delete edits.landing.imagens["depo-"+i];delete edits.planos.imagens["depo-"+i];break;}
+	}
+	var newCount=0;
+	for(var i=0;i<15;i++){if(edits.landing.imagens["depo-"+i]&&edits.landing.imagens["depo-"+i].length>10)newCount++;}
+	edits.landing.textos["depo-count"]=String(newCount);
+	edits.planos.textos["depo-count"]=String(newCount);
+	updatePreview();renderStep();
+}
+
 function setupUploadLogo(input){
 	const file=input.files[0];if(!file)return;
 	processFileToWebP(file,function(du){
