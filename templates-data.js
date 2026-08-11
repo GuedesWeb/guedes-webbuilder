@@ -419,25 +419,47 @@ if(!num)return;
 var whatsUrl='https://wa.me/'+num+'?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es';
 document.querySelectorAll('[data-editable="hero-btn-link"],[data-editable="cta-link"],[data-editable="whatsapp-link"],[data-editable="whatsapp-float-link"]').forEach(function(a){a.href=whatsUrl});
 })();
-// Depoimentos Slider — monta slides a partir dos slots depo-*
+// Depoimentos Slider — scroll infinito com setas
 (function(){
-const t=document.getElementById('depoimentosTrack'),d=document.getElementById('depoimentosDots');
-if(!t||!d)return;
-const count=parseInt(document.getElementById('depo-count-val')?.textContent||'0');
-if(count===0){t.parentElement.style.display='none';d.style.display='none';return;}
+const track=document.getElementById("depoimentosTrack"),dotsC=document.getElementById("depoimentosDots");
+const slider=document.getElementById("depoimentosSlider");
+if(!track||!dotsC||!slider)return;
+const count=parseInt(document.getElementById("depo-count-val")?.textContent||"0");
+if(count===0){slider.style.display="none";dotsC.style.display="none";return;}
 for(let i=0;i<count;i++){
-const srcEl=document.getElementById('depo-img-'+i);
-if(!srcEl||!srcEl.getAttribute('src'))continue;
-const slide=document.createElement('div');slide.className='depo-slide';
-const img=document.createElement('img');img.src=srcEl.getAttribute('src');
-slide.appendChild(img);t.appendChild(slide);
-const dot=document.createElement('button');dot.className='depo-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);d.appendChild(dot);
+const srcEl=document.getElementById("depo-img-"+i);
+if(!srcEl||!srcEl.getAttribute("src"))continue;
+const slide=document.createElement("div");slide.className="depo-slide";
+const img=document.createElement("img");img.src=srcEl.getAttribute("src");img.alt="Depoimento "+(i+1);
+slide.appendChild(img);track.appendChild(slide);
+const dot=document.createElement("button");dot.className="depo-dot"+(i===0?" active":"");dot.onclick=()=>goTo(i);dotsC.appendChild(dot);
 }
-const slides=t.querySelectorAll('.depo-slide');
-if(slides.length===0){t.parentElement.style.display='none';d.style.display='none';return;}
-let cur=0;const dots=d.querySelectorAll('.depo-dot');
-function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length))+'%)';dots.forEach((dt,j)=>dt.classList.toggle('active',j===cur))}
-if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),5000);
+const slides=track.querySelectorAll(".depo-slide");
+const total=slides.length;
+if(total===0){slider.style.display="none";dotsC.style.display="none";return;}
+// Clona primeiro e ultimo para scroll infinito
+const firstClone=slides[0].cloneNode(true);const lastClone=slides[total-1].cloneNode(true);
+track.appendChild(firstClone);track.insertBefore(lastClone,slides[0]);
+let cur=1;track.style.transform='translateX(-'+(cur*(100/total))+'%)';
+const dots=dotsC.querySelectorAll(".depo-dot");
+let autoPlay=total>3?setInterval(next,5000):null;
+function updateDots(i){dots.forEach((dt,j)=>dt.classList.toggle("active",j===i));}
+function goTo(i){
+cur=i+1;track.style.transition="transform .5s ease";
+track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(i);
+resetAuto();
+}
+function next(){goTo((cur)%total);}
+function prev(){goTo((cur-2+total)%total);}
+function resetAuto(){if(autoPlay){clearInterval(autoPlay);autoPlay=setInterval(next,5000);}}
+track.addEventListener("transitionend",function(){
+if(cur===total+1){track.style.transition="none";cur=1;track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(0);}
+if(cur===0){track.style.transition="none";cur=total;track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(total-1);}
+});
+// Setas
+var prevBtn=document.createElement("button");prevBtn.className="depo-arrow depo-arrow-left";prevBtn.innerHTML="‹";prevBtn.onclick=prev;
+var nextBtn=document.createElement("button");nextBtn.className="depo-arrow depo-arrow-right";nextBtn.innerHTML="›";nextBtn.onclick=next;
+slider.appendChild(prevBtn);slider.appendChild(nextBtn);
 })();
 
 // Carrossel dinamico — scroll infinito com setas
