@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>CMS — Editar Meu Site | Guedes</title>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="templates-data.js"></script>
 <style>
 :root{
@@ -456,7 +457,7 @@ for(var i=0;i<keys.length;i++){var k=keys[i],v=e.imagens[k]||'',l=k.replace(/-/g
 h+='<div class="fg"><label class="fl">'+esc(l)+'</label>';
 h+='<div style="display:flex;gap:4px">';
 h+='<input class="fi" id="img-url-'+k+'" value="'+esc(v)+'" placeholder="URL da imagem" oninput="onImg(\''+k+'\',this.value)" style="font-size:10px;flex:1">';
-h+='<label class="btn btn-s btn-sm" style="cursor:pointer;white-space:nowrap;font-size:11px;flex-shrink:0;padding:6px 10px" title="Fazer upload da imagem">📁 <input type="file" accept="image/*" style="display:none" onchange="uploadImg(\''+k+'\',this)"></label>';
+h+='<label class="btn btn-s btn-sm" style="cursor:pointer;white-space:nowrap;font-size:11px;flex-shrink:0;padding:6px 10px" title="Fazer upload da imagem">📁 <input type="file" accept="image/*,.heic,.heif" style="display:none" onchange="uploadImg(\''+k+'\',this)"></label>';
 h+='</div>';
 if(v&&v[0]!=='[')h+='<img src="'+esc(v)+'" style="width:100%;max-height:80px;object-fit:contain;background:rgba(0,0,0,.3);border-radius:4px;margin-top:4px;border:1px solid var(--border)" onerror="this.style.display=\'none\'">';
 h+='</div>';}
@@ -477,31 +478,55 @@ return h;
 
 function uploadImg(k,input){
 	var f=input.files[0];if(!f)return;
-	// Feedback visual durante upload
 	var label=input.parentElement;
 	var origHTML=label.innerHTML;
 	label.innerHTML="⏳";label.style.pointerEvents="none";
+	var isHEIC=f.name&&(f.name.toLowerCase().endsWith(".heic")||f.name.toLowerCase().endsWith(".heif")||f.type==="image/heic"||f.type==="image/heif");
+
+	function processImage(src){
+		var img=new Image();
+		img.onerror=function(){label.innerHTML=origHTML;label.style.pointerEvents="";toast("Erro ao carregar imagem.",true);};
+		img.onload=function(){
+		try{
+		var c=document.createElement("canvas");var mw=1200,mh=1200;
+		var w=img.width,h=img.height;
+		if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
+		c.width=w;c.height=h;
+		var ctx=c.getContext("2d");ctx.drawImage(img,0,0,w,h);
+		var dataUrl=c.toDataURL("image/webp",0.82);
+		edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;syncLinkedKeys(k,dataUrl);
+		var urlInput=document.getElementById("img-url-"+k);if(urlInput)urlInput.value="[Carregada]";
+		updatePreview();renderPanel();
+		label.innerHTML=origHTML;label.style.pointerEvents="";
+		toast("Imagem carregada!");
+		}catch(err){label.innerHTML=origHTML;label.style.pointerEvents="";toast("Erro ao processar imagem.",true);}
+		};img.src=src;
+	}
+
+	if(isHEIC){
+		// Converte HEIC → JPEG via heic2any, depois → WebP
+		if(typeof heic2any==="undefined"){
+			label.innerHTML=origHTML;label.style.pointerEvents="";
+			toast("Biblioteca HEIC nao carregada. Tente converter para JPG primeiro.",true);
+			return;
+		}
+		label.innerHTML="🔄 Convertendo...";
+		heic2any({blob:f,toType:"image/jpeg",quality:0.92}).then(function(result){
+			var blob=Array.isArray(result)?result[0]:result;
+			var url=URL.createObjectURL(blob);
+			processImage(url);
+		}).catch(function(err){
+			label.innerHTML=origHTML;label.style.pointerEvents="";
+			toast("Erro ao converter HEIC: "+(err.message||"formato invalido"),true);
+		});
+		return;
+	}
+
+	// Fluxo normal (JPEG, PNG, WebP, etc.)
 	var reader=new FileReader();
 	reader.onerror=function(){label.innerHTML=origHTML;label.style.pointerEvents="";toast("Erro ao ler arquivo.",true);};
-	reader.onload=function(e){
-	var img=new Image();
-	img.onerror=function(){label.innerHTML=origHTML;label.style.pointerEvents="";toast("Erro ao carregar imagem.",true);};
-	img.onload=function(){
-	try{
-	var c=document.createElement("canvas");var mw=1200,mh=1200;
-	var w=img.width,h=img.height;
-	if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
-	c.width=w;c.height=h;
-	var ctx=c.getContext("2d");ctx.drawImage(img,0,0,w,h);
-	var dataUrl=c.toDataURL("image/webp",0.8);
-	edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;syncLinkedKeys(k,dataUrl);
-	var urlInput=document.getElementById("img-url-"+k);if(urlInput)urlInput.value="[Carregada]";
-	updatePreview();renderPanel();
-	label.innerHTML=origHTML;label.style.pointerEvents="";
-	toast("Imagem carregada!");
-	}catch(err){label.innerHTML=origHTML;label.style.pointerEvents="";toast("Erro ao processar imagem.",true);}
-	};img.src=e.target.result;
-	};reader.readAsDataURL(f);
+	reader.onload=function(e){processImage(e.target.result);};
+	reader.readAsDataURL(f);
 }
 
 function renderLinks(){

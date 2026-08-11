@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guedes WebBuilder</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="templates-data.js"></script>
 <style>
 /* ============ DESIGN SYSTEM — Pulsedesk-Inspired ============ */
@@ -939,7 +940,7 @@ h+=`<div class="fg"><label class="fl">Nome do Estúdio</label><input class="fi" 
 const logoVal=edits.landing.imagens['logo']||'';
 h+=`<div class="fg"><label class="fl">Logotipo (PNG sem fundo)</label>`;
 h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-logo-url" value="${esc(logoVal)}" placeholder="URL ou upload...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadLogo(this)"></label></div>`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="setupUploadLogo(this)"></label></div>`;
 h+=`<img class="img-prev" id="su-logo-prev" src="${esc(logoVal)}" onerror="this.style.display='none'" onload="this.style.display='block'" ${logoVal?'':'style="display:none"'}></div>`;
 h+='<button class="btn btn-s btn-sm" onclick="removeLogoBackground()" style="margin-top:6px;width:100%">🧹 Remover Fundo</button>';
 h+='<div class="sec-hdr">🎨 Cores da Marca</div>';
@@ -961,7 +962,7 @@ for(let i=0;i<2;i++){
 const fv=edits.landing.imagens[heroKeys[i]]||'';
 h+=`<div class="fg"><label class="fl">${heroLabels[i]}</label>`;
 h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-foto${i}" value="${esc(fv)}" placeholder="URL ou upload...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadFoto(${i},this,'${heroKeys[i]}')"></label></div></div>`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="setupUploadFoto(${i},this,'${heroKeys[i]}')"></label></div></div>`;
 }
 h+='<div class="sec-hdr">📸 Galeria</div>';
 h+='<p style="font-size:11px;color:var(--dim);margin-bottom:6px">Fotos do estúdio para o carrossel.</p>';
@@ -971,7 +972,7 @@ const fv=edits.landing.imagens[galeriaKeys[i]]||'';
 const idx=i+2;
 h+=`<div class="fg"><label class="fl">Foto ${i+1}</label>`;
 h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-foto${idx}" value="${esc(fv)}" placeholder="URL ou upload...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadFoto(${idx},this,'${galeriaKeys[i]}')"></label></div></div>`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="setupUploadFoto(${idx},this,'${galeriaKeys[i]}')"></label></div></div>`;
 }
 }
 
@@ -987,7 +988,7 @@ h+=`<div class="fg"><label class="fl">@ do Instagram</label><input class="fi" id
 const mockupVal=edits.landing.imagens['insta-mockup']||'';
 h+=`<div class="fg"><label class="fl">Print do perfil (mockup)</label>`;
 h+=`<div style="display:flex;gap:6px"><input class="fi" id="su-mockup-url" value="${esc(mockupVal)}" placeholder="URL ou upload...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="setupUploadMockup(this)"></label></div>`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="setupUploadMockup(this)"></label></div>`;
 h+=`<img class="img-prev" src="${esc(mockupVal)}" onerror="this.style.display='none'" onload="this.style.display='block'" ${mockupVal?'':'style="display:none"'}></div>`;
 // --- GOOGLE REVIEWS ---
 const hasReviews=edits.landing.textos['google-reviews']||'';
@@ -1261,41 +1262,32 @@ renderStep();updateStepsBar();updatePreview();
 
 // --- UPLOAD HELPERS PARA SETUP ---
 function setupUploadLogo(input){
-const file=input.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=function(e){
-const du=e.target.result;
-document.getElementById('su-logo-url').value='[Logo Upload]';
-const prev=document.getElementById('su-logo-prev');if(prev){prev.src=du;prev.style.display='block';}
-edits.landing.imagens['logo']=du;edits.planos.imagens['logo']=du;
-edits.landing.imagens['logo-hero']=du;edits.planos.imagens['logo-hero']=du;
-updatePreview();
-};
-reader.readAsDataURL(file);
+	const file=input.files[0];if(!file)return;
+	processFileToWebP(file,function(du){
+		document.getElementById("su-logo-url").value="[Logo Upload]";
+		const prev=document.getElementById("su-logo-prev");if(prev){prev.src=du;prev.style.display="block";}
+		edits.landing.imagens["logo"]=du;edits.planos.imagens["logo"]=du;
+		edits.landing.imagens["logo-hero"]=du;edits.planos.imagens["logo-hero"]=du;
+		updatePreview();
+	},function(err){alert(err);});
 }
 function setupUploadFoto(i, input, key){
-const file=input.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=function(e){
-const du=e.target.result;
-document.getElementById('su-foto'+i).value='[Foto Upload]';
-['landing','planos'].forEach(pg=>{edits[pg].imagens[key]=du;});
-updatePreview();
-};
-reader.readAsDataURL(file);
+	const file=input.files[0];if(!file)return;
+	processFileToWebP(file,function(du){
+		document.getElementById("su-foto"+i).value="[Foto Upload]";
+		["landing","planos"].forEach(pg=>{edits[pg].imagens[key]=du;});
+		updatePreview();
+	},function(err){alert(err);});
 }
 function setupUploadMockup(input){
-const file=input.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=function(e){
-const du=e.target.result;
-document.getElementById('su-mockup-url').value='[Mockup Upload]';
-const prev=document.querySelector('#su-mockup-url + label + img');
-if(prev){prev.src=du;prev.style.display='block';}
-['landing','planos'].forEach(pg=>{edits[pg].imagens['insta-mockup']=du;});
-updatePreview();
-};
-reader.readAsDataURL(file);
+	const file=input.files[0];if(!file)return;
+	processFileToWebP(file,function(du){
+		document.getElementById("su-mockup-url").value="[Mockup Upload]";
+		const prev=document.querySelector("#su-mockup-url + label + img");
+		if(prev){prev.src=du;prev.style.display="block";}
+		["landing","planos"].forEach(pg=>{edits[pg].imagens["insta-mockup"]=du;});
+		updatePreview();
+	},function(err){alert(err);});
 }
 
 // --- REMOÇÃO DE FUNDO DA LOGO (Canvas) ---
@@ -1701,7 +1693,7 @@ function imageField(key,label){
 const v=edits[currentPage].imagens[key]||'';
 let h=`<div class="fg"><label class="fl">${label}</label>`;
 h+=`<div style="display:flex;gap:4px"><input class="fi" value="${esc(v)}" data-ikey="${key}" oninput="updateImage('${key}',this.value)" placeholder="URL da imagem...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*" onchange="uploadImage('${key}',this)"></label></div>`;
+h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="uploadImage('${key}',this)"></label></div>`;
 h+=`<img class="img-prev" src="${v}" onerror="this.style.display='none'" onload="this.style.display='block'" ${v?'':'style="display:none"'} data-preview="${key}"></div>`;
 return h;
 }
@@ -1744,19 +1736,62 @@ if(prev){prev.src=value;prev.style.display=value?'block':'none';}
 schedulePreview();
 }
 
+// Helper: detecta HEIC e converte para WebP
+function processFileToWebP(file,callback,onError){
+	const isHEIC=file.name&&(file.name.toLowerCase().endsWith(".heic")||file.name.toLowerCase().endsWith(".heif")||file.type==="image/heic"||file.type==="image/heif");
+	if(isHEIC){
+		if(typeof heic2any==="undefined"){if(onError)onError("Biblioteca HEIC nao carregada.");return;}
+		heic2any({blob:file,toType:"image/jpeg",quality:0.92}).then(function(result){
+			const blob=Array.isArray(result)?result[0]:result;
+			const url=URL.createObjectURL(blob);
+			const img=new Image();
+			img.onerror=function(){if(onError)onError("Erro ao decodificar HEIC.");};
+			img.onload=function(){
+				const c=document.createElement("canvas");const mw=1200,mh=1200;
+				let w=img.width,h=img.height;
+				if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
+				c.width=w;c.height=h;
+				c.getContext("2d").drawImage(img,0,0,w,h);
+				callback(c.toDataURL("image/webp",0.82));
+				URL.revokeObjectURL(url);
+			};img.src=url;
+		}).catch(function(err){if(onError)onError("Erro HEIC: "+(err.message||"formato invalido"));});
+		return;
+	}
+	// Fluxo normal (JPEG, PNG, WebP)
+	const reader=new FileReader();
+	reader.onerror=function(){if(onError)onError("Erro ao ler arquivo.");};
+	reader.onload=function(e){
+		const img=new Image();
+		img.onerror=function(){if(onError)onError("Erro ao carregar imagem.");};
+		img.onload=function(){
+			const c=document.createElement("canvas");const mw=1200,mh=1200;
+			let w=img.width,h=img.height;
+			if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
+			c.width=w;c.height=h;
+			c.getContext("2d").drawImage(img,0,0,w,h);
+			callback(c.toDataURL("image/webp",0.82));
+		};img.src=e.target.result;
+	};
+	reader.readAsDataURL(file);
+}
+
 function uploadImage(key,input){
-const file=input.files[0];if(!file)return;
-const reader=new FileReader();
-reader.onload=function(e){
-const dataUrl=e.target.result;
-// Sincroniza upload nas DUAS páginas
-edits.landing.imagens[key]=dataUrl;
-edits.planos.imagens[key]=dataUrl;
-const prev=document.querySelector(`[data-preview="${key}"]`);if(prev){prev.src=dataUrl;prev.style.display='block';}
-const urlInput=document.querySelector(`[data-ikey="${key}"]`);if(urlInput)urlInput.value='[Imagem Upload]';
-updatePreview();
-};
-reader.readAsDataURL(file);
+	const file=input.files[0];if(!file)return;
+	const btn=input.closest("label");
+	const origText=btn?btn.textContent:"";
+	if(btn){btn.textContent="⏳";btn.style.pointerEvents="none";}
+	processFileToWebP(file,function(dataUrl){
+		edits.landing.imagens[key]=dataUrl;
+		edits.planos.imagens[key]=dataUrl;
+		const prev=document.querySelector("[data-preview=\""+key+"\"]");if(prev){prev.src=dataUrl;prev.style.display="block";}
+		const urlInput=document.querySelector("[data-ikey=\""+key+"\"]");if(urlInput)urlInput.value="[Imagem Upload]";
+		updatePreview();
+		if(btn){btn.textContent=origText;btn.style.pointerEvents="";}
+	},function(err){
+		alert(err);
+		if(btn){btn.textContent=origText;btn.style.pointerEvents="";}
+	});
 }
 
 let previewTimer;
