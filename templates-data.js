@@ -150,6 +150,12 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .depo-dot{width:10px;height:10px;border-radius:50%;background:var(--cor-borda);border:none;cursor:pointer;transition:all .3s}
 .depo-dot.active{background:var(--cor-acento);width:28px;border-radius:5px}
 @media(max-width:768px){.depo-slide{flex:0 0 85%}.depo-slide img{aspect-ratio:3/5}}
+.depo-arrow,.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);border:1px solid var(--cor-borda);cursor:pointer;font-size:28px;color:var(--cor-escuro);display:flex;align-items:center;justify-content:center;transition:all .25s;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.depo-arrow:hover,.carousel-arrow:hover{background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.15);transform:translateY(-50%) scale(1.05)}
+.depo-arrow-left,.carousel-arrow-left{left:8px}
+.depo-arrow-right,.carousel-arrow-right{right:8px}
+@media(max-width:768px){.depo-arrow,.carousel-arrow{width:36px;height:36px;font-size:22px}.depo-arrow-left,.carousel-arrow-left{left:4px}.depo-arrow-right,.carousel-arrow-right{right:4px}}
+
 
 /* POR QUE */
 .porque-section{min-height:500px;display:flex;align-items:center;background:var(--cor-escuro);padding:80px 0}
@@ -434,25 +440,48 @@ function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length)
 if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),5000);
 })();
 
-// Carrossel dinamico — monta slides a partir dos slots gal-*
+// Carrossel dinamico — scroll infinito com setas
 (function(){
-const t=document.getElementById('carouselTrack'),d=document.getElementById('carouselDots');
-if(!t||!d)return;
+const track=document.getElementById('carouselTrack'),dotsC=document.getElementById('carouselDots');
+const carousel=document.getElementById('carousel');
+if(!track||!dotsC||!carousel)return;
 const count=parseInt(document.getElementById('gal-count-val')?.textContent||'0');
+if(count===0)return;
 for(let i=0;i<count;i++){
 const srcEl=document.getElementById('gal-img-'+i);
 if(!srcEl||!srcEl.getAttribute('src'))continue;
 const slide=document.createElement('div');slide.className='carousel-slide';
-const img=document.createElement('img');img.src=srcEl.getAttribute('src');
+const img=document.createElement('img');img.src=srcEl.getAttribute('src');img.alt='Foto '+(i+1);
 img.style.cssText='width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)';
-slide.appendChild(img);t.appendChild(slide);
-const dot=document.createElement('button');dot.className='carousel-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);d.appendChild(dot);
+slide.appendChild(img);track.appendChild(slide);
+const dot=document.createElement('button');dot.className='carousel-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);dotsC.appendChild(dot);
 }
-const slides=t.querySelectorAll('.carousel-slide');
-if(slides.length===0)return;
-let cur=0;const dots=d.querySelectorAll('.carousel-dot');
-function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length))+'%)';dots.forEach((dt,j)=>dt.classList.toggle('active',j===cur))}
-if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),4000);
+const slides=track.querySelectorAll('.carousel-slide');
+const total=slides.length;
+if(total===0)return;
+// Clona primeiro e ultimo para scroll infinito
+const firstClone=slides[0].cloneNode(true);const lastClone=slides[total-1].cloneNode(true);
+track.appendChild(firstClone);track.insertBefore(lastClone,slides[0]);
+let cur=1;track.style.transform='translateX(-'+(cur*(100/total))+'%)';
+const dots=dotsC.querySelectorAll('.carousel-dot');
+let autoPlay=total>3?setInterval(next,4000):null;
+function updateDots(i){dots.forEach((dt,j)=>dt.classList.toggle('active',j===i));}
+function goTo(i){
+cur=i+1;track.style.transition='transform .5s ease';
+track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(i);
+resetAuto();
+}
+function next(){goTo((cur)%total);}
+function prev(){goTo((cur-2+total)%total);}
+function resetAuto(){if(autoPlay){clearInterval(autoPlay);autoPlay=setInterval(next,4000);}}
+track.addEventListener('transitionend',function(){
+if(cur===total+1){track.style.transition='none';cur=1;track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(0);}
+if(cur===0){track.style.transition='none';cur=total;track.style.transform='translateX(-'+(cur*(100/total))+'%)';updateDots(total-1);}
+});
+// Setas de navegacao
+var prevBtn=document.createElement('button');prevBtn.className='carousel-arrow carousel-arrow-left';prevBtn.innerHTML='‹';prevBtn.onclick=prev;
+var nextBtn=document.createElement('button');nextBtn.className='carousel-arrow carousel-arrow-right';nextBtn.innerHTML='›';nextBtn.onclick=next;
+carousel.appendChild(prevBtn);carousel.appendChild(nextBtn);
 })();
 </script>
 <!-- CUSTOM_FOOTER -->
