@@ -463,7 +463,17 @@ h+='</div>';}
 return h;
 }
 
-function onImg(k,v){edits.landing.imagens[k]=v;edits.planos.imagens[k]=v;updatePreview();}
+	function onImg(k,v){edits.landing.imagens[k]=v;edits.planos.imagens[k]=v;syncLinkedKeys(k,v);updatePreview();}
+	// Sincroniza chaves vinculadas (ex: logo → logo-hero em ambas paginas)
+	function syncLinkedKeys(k,v){
+		var linked={"logo":["logo-hero"],"logo-hero":["logo"]};
+		if(linked[k]){
+			linked[k].forEach(function(lk){
+				edits.landing.imagens[lk]=v;
+				edits.planos.imagens[lk]=v;
+			});
+		}
+	}
 
 function uploadImg(k,input){
 	var f=input.files[0];if(!f)return;
@@ -484,7 +494,7 @@ function uploadImg(k,input){
 	c.width=w;c.height=h;
 	var ctx=c.getContext("2d");ctx.drawImage(img,0,0,w,h);
 	var dataUrl=c.toDataURL("image/webp",0.8);
-	edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;
+	edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;syncLinkedKeys(k,dataUrl);
 	var urlInput=document.getElementById("img-url-"+k);if(urlInput)urlInput.value="[Carregada]";
 	updatePreview();renderPanel();
 	label.innerHTML=origHTML;label.style.pointerEvents="";
