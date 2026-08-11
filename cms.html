@@ -430,7 +430,7 @@ if(keys.length===0)h+='<p style="font-size:11px;color:var(--dim);text-align:cent
 return h;
 }
 
-function onText(k,v){edits[currentPage].textos[k]=v;updatePreview();}
+function onText(k,v){edits.landing.textos[k]=v;edits.planos.textos[k]=v;updatePreview();}
 
 function renderCores(){
 var e=edits[currentPage];
@@ -461,7 +461,7 @@ h+='</div>';}
 return h;
 }
 
-function onImg(k,v){edits[currentPage].imagens[k]=v;updatePreview();}
+function onImg(k,v){edits.landing.imagens[k]=v;edits.planos.imagens[k]=v;updatePreview();}
 
 function uploadImg(k,input){
 	var f=input.files[0];if(!f)return;
@@ -482,7 +482,7 @@ function uploadImg(k,input){
 	c.width=w;c.height=h;
 	var ctx=c.getContext("2d");ctx.drawImage(img,0,0,w,h);
 	var dataUrl=c.toDataURL("image/webp",0.8);
-	edits[currentPage].imagens[k]=dataUrl;
+	edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;
 	var urlInput=document.getElementById("img-url-"+k);if(urlInput)urlInput.value="[Carregada]";
 	updatePreview();renderPanel();
 	label.innerHTML=origHTML;label.style.pointerEvents="";
@@ -501,7 +501,7 @@ h+='<div class="sec-hdr">WhatsApp</div><div class="fg"><label class="fl">Número
 return h;
 }
 
-function onLink(k,v){edits[currentPage].links[k]=v;updatePreview();}
+function onLink(k,v){edits.landing.links[k]=v;edits.planos.links[k]=v;updatePreview();}
 
 function renderPlanos(){
 currentPage='planos';document.getElementById('previewLabel').textContent='Página de Planos';buildTabs();updatePreview();
