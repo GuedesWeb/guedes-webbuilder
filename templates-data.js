@@ -312,15 +312,15 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 
 	<!-- Slots ocultos para imagens (gerenciados pelo CMS) -->
 	<div style="display:none" aria-hidden="true">
-	<img data-editable="depo-0" src=""><img data-editable="depo-1" src=""><img data-editable="depo-2" src=""><img data-editable="depo-3" src=""><img data-editable="depo-4" src="">
-	<img data-editable="depo-5" src=""><img data-editable="depo-6" src=""><img data-editable="depo-7" src=""><img data-editable="depo-8" src=""><img data-editable="depo-9" src="">
-	<img data-editable="depo-10" src=""><img data-editable="depo-11" src=""><img data-editable="depo-12" src=""><img data-editable="depo-13" src=""><img data-editable="depo-14" src="">
-	<span data-editable="depo-count">0</span>
-	<img data-editable="gal-0" src=""><img data-editable="gal-1" src=""><img data-editable="gal-2" src=""><img data-editable="gal-3" src=""><img data-editable="gal-4" src="">
-	<img data-editable="gal-5" src=""><img data-editable="gal-6" src=""><img data-editable="gal-7" src=""><img data-editable="gal-8" src=""><img data-editable="gal-9" src="">
-	<img data-editable="gal-10" src=""><img data-editable="gal-11" src=""><img data-editable="gal-12" src=""><img data-editable="gal-13" src=""><img data-editable="gal-14" src="">
-	<img data-editable="gal-15" src=""><img data-editable="gal-16" src=""><img data-editable="gal-17" src=""><img data-editable="gal-18" src=""><img data-editable="gal-19" src="">
-	<span data-editable="gal-count">0</span>
+	<img id="depo-img-0" data-editable="depo-0" src=""><img id="depo-img-1" data-editable="depo-1" src=""><img id="depo-img-2" data-editable="depo-2" src=""><img id="depo-img-3" data-editable="depo-3" src=""><img id="depo-img-4" data-editable="depo-4" src="">
+	<img id="depo-img-5" data-editable="depo-5" src=""><img id="depo-img-6" data-editable="depo-6" src=""><img id="depo-img-7" data-editable="depo-7" src=""><img id="depo-img-8" data-editable="depo-8" src=""><img id="depo-img-9" data-editable="depo-9" src="">
+	<img id="depo-img-10" data-editable="depo-10" src=""><img id="depo-img-11" data-editable="depo-11" src=""><img id="depo-img-12" data-editable="depo-12" src=""><img id="depo-img-13" data-editable="depo-13" src=""><img id="depo-img-14" data-editable="depo-14" src="">
+	<span id="depo-count-val" data-editable="depo-count">0</span>
+	<img id="gal-img-0" data-editable="gal-0" src=""><img id="gal-img-1" data-editable="gal-1" src=""><img id="gal-img-2" data-editable="gal-2" src=""><img id="gal-img-3" data-editable="gal-3" src=""><img id="gal-img-4" data-editable="gal-4" src="">
+	<img id="gal-img-5" data-editable="gal-5" src=""><img id="gal-img-6" data-editable="gal-6" src=""><img id="gal-img-7" data-editable="gal-7" src=""><img id="gal-img-8" data-editable="gal-8" src=""><img id="gal-img-9" data-editable="gal-9" src="">
+	<img id="gal-img-10" data-editable="gal-10" src=""><img id="gal-img-11" data-editable="gal-11" src=""><img id="gal-img-12" data-editable="gal-12" src=""><img id="gal-img-13" data-editable="gal-13" src=""><img id="gal-img-14" data-editable="gal-14" src="">
+	<img id="gal-img-15" data-editable="gal-15" src=""><img id="gal-img-16" data-editable="gal-16" src=""><img id="gal-img-17" data-editable="gal-17" src=""><img id="gal-img-18" data-editable="gal-18" src=""><img id="gal-img-19" data-editable="gal-19" src="">
+	<span id="gal-count-val" data-editable="gal-count">0</span>
 	</div>
 
 <!-- PORQUE FAZER PILATES? -->
@@ -417,10 +417,10 @@ document.querySelectorAll('[data-editable="hero-btn-link"],[data-editable="cta-l
 (function(){
 const t=document.getElementById('depoimentosTrack'),d=document.getElementById('depoimentosDots');
 if(!t||!d)return;
-const count=parseInt(document.querySelector('[data-editable="depo-count"]')?.textContent||'0');
+const count=parseInt(document.getElementById('depo-count-val')?.textContent||'0');
 if(count===0){t.parentElement.style.display='none';d.style.display='none';return;}
 for(let i=0;i<count;i++){
-const srcEl=document.querySelector('img[data-editable="depo-"+i]');
+const srcEl=document.getElementById('depo-img-'+i);
 if(!srcEl||!srcEl.getAttribute('src'))continue;
 const slide=document.createElement('div');slide.className='depo-slide';
 const img=document.createElement('img');img.src=srcEl.getAttribute('src');
@@ -438,9 +438,9 @@ if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),5000);
 (function(){
 const t=document.getElementById('carouselTrack'),d=document.getElementById('carouselDots');
 if(!t||!d)return;
-const count=parseInt(document.querySelector('[data-editable="gal-count"]')?.textContent||'0');
+const count=parseInt(document.getElementById('gal-count-val')?.textContent||'0');
 for(let i=0;i<count;i++){
-const srcEl=document.querySelector('img[data-editable="gal-"+i]');
+const srcEl=document.getElementById('gal-img-'+i);
 if(!srcEl||!srcEl.getAttribute('src'))continue;
 const slide=document.createElement('div');slide.className='carousel-slide';
 const img=document.createElement('img');img.src=srcEl.getAttribute('src');
