@@ -1019,7 +1019,7 @@ const pk=`${planoKeys[p]}-op${f+1}-preco`;
 h+=`<div class="fg"><label class="fl">${freqLabels[f]}</label><input class="fi" id="su-${pk}" value="${esc(edits.planos.textos[pk]||'')}" placeholder="R$ 000,00"></div>`;
 }
 }
-h+=`<div class="fg"><label class="fl">Aula avulsa</label><input class="fi" id="su-avulso" value="${esc(edits.planos.textos['avulso']||'')}" placeholder="R$180,00 cada aula"></div>`;
+// Aula avulsa removida
 }
 
 // --- NAVEGAÇÃO ---
@@ -1075,7 +1075,7 @@ const k='su-'+pk+'-op'+(f+1)+'-preco';
 if(setupCache[k])edits.planos.textos[pk+'-op'+(f+1)+'-preco']=setupCache[k];
 }
 });
-if(setupCache['su-avulso'])edits.planos.textos['avulso']=setupCache['su-avulso'];
+// Aula avulsa removida
 }
 
 function nextSetupSubStep(){
@@ -1250,8 +1250,7 @@ const obsKey=planoKeys[p]+'-obs';
 const obsTexts=['No plano mensal, as aulas são realizadas no período de 30 dias.','No plano trimestral, as aulas são realizadas no período de 90 dias.','No plano semestral, as aulas são realizadas no período de 180 dias.'];
 edits.planos.textos[obsKey]=obsTexts[p];
 }
-const avulso=document.getElementById('su-avulso')?.value.trim();
-if(avulso)edits.planos.textos['avulso']=avulso;
+// Aula avulsa removida
 
 // Avançar para edição com preview
 setupSubStep=0;
@@ -1449,7 +1448,7 @@ h+=field(p+'-nome','Nome do plano',nomes[i]);
 for(let j=1;j<=3;j++){h+=field(p+'-op'+j+'-label','Opção '+j+' - Label','');h+=field(p+'-op'+j+'-preco','Opção '+j+' - Preço','');}
 h+=field(p+'-obs','Observação','');
 });
-h+=field('avulso','Aulas avulsas','Aulas avulsas: <strong>R$180,00</strong> cada aula.<br>Descontos para o pagamento no pix');
+// Aula avulsa removida
 updatePreview();
 return h;
 }

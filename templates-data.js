@@ -8,7 +8,7 @@ const TEMPLATES = {
 <meta name="description" content="Domine seu corpo e mente com o poder do Pilates. Agende uma aula experimental." data-editable="seo-description">
 <link rel="icon" href="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/cropped-FAVICON-32x32.png" data-editable="favicon">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -24,8 +24,8 @@ const TEMPLATES = {
   --sombra-md: 0 8px 30px rgba(58,45,40,.08);
   --sombra-lg: 0 20px 60px rgba(58,45,40,.10);
   --raio: 12px;
-  --fonte-display: 'Cormorant Garamond', Georgia, serif;
-  --fonte-corpo: 'Work Sans', system-ui, sans-serif;
+  --fonte-display: 'Poppins', sans-serif;
+  --fonte-corpo: 'Poppins', sans-serif;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -52,7 +52,7 @@ ul{list-style:none}
 .header{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:all .35s}
 .header.scrolled{background:rgba(251,247,242,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:10px 0;box-shadow:0 1px 0 var(--cor-borda)}
 .header .container{display:flex;align-items:center;justify-content:space-between}
-.logo-img{height:44px;width:auto}
+.logo-img{height:28px;width:auto}
 .nav{display:flex;align-items:center;gap:36px}
 .nav a{font-size:14px;font-weight:500;color:var(--cor-texto);transition:color .25s;position:relative}
 .nav a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--cor-acento);transition:width .25s}
@@ -204,7 +204,7 @@ ul{list-style:none}
 <!-- HEADER -->
 <header class="header" id="header">
 <div class="container">
-<a href="#" class="logo-img-link"><img class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Georgia,serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo"></a>
+<a href="#" class="logo-img-link"><img class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Poppins,sans-serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo"></a>
 <nav class="nav" id="nav">
 <a href="#faleconosco" data-editable="menu-1">Fale conosco</a>
 <a href="#nossoespaco" data-editable="menu-2">Nosso espaço</a>
@@ -220,8 +220,8 @@ ul{list-style:none}
 <img class="hero-img right" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3C/svg%3E" alt="" data-editable="hero-img-right">
 <div class="hero-glow"></div>
 <div class="container">
-<img class="hero-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Georgia,serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo-hero">
-<h2 data-editable="hero-headline">Domine seu corpo e mente com o poder do Pilates.</h2>
+<img class="hero-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Poppins,sans-serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo-hero">
+<h2 data-editable="hero-headline">Domine seu corpo e mente com o poder do&nbsp;Pilates.</h2>
 <a href="#" class="btn btn-accent" data-editable="hero-btn-link" data-editable-text="hero-btn-text">Agende uma aula experimental</a>
 </div>
 </section>
@@ -433,7 +433,7 @@ setInterval(()=>goTo((cur+1)%slides.length),4000);
 <meta name="description" content="Informações sobre planos e aulas." data-editable="seo-description">
 <link rel="icon" href="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/cropped-FAVICON-32x32.png" data-editable="favicon">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -446,8 +446,8 @@ setInterval(()=>goTo((cur+1)%slides.length),4000);
   --cor-texto-suave: #7A6E66;
   --cor-borda: #E8E0D8;
   --raio: 12px;
-  --fonte-display: 'Cormorant Garamond', Georgia, serif;
-  --fonte-corpo: 'Work Sans', system-ui, sans-serif;
+  --fonte-display: 'Poppins', sans-serif;
+  --fonte-corpo: 'Poppins', sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;overflow-x:hidden}
@@ -469,7 +469,7 @@ ul{list-style:none}
 .header{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;transition:all .35s}
 .header.scrolled{background:rgba(251,247,242,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:10px 0;box-shadow:0 1px 0 var(--cor-borda)}
 .header .container{display:flex;align-items:center;justify-content:center}
-.logo-img{height:44px;width:auto}
+.logo-img{height:28px;width:auto}
 
 /* HERO */
 .hero{position:relative;min-height:55vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--cor-fundo)}
@@ -511,9 +511,6 @@ ul{list-style:none}
 .plano-card.destaque .plano-item-preco{color:#fff}
 .plano-obs{font-size:12px;color:var(--cor-texto-suave);margin-top:20px;padding-top:16px;border-top:1px solid var(--cor-borda);font-style:italic}
 .plano-card.destaque .plano-obs{color:rgba(255,255,255,.5);border-top-color:rgba(255,255,255,.1)}
-.avulso{text-align:center;margin-top:32px;padding:24px 32px;background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:var(--raio);max-width:500px;margin-left:auto;margin-right:auto}
-.avulso p{font-size:15px;color:var(--cor-texto);line-height:1.8}
-.avulso strong{color:var(--cor-acento)}
 @media(max-width:768px){
 .planos-grid{flex-direction:column;align-items:center}.plano-card{max-width:100%;min-width:0;padding:32px 20px}
 .hero h1{font-size:28px}.hero{padding:100px 24px 60px}
@@ -555,7 +552,7 @@ ul{list-style:none}
 <span data-editable="whatsapp-numero" style="display:none">5538998760323</span>
 
 <header class="header" id="header">
-<div class="container"><a href="#" class="logo-link"><img class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Georgia,serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo"></a></div>
+<div class="container"><a href="#" class="logo-link"><img class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Poppins,sans-serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo"></a></div>
 </header>
 
 <section class="hero">
@@ -605,7 +602,6 @@ ul{list-style:none}
 <p class="plano-obs" data-editable="plano3-obs">No plano semestral, ás aulas são realizadas no período de 180 dias.</p>
 </div>
 </div>
-<div class="avulso"><p data-editable="avulso">Aulas avulsas: <strong>R$180,00</strong> cada aula.<br>Descontos para o pagamento no pix</p></div>
 </div>
 </section>
 
