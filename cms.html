@@ -268,11 +268,13 @@ var st=d.getElementById('wb-colors');
 if(!st){st=d.createElement('style');st.id='wb-colors';d.head.appendChild(st);}
 st.textContent=css;
 
-var im=e.imagens||{};
-var ik=Object.keys(im);
-for(var i=0;i<ik.length;i++){var k=ik[i],v=im[k];if(!v||v[0]==='[')continue;var el=d.querySelector('[data-editable="'+k+'"]');if(el&&el.tagName==='IMG')el.setAttribute('src',v);}
-for(var i=0;i<ik.length;i++){var k2=ik[i],v2=im[k2];if(!v2||v2[0]==='[')continue;d.querySelectorAll('[data-editable-bg="'+k2+'"]').forEach(function(el){el.style.backgroundImage='url("'+v2+'")';});}
-
+	var im=e.imagens||{};
+	// Fallback: busca imagem na outra pagina se estiver vazia
+	var otherPage=page==="landing"?"planos":"landing";
+	var imOther=(edits[otherPage]&&edits[otherPage].imagens)||{};
+	var ik=Object.keys(im);
+	for(var i=0;i<ik.length;i++){var k=ik[i],v=im[k];if(!v||v[0]==='['){v=imOther[k];}if(!v||v[0]==='[')continue;var el=d.querySelector('[data-editable="'+k+'"]');if(el&&el.tagName==='IMG')el.setAttribute('src',v);}
+	for(var i=0;i<ik.length;i++){var k2=ik[i],v2=im[k2];if(!v2||v2[0]==='['){v2=imOther[k2];}if(!v2||v2[0]==='[')continue;d.querySelectorAll('[data-editable-bg="'+k2+'"]').forEach(function(el){el.style.backgroundImage='url("'+v2+'")';});}
 var tx=e.textos||{};
 var tk=Object.keys(tx);
 for(var i=0;i<tk.length;i++){var k3=tk[i],v3=tx[k3];var els=d.querySelectorAll('[data-editable-text="'+k3+'"]');if(els.length>0){els.forEach(function(el){el.textContent=v3;});continue;}var el2=d.querySelector('[data-editable="'+k3+'"]');if(!el2)continue;if(el2.tagName==='INPUT'||el2.tagName==='TEXTAREA'){el2.setAttribute('value',v3);el2.value=v3;}else if(!el2.children.length){el2.textContent=v3;}}
