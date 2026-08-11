@@ -90,7 +90,10 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .busca-section .container{text-align:center}
 .busca-title{font-size:clamp(28px,3.5vw,40px);font-weight:500;color:var(--cor-escuro);margin-bottom:40px}
 .cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.card-busca{padding:280px 16px 32px;background-size:cover;background-position:top center;background-repeat:no-repeat;border-radius:var(--raio);box-shadow:var(--sombra-sm);text-align:center;transition:all .3s}
+.card-busca{padding:280px 16px 32px;background-size:cover;background-position:center center;background-repeat:no-repeat;border-radius:var(--raio);box-shadow:var(--sombra-sm);text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.card-busca::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.02) 100%);border-radius:var(--raio);z-index:0}
+.card-busca>*{position:relative;z-index:1}
+.card-busca h3,.card-busca p{color:#fff!important}
 .card-busca:hover{transform:translateY(-4px);box-shadow:var(--sombra-md)}
 .card-busca h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;color:var(--cor-escuro);margin-bottom:4px}
 .card-busca p{font-size:15px;color:var(--cor-texto-suave);line-height:1.4}
@@ -134,20 +137,19 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .dif-dot{width:7px;height:7px;border-radius:50%;background:var(--cor-acento);flex-shrink:0}
 @media(max-width:768px){.dif-item{font-size:14px}}
 
-/* DEPOIMENTOS */
+/* DEPOIMENTOS (Slider de Imagens) */
 .depoimentos{background:var(--cor-superficie)}
-.depo-header{text-align:center;margin-bottom:40px}
-.depo-header .titulo{font-family:var(--fonte-display);font-size:24px;font-weight:400;color:var(--cor-texto)}
+.depo-header{text-align:center;margin-bottom:32px}
+.depo-header .titulo{font-size:24px;font-weight:400;color:var(--cor-texto)}
 .depo-header .subtitulo{font-size:clamp(28px,3.5vw,40px);font-weight:500;color:var(--cor-escuro)}
-.depo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.depo-card{background:var(--cor-fundo);padding:28px 24px;border-radius:var(--raio);border:1px solid var(--cor-borda);transition:all .3s}
-.depo-card:hover{box-shadow:var(--sombra-md)}
-.depo-stars{color:#D4A853;font-size:14px;letter-spacing:2px;margin-bottom:12px}
-.depo-card blockquote{font-size:14px;line-height:1.7;color:var(--cor-texto-suave);font-style:italic;margin-bottom:16px}
-.depo-autor{display:flex;align-items:center;gap:10px}
-.depo-avatar{width:36px;height:36px;border-radius:50%;background:var(--cor-medio);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px;flex-shrink:0}
-.depo-nome{font-weight:600;font-size:13px;color:var(--cor-texto)}
-@media(max-width:768px){.depo-grid{grid-template-columns:1fr}}
+.depo-slider{overflow:hidden;position:relative;max-width:900px;margin:0 auto}
+.depo-slide-track{display:flex;transition:transform .5s ease}
+.depo-slide{flex:0 0 calc(100%/3);padding:0 8px;min-width:280px}
+.depo-slide img{width:100%;aspect-ratio:3/4.2;object-fit:contain;border-radius:var(--raio);background:var(--cor-fundo)}
+.depo-dots{display:flex;justify-content:center;gap:8px;margin-top:24px}
+.depo-dot{width:10px;height:10px;border-radius:50%;background:var(--cor-borda);border:none;cursor:pointer;transition:all .3s}
+.depo-dot.active{background:var(--cor-acento);width:28px;border-radius:5px}
+@media(max-width:768px){.depo-slide{flex:0 0 85%}.depo-slide img{aspect-ratio:3/5}}
 
 /* POR QUE */
 .porque-section{min-height:500px;display:flex;align-items:center;background:var(--cor-escuro);padding:80px 0}
@@ -232,7 +234,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <div class="container">
 <p class="busca-title display" data-editable="busca-title">O que você busca?</p>
 <div class="cards-grid">
-<div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card1.avif)" <h3 data-editable="card1-titulo">Melhorar a saúde</h3><p data-editable="card1-desc">Trabalhe o tônus muscular, flexibilidade, força e postura.</p></div>
+<div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card1.avif)"><h3 data-editable="card1-titulo">Melhorar a saúde</h3><p data-editable="card1-desc">Trabalhe o tônus muscular, flexibilidade, força e postura.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card2.avif)"><h3 data-editable="card2-titulo">Dê adeus ás dores</h3><p data-editable="card2-desc">Alivie o stress melhore a disposição e a auto estima.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/card3.avif)"><h3 data-editable="card3-titulo">Qualidade de vida</h3><p data-editable="card3-desc">Tenha uma rotina sem desconforto com um corpo totalmente transformado.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/card4.avif)"><h3 data-editable="card4-titulo">Desempenho</h3><p data-editable="card4-desc">Otimize o desempenho das atividades diárias e de outras atividades físicas.</p></div>
@@ -271,15 +273,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <p class="espaco-title display" data-editable="espaco-title">Conheça nosso Espaço</p>
 </div>
 <div class="carousel" id="carousel">
-<div class="carousel-track" id="carouselTrack">
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.43.09.jpeg" data-editable="galeria-1" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.17-1.jpeg" data-editable="galeria-2" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.17.jpeg" data-editable="galeria-3" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.16-2.jpeg" data-editable="galeria-4" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.16-1.jpeg" data-editable="galeria-5" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.16.jpeg" data-editable="galeria-6" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.42.15.jpeg" data-editable="galeria-7" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
-<div class="carousel-slide"><img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-08-at-22.43.32.jpeg" data-editable="galeria-8" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)"></div>
+	<div class="carousel-track" id="carouselTrack"></div>
 </div>
 </div>
 <div class="carousel-dots" id="carouselDots"></div>
@@ -302,16 +296,32 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 </div>
 </section>
 
-<!-- DEPOIMENTOS -->
-<section class="section depoimentos">
-<div class="container">
-<div class="depo-header">
-<p class="titulo" data-editable="depo-label">FEEDBACKS</p>
-<p class="subtitulo display" data-editable="depo-title">Veja o que os nossos alunos falam de nós</p>
-</div>
-<div id="reviews-widget" style="max-width:900px;margin:0 auto;min-height:60px" data-editable-html="google-reviews"></div>
-</div>
-</section>
+	<!-- DEPOIMENTOS (Slider de Imagens) -->
+	<section class="section depoimentos">
+	<div class="container">
+	<div class="depo-header">
+	<p class="titulo" data-editable="depo-label">FEEDBACKS</p>
+	<p class="subtitulo display" data-editable="depo-title">Veja o que os nossos alunos falam de nós</p>
+	</div>
+	<div class="depo-slider" id="depoimentosSlider">
+	<div class="depo-slide-track" id="depoimentosTrack"></div>
+	</div>
+	<div class="depo-dots" id="depoimentosDots"></div>
+	</div>
+	</section>
+
+	<!-- Slots ocultos para imagens (gerenciados pelo CMS) -->
+	<div style="display:none" aria-hidden="true">
+	<img data-editable="depo-0" src=""><img data-editable="depo-1" src=""><img data-editable="depo-2" src=""><img data-editable="depo-3" src=""><img data-editable="depo-4" src="">
+	<img data-editable="depo-5" src=""><img data-editable="depo-6" src=""><img data-editable="depo-7" src=""><img data-editable="depo-8" src=""><img data-editable="depo-9" src="">
+	<img data-editable="depo-10" src=""><img data-editable="depo-11" src=""><img data-editable="depo-12" src=""><img data-editable="depo-13" src=""><img data-editable="depo-14" src="">
+	<span data-editable="depo-count">0</span>
+	<img data-editable="gal-0" src=""><img data-editable="gal-1" src=""><img data-editable="gal-2" src=""><img data-editable="gal-3" src=""><img data-editable="gal-4" src="">
+	<img data-editable="gal-5" src=""><img data-editable="gal-6" src=""><img data-editable="gal-7" src=""><img data-editable="gal-8" src=""><img data-editable="gal-9" src="">
+	<img data-editable="gal-10" src=""><img data-editable="gal-11" src=""><img data-editable="gal-12" src=""><img data-editable="gal-13" src=""><img data-editable="gal-14" src="">
+	<img data-editable="gal-15" src=""><img data-editable="gal-16" src=""><img data-editable="gal-17" src=""><img data-editable="gal-18" src=""><img data-editable="gal-19" src="">
+	<span data-editable="gal-count">0</span>
+	</div>
 
 <!-- PORQUE FAZER PILATES? -->
 <section class="porque-section">
@@ -403,22 +413,46 @@ if(!num)return;
 var whatsUrl='https://wa.me/'+num+'?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es';
 document.querySelectorAll('[data-editable="hero-btn-link"],[data-editable="cta-link"],[data-editable="whatsapp-link"],[data-editable="whatsapp-float-link"]').forEach(function(a){a.href=whatsUrl});
 })();
-// Google Reviews — renderiza HTML do campo google-reviews
+// Depoimentos Slider — monta slides a partir dos slots depo-*
 (function(){
-var el=document.querySelector('[data-editable-html="google-reviews"]');
-if(el&&el.textContent.trim()){el.innerHTML=el.textContent.trim()}
+const t=document.getElementById('depoimentosTrack'),d=document.getElementById('depoimentosDots');
+if(!t||!d)return;
+const count=parseInt(document.querySelector('[data-editable="depo-count"]')?.textContent||'0');
+if(count===0){t.parentElement.style.display='none';d.style.display='none';return;}
+for(let i=0;i<count;i++){
+const srcEl=document.querySelector('img[data-editable="depo-"+i]');
+if(!srcEl||!srcEl.getAttribute('src'))continue;
+const slide=document.createElement('div');slide.className='depo-slide';
+const img=document.createElement('img');img.src=srcEl.getAttribute('src');
+slide.appendChild(img);t.appendChild(slide);
+const dot=document.createElement('button');dot.className='depo-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);d.appendChild(dot);
+}
+const slides=t.querySelectorAll('.depo-slide');
+if(slides.length===0){t.parentElement.style.display='none';d.style.display='none';return;}
+let cur=0;const dots=d.querySelectorAll('.depo-dot');
+function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length))+'%)';dots.forEach((dt,j)=>dt.classList.toggle('active',j===cur))}
+if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),5000);
 })();
 
-// Carrossel — dots e autoplay
+// Carrossel dinamico — monta slides a partir dos slots gal-*
 (function(){
 const t=document.getElementById('carouselTrack'),d=document.getElementById('carouselDots');
-const slides=t.querySelectorAll('.carousel-slide');
-slides.forEach((s,i)=>{
+if(!t||!d)return;
+const count=parseInt(document.querySelector('[data-editable="gal-count"]')?.textContent||'0');
+for(let i=0;i<count;i++){
+const srcEl=document.querySelector('img[data-editable="gal-"+i]');
+if(!srcEl||!srcEl.getAttribute('src'))continue;
+const slide=document.createElement('div');slide.className='carousel-slide';
+const img=document.createElement('img');img.src=srcEl.getAttribute('src');
+img.style.cssText='width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)';
+slide.appendChild(img);t.appendChild(slide);
 const dot=document.createElement('button');dot.className='carousel-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);d.appendChild(dot);
-});
+}
+const slides=t.querySelectorAll('.carousel-slide');
+if(slides.length===0)return;
 let cur=0;const dots=d.querySelectorAll('.carousel-dot');
 function goTo(i){cur=i;t.style.transform='translateX(-'+(cur*(100/slides.length))+'%)';dots.forEach((dt,j)=>dt.classList.toggle('active',j===cur))}
-setInterval(()=>goTo((cur+1)%slides.length),4000);
+if(slides.length>3)setInterval(()=>goTo((cur+1)%slides.length),4000);
 })();
 </script>
 <!-- CUSTOM_FOOTER -->
