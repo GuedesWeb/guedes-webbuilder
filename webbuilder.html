@@ -1282,28 +1282,18 @@ renderStep();updateStepsBar();updatePreview();
 
 // --- UPLOAD EM LOTE DA GALERIA (Setup) ---
 function setupBulkGaleria(input){
-var files=input.files;if(!files||files.length===0)return;
-var max=20;var total=Math.min(files.length,max);
-// Limpa galeria anterior
-for(var i=0;i<max;i++){delete edits.landing.imagens['gal-'+i];delete edits.planos.imagens['gal-'+i];}
-var processed=0;
-function processNext(){
-if(processed>=total){
-edits.landing.textos['gal-count']=String(processed);
-edits.planos.textos['gal-count']=String(processed);
-updatePreview();
-var prev=document.getElementById('setup-galeria-preview');
-if(prev){prev.innerHTML='<p style=\"font-size:11px;color:var(--green);text-align:center;padding:8px\">✅ '+processed+' imagens carregadas!</p>';}
-return;
-}
-processFileToWebP(files[processed],function(dataUrl){
-edits.landing.imagens['gal-'+processed]=dataUrl;
-edits.planos.imagens['gal-'+processed]=dataUrl;
-processed++;
-processNext();
-},function(){processed++;processNext();});
-}
-processNext();
+var file=input.files[0];if(!file)return;
+var max=20;
+var curCount=parseInt(edits.landing.textos['gal-count']||'0');
+if(curCount>=max){alert('Limite de '+max+' imagens.');return;}
+var idx=curCount;
+processFileToWebP(file,function(dataUrl){
+edits.landing.imagens['gal-'+idx]=dataUrl;
+edits.planos.imagens['gal-'+idx]=dataUrl;
+edits.landing.textos['gal-count']=String(curCount+1);
+edits.planos.textos['gal-count']=String(curCount+1);
+updatePreview();renderStep();
+},function(err){alert(err);});
 }
 
 // --- UPLOAD HELPERS PARA SETUP ---
