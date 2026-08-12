@@ -59,13 +59,16 @@ linear-gradient(180deg,#0b1020 0%,#080c14 42%,#0a0d13 100%);}
 .step.active{color:var(--bright);background:rgba(76,67,247,.1)}
 .step.active .num{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(76,67,247,.4)}
 .step.done{color:var(--green)}.step.done .num{background:rgba(32,201,151,.2);border-color:var(--green);color:var(--green)}
+.tab{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:500;color:var(--dim);white-space:nowrap;transition:all var(--transition);flex-shrink:0}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.tab.on{color:var(--bright);background:rgba(76,67,247,.12)}
 
 /* ============ MAIN ============ */
 .main{display:flex;flex:1;overflow:hidden;position:relative}
 
 /* ============ PREVIEW ============ */
 .preview{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0;position:relative}
-.preview-bar{display:flex;align-items:center;gap:10px;padding:7px 16px;background:rgba(13,18,32,.6);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.preview-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:7px 16px;background:rgba(13,18,32,.6);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
 .pdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;opacity:.8}
 .pdot.r{background:#FF5F57}.pdot.y{background:#FEBC2E}.pdot.g{background:#28C840}
 .purl{flex:1;padding:4px 12px;background:rgba(255,255,255,.03);border-radius:6px;font-size:11px;color:var(--dim);text-align:center;overflow:hidden;white-space:nowrap;border:1px solid var(--border)}
@@ -73,9 +76,15 @@ linear-gradient(180deg,#0b1020 0%,#080c14 42%,#0a0d13 100%);}
 .szbtns button{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:11px;font-family:var(--font);transition:all var(--transition)}
 .szbtns button:hover{background:var(--bg3);color:var(--text)}
 .szbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.pgbtn{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:13px;font-family:var(--font);transition:all var(--transition)}
-.pgbtn:hover{background:var(--bg3);color:var(--text)}
-.pgbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+/* ============ PAGE SWITCHER (Principal / Planos) ============ */
+.pageswitch{display:flex;gap:4px;background:rgba(255,255,255,.03);border:1px solid var(--border);padding:4px;border-radius:10px}
+.psbtn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;border:none;background:transparent;color:var(--dim);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);transition:all var(--transition);white-space:nowrap}
+.psbtn:hover{color:var(--bright);background:var(--bg3)}
+.psbtn.on{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(76,67,247,.35)}
+.psbtn .ps-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(245,158,11,.18);color:var(--warning);letter-spacing:.02em}
+.psbtn.on .ps-tag{background:rgba(255,255,255,.2);color:#fff}
+.planos-warn{display:none;align-items:flex-start;gap:10px;padding:10px 16px;font-size:12px;line-height:1.65;color:var(--warning);background:rgba(245,158,11,.07);border-bottom:1px solid rgba(245,158,11,.18)}
+.planos-warn b{color:var(--bright)}
 .wb-toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;padding:10px 18px;border-radius:var(--r);font-size:11px;font-weight:600;z-index:99999;opacity:0;transform:translateY(10px);transition:all .25s;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .wb-toast.show{opacity:1;transform:translateY(0)}
 .wb-toast-err{background:var(--error);color:#fff}
@@ -109,10 +118,6 @@ linear-gradient(180deg,#0b1020 0%,#080c14 42%,#0a0d13 100%);}
 textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
 
 /* ============ COLORS ============ */
-.colors-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
-.color-dot{width:38px;height:38px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all var(--transition)}
-.color-dot:hover{transform:scale(1.12);border-color:var(--bright)}
-.color-dot.sel{border-color:var(--bright);box-shadow:0 0 20px rgba(255,255,255,.15)}
 .color-pick{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:var(--r);border:1px solid var(--border);transition:all var(--transition)}
 .color-pick:hover{border-color:var(--border-hover)}
 .color-pick input[type=color]{width:32px;height:32px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px}
@@ -131,6 +136,7 @@ textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
 .sec-hdr:first-child{margin-top:0;padding-top:0;border-top:none}
 
 .step-title{font-weight:700;font-size:20px;color:var(--bright);margin-bottom:6px;letter-spacing:-.02em}
+.panel-title{font-weight:700;font-size:15px;color:var(--bright);margin-bottom:10px;letter-spacing:-.02em}
 .step-desc{font-size:13px;color:var(--dim);margin-bottom:24px;line-height:1.6}
 .elfsight-guide{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:20px;margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--dim)}
 .elfsight-guide strong{color:var(--bright)}
@@ -160,17 +166,17 @@ textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
 <div class="preview-bar">
 <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
 <span class="purl" id="previewLabel">Landing Page</span>
-<div class="szbtns" style="margin-right:6px">
-<button class="pgbtn on" data-page="landing" onclick="switchPage('landing')" title="Landing">🏠</button>
-<button class="pgbtn" data-page="planos" onclick="switchPage('planos')" title="Planos">💎</button>
-</div>
 <div class="szbtns">
 <button class="on" onclick="setSize('100%',this)">💻</button>
 <button onclick="setSize('768px',this)">📲</button>
 <button onclick="setSize('375px',this)">📱</button>
 </div>
 </div>
-<div style="padding:4px 16px;font-size:10px;color:var(--dim);background:rgba(13,18,32,.4);border-bottom:1px solid var(--border)">✏️ Clique nos textos e imagens do preview para editar</div>
+<div style="padding:4px 16px;font-size:10px;color:var(--dim);background:rgba(13,18,32,.4);border-bottom:1px solid var(--border)">✏️ Clique nos textos e imagens do preview para editar · Alterne entre 🏠 Página Principal e 💎 Página de Planos nos botões do topo</div>
+<div class="planos-warn" id="planosWarn">
+<span style="font-size:17px;line-height:1.2">🔒</span>
+<span>A <b>Página de Planos não aparece no seu site</b> — ela só é aberta pelo <b>link que você enviar</b> (ex: <span style="font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:var(--bright)">nomedoestudio.com/planos</span>). Quem visita a página principal não encontra nenhum atalho para ela, e ela não aparece no Google.</span>
+</div>
 <div class="pwrap" id="previewWrap"><iframe id="previewFrame" src="about:blank" style="width:100%;height:100%"></iframe></div>
 </div>
 
@@ -188,14 +194,19 @@ textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
 const STEPS=[
 {id:'boasvindas',icon:'👋',label:'Boas-vindas'},
 {id:'setup',icon:'🚀',label:'Pré-Configuração'},
-{id:'identidade',icon:'🏷️',label:'Identidade'},
+];
+// Abas da tela de edição — mesmo layout do CMS
+const EDIT_TABS=[
 {id:'cores',icon:'🎨',label:'Cores'},
 {id:'imagens',icon:'🖼️',label:'Imagens'},
-{id:'contato',icon:'🔗',label:'Contato'},
-{id:'avaliacoes',icon:'⭐',label:'Avaliações'},
+{id:'links',icon:'🔗',label:'Links'},
+{id:'depoimentos',icon:'💬',label:'Depoimentos'},
+{id:'galeria',icon:'📸',label:'Galeria'},
+{id:'ajustes',icon:'⚙️',label:'Ajustes'},
 {id:'publicar',icon:'🚀',label:'Publicar'},
 ];
 let currentPage='landing',currentStep=0,setupSubStep=0,setupCache={};
+let editMode=false,currentTab='imagens';
 let templateData={landing:null,planos:null};
 let edits={landing:{cores:{},imagens:{},textos:{},links:{}},planos:{cores:{},imagens:{},textos:{},links:{}}};
 let customCode={head:'',bodyStart:'',footer:''};
@@ -447,9 +458,35 @@ if(!templateData.landing||!templateData.planos){alert('Erro nos templates!');ret
 edits.landing.cores=JSON.parse(JSON.stringify(defaults.landing));
 edits.planos.cores=JSON.parse(JSON.stringify(defaults.planos));
 parseFields('landing');parseFields('planos');
+restaurarRascunho();
 buildStepsBar();
 checkAdminMode().then(function(){if(isAdmin)renderStep();});
 renderStep();updatePreview();
+}
+
+// ==================== RASCUNHO (localStorage) ====================
+function restaurarRascunho(){
+try{
+const raw=localStorage.getItem('wb_rascunho');if(!raw)return;
+const j=JSON.parse(raw);
+if(j&&j.edits){
+['landing','planos'].forEach(pg=>{
+if(!j.edits[pg])return;
+Object.assign(edits[pg].cores,j.edits[pg].cores||{});
+Object.assign(edits[pg].imagens,j.edits[pg].imagens||{});
+Object.assign(edits[pg].textos,j.edits[pg].textos||{});
+Object.assign(edits[pg].links,j.edits[pg].links||{});
+});
+}
+if(j&&j.customCode)customCode=j.customCode;
+}catch(e){}
+}
+
+function salvarRascunho(){
+try{
+localStorage.setItem('wb_rascunho',JSON.stringify({edits:edits,customCode:customCode}));
+toast('💾 Alterações salvas neste navegador');
+}catch(e){toast('Erro ao salvar: '+e.message,true);}
 }
 
 function parseFields(page){
@@ -468,23 +505,30 @@ doc.querySelectorAll('[data-editable-bg]').forEach(el=>{const k=el.getAttribute(
 doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k)e.textos[k]=el.innerHTML.trim();});
 }
 
-// ==================== STEPS BAR ====================
+// ==================== BARRA DE ABAS (tela de edição — estilo CMS) ====================
 function buildStepsBar(){
 const bar=document.getElementById('stepsBar');
-bar.innerHTML=STEPS.map((s,i)=>`<div class="step" id="step${i}" onclick="goToStep(${i})"><span class="num">${i+1}</span>${s.icon} ${s.label}</div>`).join('');
+let h=EDIT_TABS.map(t=>`<div class="tab" id="tab-${t.id}" onclick="switchTab('${t.id}')">${t.icon} ${t.label}</div>`).join('');
+// Seletor de páginas em destaque (Principal / Planos)
+h+='<div class="pageswitch" style="margin-left:auto">';
+h+='<button class="psbtn on" data-page="landing" onclick="switchPage(\'landing\')" title="Editar a Página Principal — a página inicial que os visitantes veem">🏠 Página Principal</button>';
+h+='<button class="psbtn" data-page="planos" onclick="switchPage(\'planos\')" title="Editar a Página de Planos — acessada somente pelo link que você enviar">💎 Página de Planos <span class="ps-tag">via link</span></button>';
+h+='</div>';
+bar.innerHTML=h;
+updateStepsBar();
 }
 
 function updateStepsBar(){
-STEPS.forEach((s,i)=>{
-const el=document.getElementById('step'+i);
-el.classList.remove('active','done');
-if(i===currentStep)el.classList.add('active');
-else if(i<currentStep)el.classList.add('done');
+EDIT_TABS.forEach(t=>{
+const el=document.getElementById('tab-'+t.id);
+if(el)el.classList.toggle('on',editMode&&t.id===currentTab);
 });
-document.getElementById('btnPrev').style.display=currentStep===0?'none':'flex';
-const isLast=currentStep===STEPS.length-1;
-document.getElementById('btnNext').style.display=isLast?'none':'flex';
-document.getElementById('btnNext').textContent='Próximo →';
+}
+
+function switchTab(id){
+currentTab=id;
+updateStepsBar();
+renderEditPanel();
 }
 
 function goToStep(i){
@@ -499,10 +543,6 @@ function nextStep(){
 		if(currentStep===1){
 			applySetup();return;
 		}
-	
-	if(currentStep<STEPS.length-1){currentStep++;
-		renderStep();updateStepsBar();
-	}else{exportAll()}
 }
 function prevStep(){
 	if(currentStep>0){currentStep--;
@@ -512,24 +552,36 @@ function prevStep(){
 
 // ==================== RENDER STEP ====================
 function renderStep(){
+if(editMode){renderEditPanel();return;}
 const pc=document.getElementById('panelContent');const s=STEPS[currentStep];
 let h=s.id==='boasvindas'?'':'<div class="step-title">'+s.icon+' Etapa '+(currentStep+1)+': '+s.label+'</div>';
 switch(s.id){
 case 'boasvindas':h+=renderBoasvindas();break;
 case 'setup':h+=renderSetup();break;
-case 'identidade':h+=renderIdentidade();break;
-case 'cores':h+=renderCores();break;
-case 'imagens':h+=renderImagens();break;
-case 'contato':h+=renderContato();break;
-case 'avaliacoes':h+=renderAvaliacoes();break;
-case 'publicar':h+=renderPublicar();break;
 }
 pc.innerHTML=h;updateStepsBar();
-// Layout: setup ocupa tela cheia (sem preview)
-toggleSetupLayout(s.id==='boasvindas'||s.id==='setup');
-// bind color pickers after render
+// Layout: pré-configuração ocupa tela cheia (sem preview)
+toggleSetupLayout(true);
 if(s.id==='setup')setTimeout(()=>previewSetupPalette(),50);
-if(s.id==='cores')bindColorPickers();
+}
+
+// ==================== RENDER PAINEL DE EDIÇÃO (estilo CMS) ====================
+function renderEditPanel(){
+const pc=document.getElementById('panelContent');
+let h='';
+if(currentTab==='cores')h=renderCores();
+else if(currentTab==='imagens')h=renderImagens();
+else if(currentTab==='links')h=renderLinks();
+else if(currentTab==='depoimentos')h=renderDepoimentos();
+else if(currentTab==='galeria')h=renderGaleria();
+else if(currentTab==='ajustes')h=renderAjustes();
+else if(currentTab==='publicar')h=renderPublicar();
+pc.innerHTML=h;
+updateStepsBar();
+toggleSetupLayout(false);
+// Rodapé do painel: Salvar / Baixar / Publicar
+const nav=document.querySelector('.panel-nav');
+if(nav)nav.innerHTML='<button class="btn btn-s btn-sm" onclick="salvarRascunho()">💾 Salvar</button><button class="btn btn-s btn-sm" onclick="exportAll()">📥 Baixar</button><button class="btn btn-p btn-sm" onclick="switchTab(\'publicar\')">🚀 Publicar</button>';
 }
 
 function toggleSetupLayout(isSetup){
@@ -575,19 +627,6 @@ if(card){while(card.firstChild){panelContent.appendChild(card.firstChild);}}
 wrapper.remove();
 }
 }
-}
-
-function renderIdentidade(){
-let h='<p class="step-desc">Nome do negócio, logo e imagens decorativas da Hero</p>';
-h+=field('logo-text','Nome da Empresa (usado no título SEO e rodapé)','Sua Empresa');
-h+=imageField('logo','Logo (Header)');
-h+=imageField('logo-hero','Logo (Hero)');
-h+=imageField('favicon','Favicon');
-h+='<div class="sec-hdr">🖼️ Imagens Decorativas da Hero</div>';
-h+='<p style="font-size:11px;color:var(--dim);margin-bottom:12px">As imagens recebem tratamento automático: tons lavados, suaves e elegantes. Envie fotos no estilo wellness/Pilates para o melhor resultado.</p>';
-h+=imageField('hero-img-left','Imagem Lateral Esquerda');
-h+=imageField('hero-img-right','Imagem Lateral Direita');
-return h;
 }
 
 // ==================== BOAS-VINDAS ====================
@@ -1275,11 +1314,11 @@ edits.planos.textos[obsKey]=obsTexts[p];
 }
 // Aula avulsa removida
 
-// Avançar para edição com preview
+// Avançar para a tela de edição (abas estilo CMS)
 setupSubStep=0;
-currentPage='landing';
-currentStep=2;  // Avança para Identidade
-renderStep();updateStepsBar();updatePreview();
+editMode=true;currentTab='imagens';currentPage='landing';
+buildStepsBar();renderStep();updatePreview();
+setTimeout(()=>toast('✅ Configuração aplicada! Use os botões no topo para alternar entre 🏠 Página Principal e 💎 Página de Planos.'),400);
 }
 
 // --- UPLOAD EM LOTE DA GALERIA (Setup) ---
@@ -1420,66 +1459,217 @@ updatePreview();
 img.src=logoData;
 }
 
+// ==================== PAINÉIS DE EDIÇÃO (estilo CMS) ====================
 function renderCores(){
-let h='<p class="step-desc">Escolha uma paleta ou ajuste cada cor</p>';
-h+='<div class="colors-row">';
-colorPresets.forEach(p=>{h+=`<div class="color-dot" style="background:${p.colors['cor-escuro']}" title="${p.name}" onclick="applyPreset('${p.name}')"></div>`;});
-h+='</div>';
+const e=edits[currentPage];
+let h='<div class="panel-title">🎨 Cores</div><p style="font-size:11px;color:var(--dim);margin-bottom:12px">Aplicadas em ambas as páginas.</p>';
+h+='<div class="sec-hdr">Paletas prontas</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+colorPresets.forEach(p=>{h+=`<button class="btn btn-s btn-sm" onclick="applyPreset('${p.name}')" style="font-size:10px;padding:4px 10px">${p.name}</button>`;});
+h+='</div><div class="sec-hdr">Cores</div>';
 colorDefs.forEach(d=>{
-const v=edits[currentPage].cores[d.key]||'#000';
-h+=`<div class="color-pick"><input type="color" value="${v}" data-ckey="${d.key}" onchange="updateColor('${d.key}',this.value)"><span class="cn">${d.label}</span><span class="cv">${v}</span></div>`;
+const v=e.cores[d.key]||'#000';
+h+=`<div class="color-pick"><input type="color" value="${v}" onchange="onColor('${d.key}',this.value)"><span class="cn">${d.label}</span><span class="cv">${v}</span></div>`;
 });
 return h;
 }
 
-
-function renderContato(){
-	let h='<p class="step-desc">WhatsApp, links e redes sociais. <b style="color:var(--accent)">Textos sao editados clicando no preview.</b></p>';
-	h+=field('whatsapp-numero','WhatsApp (numero com DDD)','5511999999999');
-	h+=field('whatsapp-link','Link do WhatsApp','https://wa.me/5511999999999');
-	h+=field('telefone-link','Telefone (link)','tel:+5511900000000');
-	h+=field('insta-link','Link do Instagram','https://instagram.com/seuinstagram');
-	return h;
+function onColor(k,v){
+edits.landing.cores[k]=v;edits.planos.cores[k]=v;updatePreview();
+const el=document.querySelector(`[onchange="onColor('${k}',this.value)"]`);
+if(el){const cv=el.parentElement.querySelector('.cv');if(cv)cv.textContent=v;}
 }
 
 function renderImagens(){
-let h='<p class="step-desc">Upload ou URL das imagens do site</p>';
-const imgs=edits[currentPage].imagens;
-Object.keys(imgs).forEach(k=>{
-if(k.includes('galeria-')||k.startsWith('depo-')||k.startsWith('gal-'))return;
-h+=imageField(k,k.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()));
+const e=edits[currentPage];
+const keys=Object.keys(e.imagens||{}).filter(k=>k.indexOf('depo-')!==0&&k.indexOf('gal-')!==0).sort();
+let h='<div class="panel-title">🖼️ Imagens</div><p style="font-size:11px;color:var(--dim);margin-bottom:8px">💬 Depoimentos e 📸 Galeria têm abas próprias.</p>';
+if(keys.length===0)return h+'<p style="font-size:12px;color:var(--dim);text-align:center;padding:24px">Nenhuma imagem.</p>';
+keys.forEach(k=>{
+const v=e.imagens[k]||'';
+const l=k.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+h+='<div class="fg"><label class="fl">'+esc(l)+'</label>';
+h+='<div style="display:flex;gap:6px">';
+h+='<input class="fi" id="img-url-'+k+'" value="'+esc(v)+'" placeholder="URL da imagem" oninput="onImg(\''+k+'\',this.value)" style="flex:1;font-size:11px">';
+h+='<label class="upload-btn" style="white-space:nowrap;flex-shrink:0;cursor:pointer" title="Fazer upload da imagem">📁<input type="file" accept="image/*,.heic,.heif" style="display:none" onchange="uploadImg(\''+k+'\',this)"></label>';
+h+='</div>';
+if(v&&!v.startsWith('['))h+='<img src="'+esc(v)+'" style="width:100%;max-height:80px;object-fit:contain;background:rgba(0,0,0,.3);border-radius:8px;margin-top:6px;border:1px solid var(--border)" onerror="this.style.display=\'none\'">';
+h+='</div>';
 });
-// Galeria
-if(Object.keys(imgs).some(k=>k.includes('galeria-'))){
-h+='<div class="sec-hdr">📸 Galeria (8 fotos)</div>';
-for(let i=1;i<=8;i++)h+=imageField('galeria-'+i,'Foto '+i);
-}
 return h;
 }
 
-function renderAvaliacoes(){
-let h='<p class="step-desc">Integre avaliações reais do Google no site</p>';
-h+=`<div class="elfsight-guide">
-<strong>⭐ Como obter avaliações do Google:</strong>
-<ol>
-<li>Acesse <a href="https://elfsight.com/google-reviews-widget/" target="_blank">elfsight.com/google-reviews-widget</a></li>
-<li>Clique em <strong>"Create widget"</strong> (grátis)</li>
-<li>Conecte sua conta Google e selecione seu negócio</li>
-<li>Personalize as cores e layout do widget</li>
-<li>Copie o <strong>código embed</strong> gerado</li>
-<li>Cole no campo abaixo 👇</li>
-</ol>
-</div>`;
-h+=`<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea class="fi" data-tkey="google-reviews" oninput="updateText('google-reviews',this.value)" rows="6" placeholder="Cole aqui o código HTML do widget...">${esc(edits[currentPage].textos['google-reviews']||'')}</textarea></div>`;
+function onImg(k,v){edits.landing.imagens[k]=v;edits.planos.imagens[k]=v;syncLinkedKeys(k,v);schedulePreview();}
+
+// Sincroniza chaves vinculadas (ex: logo → logo-hero em ambas as páginas)
+function syncLinkedKeys(k,v){
+const linked={'logo':['logo-hero'],'logo-hero':['logo']};
+if(linked[k]){
+linked[k].forEach(lk=>{
+edits.landing.imagens[lk]=v;
+edits.planos.imagens[lk]=v;
+});
+}
+}
+
+function uploadImg(k,input){
+const file=input.files[0];if(!file)return;
+const label=input.parentElement;
+const origHTML=label.innerHTML;
+label.innerHTML='⏳';label.style.pointerEvents='none';
+processFileToWebP(file,function(dataUrl){
+edits.landing.imagens[k]=dataUrl;edits.planos.imagens[k]=dataUrl;syncLinkedKeys(k,dataUrl);
+const urlInput=document.getElementById('img-url-'+k);if(urlInput)urlInput.value='[Carregada]';
+updatePreview();renderEditPanel();
+label.innerHTML=origHTML;label.style.pointerEvents='';
+toast('Imagem carregada!');
+},function(err){
+label.innerHTML=origHTML;label.style.pointerEvents='';
+toast(err,true);
+});
+}
+
+function renderLinks(){
+const e=edits[currentPage];const lk=Object.keys(e.links||{}).sort();
+let h='<div class="panel-title">🔗 Links</div><p style="font-size:11px;color:var(--dim);margin-bottom:8px">Links usados no site. O número do WhatsApp fica em ⚙️ Ajustes.</p>';
+if(lk.length===0)return h+'<p style="font-size:12px;color:var(--dim);text-align:center;padding:24px">Nenhum link.</p>';
+lk.forEach(k=>{
+const v=e.links[k]||'';
+h+='<div class="fg"><label class="fl">'+esc(k.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()))+'</label><input class="fi" value="'+esc(v)+'" placeholder="https://..." oninput="onLink(\''+k+'\',this.value)" style="font-size:11px"></div>';
+});
 return h;
 }
 
+function onLink(k,v){edits.landing.links[k]=v;edits.planos.links[k]=v;schedulePreview();}
 
-function renderExportar(){
-let h='<p class="step-desc">Baixe os arquivos ou vá para a próxima etapa para publicar online.</p>';
-h+='<p style="font-size:13px;color:var(--dim);margin-bottom:16px">✅ Todas as etapas concluídas! Clique no botão abaixo para baixar os arquivos HTML.</p>';
-h+='<button class="btn btn-e" style="width:100%;padding:14px;font-size:15px" onclick="exportAll()">💾 Exportar Landing Page + Planos</button>';
-h+='<p style="font-size:11px;color:var(--dim);margin-top:12px;text-align:center">Atalho: Ctrl+S</p>';
+function onText(k,v){edits.landing.textos[k]=v;edits.planos.textos[k]=v;schedulePreview();}
+function onWhatsappNum(v){const d=v.replace(/\D/g,'');onText('whatsapp-numero',d);}
+
+// ==================== DEPOIMENTOS E GALERIA (multi-upload, estilo CMS) ====================
+function renderDepoimentos(){
+let h='<div class="panel-title">💬 Depoimentos</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:14px;line-height:1.5">📱 Prints do WhatsApp, Instagram, Google — <b style="color:var(--bright)">selecione vários de uma vez</b>. Aparecem em slider.</p>';
+h+=multiUploadPanel('depo');
+return h;
+}
+
+function renderGaleria(){
+let h='<div class="panel-title">📸 Galeria do Estúdio</div>';
+h+='<p style="font-size:11px;color:var(--dim);margin-bottom:14px;line-height:1.5">📸 Fotos do estúdio — <b style="color:var(--bright)">selecione várias de uma vez</b>. Aparecem em carrossel.</p>';
+h+=multiUploadPanel('gal');
+return h;
+}
+
+function multiUploadPanel(prefix){
+const max=prefix==='depo'?15:20;
+let h='';
+const count=parseInt(edits[currentPage].textos[prefix+'-count']||'0');
+h+='<div id="'+prefix+'-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">';
+let hasImgs=false;
+for(let i=0;i<max;i++){
+const k=prefix+'-'+i;
+const v=edits[currentPage].imagens[k]||'';
+if(v&&!v.startsWith('[')&&v.length>10){
+hasImgs=true;
+h+='<div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r);padding:6px 8px">';
+h+='<img src="'+esc(v)+'" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">';
+h+='<span style="flex:1;font-size:10px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(k.replace(/-/g,' ').toUpperCase())+'</span>';
+h+='<button class="btn btn-s btn-sm" onclick="removeMultiImg(\''+prefix+'\','+i+')" style="flex-shrink:0;font-size:10px;padding:3px 10px">✕</button>';
+h+='</div>';
+}
+}
+if(!hasImgs)h+='<p style="font-size:11px;color:var(--dim);text-align:center;padding:16px">Nenhuma imagem ainda.</p>';
+h+='</div>';
+h+='<label class="btn btn-p" style="cursor:pointer;width:100%;padding:14px;font-size:13px;margin-bottom:4px">📁 Adicionar Imagem<input type="file" accept="image/*,.heic,.heif" multiple style="display:none" onchange="handleMultiUpload(\''+prefix+'\',this)"></label>';
+h+='<p style="font-size:10px;color:var(--dim);text-align:center">Pode selecionar várias de uma vez. Máx. '+max+' imagens.</p>';
+return h;
+}
+
+function removeMultiImg(prefix,index){
+const max=prefix==='depo'?15:20;
+delete edits.landing.imagens[prefix+'-'+index];
+delete edits.planos.imagens[prefix+'-'+index];
+for(let i=index;i<max-1;i++){
+const next=edits.landing.imagens[prefix+'-'+(i+1)];
+if(next&&next.length>10){
+edits.landing.imagens[prefix+'-'+i]=next;
+edits.planos.imagens[prefix+'-'+i]=next;
+}else{
+delete edits.landing.imagens[prefix+'-'+i];
+delete edits.planos.imagens[prefix+'-'+i];
+break;
+}
+}
+let newCount=0;
+for(let i=0;i<max;i++){if(edits.landing.imagens[prefix+'-'+i]&&edits.landing.imagens[prefix+'-'+i].length>10)newCount++;}
+edits.landing.textos[prefix+'-count']=String(newCount);
+edits.planos.textos[prefix+'-count']=String(newCount);
+updatePreview();renderEditPanel();
+}
+
+function handleMultiUpload(prefix,input){
+const files=input.files;if(!files||files.length===0)return;
+const max=prefix==='depo'?15:20;
+const curCount=parseInt(edits[currentPage].textos[prefix+'-count']||'0');
+const remaining=max-curCount;
+if(files.length>remaining){toast('Máximo '+max+' imagens. Você já tem '+curCount+'.',true);return;}
+let processed=0;
+function processNext(){
+if(processed>=files.length){
+edits.landing.textos[prefix+'-count']=String(curCount+processed);
+edits.planos.textos[prefix+'-count']=String(curCount+processed);
+updatePreview();renderEditPanel();
+toast(processed+' imagem(ns) adicionada(s)!');
+return;
+}
+const idx=curCount+processed;
+const file=files[processed];
+processFileToWebP(file,function(dataUrl){
+edits.landing.imagens[prefix+'-'+idx]=dataUrl;
+edits.planos.imagens[prefix+'-'+idx]=dataUrl;
+processed++;processNext();
+},function(err){
+toast(err,true);
+processed++;processNext();
+});
+}
+processNext();
+}
+
+// ==================== AJUSTES (SEO, WhatsApp, avaliações, código) ====================
+function renderAjustes(){
+let h='<div class="panel-title">⚙️ Ajustes</div>';
+// SEO
+h+='<div class="sec-hdr">🔎 SEO</div>';
+h+='<div class="fg"><label class="fl">Título da Página</label><input class="fi" value="'+esc(edits.landing.textos['seo-title']||'')+'" oninput="onText(\'seo-title\',this.value)" style="font-size:11px"></div>';
+h+='<div class="fg"><label class="fl">Descrição (meta description)</label><textarea class="fi" oninput="onText(\'seo-description\',this.value)" style="min-height:46px">'+esc(edits.landing.textos['seo-description']||'')+'</textarea></div>';
+// WhatsApp
+h+='<div class="sec-hdr">💬 WhatsApp</div>';
+h+='<div class="fg"><label class="fl">Número (só dígitos)</label><input class="fi" id="cms-wpp" value="'+esc(edits.landing.textos['whatsapp-numero']||'')+'" oninput="onWhatsappNum(this.value)" placeholder="5538998760323" style="font-size:11px"></div>';
+// Avaliações do Google (Elfsight)
+h+='<div class="sec-hdr">⭐ Avaliações do Google</div>';
+h+='<div class="elfsight-guide">';
+h+='<strong>⭐ Como obter avaliações do Google:</strong><ol>';
+h+='<li>Acesse <a href="https://elfsight.com/google-reviews-widget/" target="_blank">elfsight.com/google-reviews-widget</a></li>';
+h+='<li>Clique em <strong>"Create widget"</strong> (grátis)</li>';
+h+='<li>Conecte sua conta Google e selecione seu negócio</li>';
+h+='<li>Personalize as cores e layout do widget</li>';
+h+='<li>Copie o <strong>código embed</strong> gerado</li>';
+h+='<li>Cole no campo abaixo 👇</li>';
+h+='</ol></div>';
+h+='<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea class="fi" oninput="onText(\'google-reviews\',this.value)" rows="6" placeholder="Cole aqui o código HTML do widget...">'+esc(edits[currentPage].textos['google-reviews']||'')+'</textarea></div>';
+// Código customizado
+h+='<div class="sec-hdr">📜 Código Customizado</div>';
+h+='<p style="font-size:10px;color:var(--dim);margin-bottom:14px;line-height:1.5">Scripts e widgets inseridos em <b style="color:var(--bright)">ambas as páginas</b>.</p>';
+h+='<div class="fg"><label class="fl">Head (antes de &lt;/head&gt;)</label><textarea class="fi" id="cc-head" style="min-height:70px;font-family:monospace;font-size:10px" placeholder="Google Analytics, meta tags...">'+esc(customCode.head)+'</textarea></div>';
+h+='<div class="fg"><label class="fl">Início do Body</label><textarea class="fi" id="cc-body" style="min-height:70px;font-family:monospace;font-size:10px" placeholder="Pixels, scripts de chat...">'+esc(customCode.bodyStart)+'</textarea></div>';
+h+='<div class="fg"><label class="fl">Footer (antes de &lt;/body&gt;)</label><textarea class="fi" id="cc-footer" style="min-height:70px;font-family:monospace;font-size:10px" placeholder="Widgets, chatbot...">'+esc(customCode.footer)+'</textarea></div>';
+h+='<p style="font-size:9px;color:var(--warning);margin-top:8px">⚠️ Código inválido pode quebrar o site.</p>';
+// Bind dos campos de código
+setTimeout(function(){
+const a=document.getElementById('cc-head');if(a)a.oninput=function(){customCode.head=this.value;};
+const b=document.getElementById('cc-body');if(b)b.oninput=function(){customCode.bodyStart=this.value;};
+const c=document.getElementById('cc-footer');if(c)c.oninput=function(){customCode.footer=this.value;};
+},50);
 return h;
 }
 
@@ -1512,18 +1702,10 @@ h+=`<p style="font-size:12px;color:var(--secondary);margin-top:4px">🔗 <strong
 h+='<div id="pub-alternatives" style="margin-top:8px"></div>';
 
 h+='<div style="font-size:11px;color:var(--dim);line-height:1.7;margin-top:12px">✅ Landing Page + Planos &nbsp;✅ SSL &nbsp;✅ CDN global</div>';
+h+='<div style="font-size:10px;color:var(--warning);line-height:1.6;margin-top:10px">🔒 A <strong style="color:var(--bright)">Página de Planos não aparece no seu site</strong>: ela fica em <span style="font-family:monospace">nomedoestudio.vercel.app/planos</span> e só abre por esse link.</div>';
 
 // Botão publicar grátis
 h+=`<button class="btn btn-p" id="pub-btn" style="width:100%;margin-top:20px;padding:14px;font-size:14px" onclick="publishToVercel()">🚀 Publicar Grátis</button>`;
-h+='</div>';
-
-// ⚙️ Código Customizado
-h+='<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-card);padding:16px;margin-bottom:16px">';
-h+='<p style="font-weight:700;font-size:12px;color:var(--bright);margin-bottom:4px">⚙️ Código Customizado</p>';
-h+='<p style="font-size:10px;color:var(--dim);margin-bottom:10px">Scripts, pixels, widgets. Inserido em ambas as páginas.</p>';
-h+='<div class="fg"><label class="fl">🧠 Head (antes de &lt;/head&gt;)</label><textarea class="fi" id="cc-head" placeholder="&lt;script&gt;...&lt;/script&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.head=this.value"></textarea></div>';
-h+='<div class="fg"><label class="fl">📦 Início do Body</label><textarea class="fi" id="cc-body" placeholder="&lt;noscript&gt;...&lt;/noscript&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.bodyStart=this.value"></textarea></div>';
-h+='<div class="fg"><label class="fl">👣 Footer (antes de &lt;/body&gt;)</label><textarea class="fi" id="cc-footer" placeholder="&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;" style="min-height:60px;font-family:monospace;font-size:11px" oninput="customCode.footer=this.value"></textarea></div>';
 h+='</div>';
 
 // Admin: Copiar HTML
@@ -1680,12 +1862,13 @@ resultDiv.innerHTML=`<div style="background:rgba(32,201,151,.08);border:1px soli
 <a href="${linkPrincipal}" target="_blank" style="font-size:11px;color:var(--accent)">Abrir →</a>
 </div>
 <div style="margin-bottom:16px">
-<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">💎 Página de Planos <span style="color:var(--warning);font-size:9px">(não indexado)</span></div>
+<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">💎 Página de Planos <span style="color:var(--warning);font-size:9px">(não aparece no site — só abre por este link)</span></div>
 <div style="display:flex;gap:6px;align-items:center">
 <input class="fi" value="${esc(linkPlanos)}" readonly style="flex:1;font-size:12px;cursor:text" onclick="this.select()" id="pub-link-planos">
 <button class="btn btn-s btn-sm" onclick="copyLink('pub-link-planos')" style="white-space:nowrap">📋 Copiar</button>
 </div>
 <a href="${linkPlanos}" target="_blank" style="font-size:11px;color:var(--accent)">Abrir →</a>
+<p style="font-size:10px;color:var(--dim);margin-top:2px;line-height:1.5">🔒 Envie este link para quem quiser ver os planos — ele não aparece no menu do site e não é indexado pelo Google.</p>
 </div>
 </div>
 <p style="font-size:10px;color:var(--dim);margin-top:12px">Pode levar até 30s para ficar disponível.</p>
@@ -1711,60 +1894,7 @@ btn.textContent='🚀 Tentar Novamente';btn.disabled=false;
 }
 }
 
-// ==================== FIELD HELPERS ====================
-function field(key,label,placeholder){
-const e=edits[currentPage];let v='';
-if(e.textos[key]!==undefined)v=e.textos[key];
-else if(e.links[key]!==undefined)v=e.links[key];
-return `<div class="fg"><label class="fl">${label}</label><input class="fi" value="${esc(v||'')}" data-tkey="${key}" placeholder="${placeholder||''}" oninput="updateField('${key}',this.value)"></div>`;
-}
-
-function imageField(key,label){
-const v=edits[currentPage].imagens[key]||'';
-let h=`<div class="fg"><label class="fl">${label}</label>`;
-h+=`<div style="display:flex;gap:4px"><input class="fi" value="${esc(v)}" data-ikey="${key}" oninput="updateImage('${key}',this.value)" placeholder="URL da imagem...">`;
-h+=`<label class="upload-btn">📁<input type="file" accept="image/*,.heic,.heif" onchange="uploadImage('${key}',this)"></label></div>`;
-h+=`<img class="img-prev" src="${v}" onerror="this.style.display='none'" onload="this.style.display='block'" ${v?'':'style="display:none"'} data-preview="${key}"></div>`;
-return h;
-}
-
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-
-// ==================== UPDATE FUNCTIONS ====================
-function updateField(key,value){
-// Sincroniza campo nas DUAS páginas
-['landing','planos'].forEach(page=>{
-const e=edits[page];
-if(e.textos[key]!==undefined)e.textos[key]=value;
-if(e.links[key]!==undefined)e.links[key]=value;
-});
-schedulePreview();
-}
-
-function updateText(key,value){
-// Sincroniza texto nas DUAS páginas
-edits.landing.textos[key]=value;
-edits.planos.textos[key]=value;
-schedulePreview();
-}
-
-function updateColor(key,value){
-// Sincroniza cor nas DUAS páginas
-edits.landing.cores[key]=value;
-edits.planos.cores[key]=value;
-const input=document.querySelector(`[data-ckey="${key}"]`);
-if(input){const cv=input.parentElement.querySelector('.cv');if(cv)cv.textContent=value;}
-updatePreview();
-}
-
-function updateImage(key,value){
-// Sincroniza imagem nas DUAS páginas
-edits.landing.imagens[key]=value;
-edits.planos.imagens[key]=value;
-const prev=document.querySelector(`[data-preview="${key}"]`);
-if(prev){prev.src=value;prev.style.display=value?'block':'none';}
-schedulePreview();
-}
 
 // Helper: detecta HEIC e converte para WebP
 function processFileToWebP(file,callback,onError){
@@ -1806,24 +1936,6 @@ function processFileToWebP(file,callback,onError){
 	reader.readAsDataURL(file);
 }
 
-function uploadImage(key,input){
-	const file=input.files[0];if(!file)return;
-	const btn=input.closest("label");
-	const origText=btn?btn.textContent:"";
-	if(btn){btn.textContent="⏳";btn.style.pointerEvents="none";}
-	processFileToWebP(file,function(dataUrl){
-		edits.landing.imagens[key]=dataUrl;
-		edits.planos.imagens[key]=dataUrl;
-		const prev=document.querySelector("[data-preview=\""+key+"\"]");if(prev){prev.src=dataUrl;prev.style.display="block";}
-		const urlInput=document.querySelector("[data-ikey=\""+key+"\"]");if(urlInput)urlInput.value="[Imagem Upload]";
-		updatePreview();
-		if(btn){btn.textContent=origText;btn.style.pointerEvents="";}
-	},function(err){
-		alert(err);
-		if(btn){btn.textContent=origText;btn.style.pointerEvents="";}
-	});
-}
-
 let previewTimer;
 function schedulePreview(){clearTimeout(previewTimer);previewTimer=setTimeout(updatePreview,300);}
 
@@ -1832,13 +1944,8 @@ const preset=colorPresets.find(p=>p.name===name);if(!preset)return;
 // Aplica paleta nas DUAS páginas
 edits.landing.cores=JSON.parse(JSON.stringify(preset.colors));
 edits.planos.cores=JSON.parse(JSON.stringify(preset.colors));
-document.querySelectorAll('[data-ckey]').forEach(input=>{
-const v=preset.colors[input.dataset.ckey];if(v){input.value=v;const cv=input.parentElement.querySelector('.cv');if(cv)cv.textContent=v;}
-});
-updatePreview();
+updatePreview();renderEditPanel();
 }
-
-function bindColorPickers(){/* no-op, inline onchange handles it */}
 
 // ==================== PREVIEW ====================
 function updatePreview(){
@@ -1897,9 +2004,13 @@ setTimeout(()=>URL.revokeObjectURL(url),1000);
 // ==================== PAGE SWITCH ====================
 function switchPage(page){
 currentPage=page;
-document.querySelectorAll('.pgbtn').forEach(t=>t.classList.toggle('on',t.dataset.page===page));
+document.querySelectorAll('.psbtn').forEach(t=>t.classList.toggle('on',t.dataset.page===page));
 document.getElementById('previewLabel').textContent=page==='landing'?'Landing Page':'Página de Planos';
-renderStep();updatePreview();
+// Aviso: a página de planos não aparece no site — só abre pelo link
+const warn=document.getElementById('planosWarn');
+if(warn)warn.style.display=page==='planos'?'flex':'none';
+if(editMode)renderEditPanel();
+updatePreview();
 }
 
 // ==================== PREVIEW SIZE ====================
@@ -1969,6 +2080,8 @@ fileInput.click();
 
 // ==================== KEYBOARD ====================
 document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportAll();}});
+// Autosave silencioso ao sair da página
+window.addEventListener('beforeunload',function(){try{localStorage.setItem('wb_rascunho',JSON.stringify({edits:edits,customCode:customCode}));}catch(e){}});
 
 // ==================== START ====================
 init();

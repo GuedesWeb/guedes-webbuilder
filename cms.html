@@ -61,6 +61,16 @@ a{color:var(--accent);text-decoration:none}
 .tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
 .tab.on{color:var(--bright);background:rgba(76,67,247,.12)}
 
+/* Page Switcher (Principal / Planos) */
+.pageswitch{display:flex;gap:4px;background:rgba(255,255,255,.03);border:1px solid var(--border);padding:4px;border-radius:10px}
+.psbtn{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;border:none;background:transparent;color:var(--dim);cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font);transition:all var(--transition);white-space:nowrap}
+.psbtn:hover{color:var(--bright);background:var(--bg3)}
+.psbtn.on{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(76,67,247,.35)}
+.psbtn .ps-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,158,11,.18);color:var(--warning);letter-spacing:.02em}
+.psbtn.on .ps-tag{background:rgba(255,255,255,.2);color:#fff}
+.planos-warn{display:none;align-items:flex-start;gap:10px;padding:9px 14px;font-size:11px;line-height:1.6;color:var(--warning);background:rgba(245,158,11,.07);border-bottom:1px solid rgba(245,158,11,.18)}
+.planos-warn b{color:var(--bright)}
+
 /* Main */
 .main{display:flex;flex:1;overflow:hidden}
 .preview{flex:1;display:flex;flex-direction:column;background:#060a10;min-width:0}
@@ -149,7 +159,11 @@ Recebeu credenciais do Guedes?<br>Entre aqui para gerenciar seu site.
 </div>
 </div>
 <div class="pwrap"><iframe id="previewFrame" src="about:blank" style="width:100%;height:100%"></iframe></div>
-<span style="display:inline-block;margin-top:6px;font-size:10px;color:var(--dim);padding:0 4px">✏️ Clique nos textos e imagens do preview para editar</span>
+<span style="display:inline-block;margin-top:6px;font-size:10px;color:var(--dim);padding:0 4px">✏️ Clique nos textos e imagens do preview para editar · Alterne entre 🏠 Página Principal e 💎 Página de Planos nos botões do topo</span>
+<div class="planos-warn" id="planosWarn">
+<span style="font-size:16px;line-height:1.2">🔒</span>
+<span>A <b>Página de Planos não aparece no seu site</b> — ela só é aberta pelo <b>link que você enviar</b> (ex: <span style="font-family:monospace;font-size:10px;color:var(--bright)">seudominio.com/planos</span>). Quem visita a página principal não encontra nenhum atalho para ela, e ela não aparece no Google.</span>
+</div>
 </div>
 
 <div class="panel">
@@ -344,9 +358,9 @@ f.style.width=w;f.style.height='100%';
 function buildTabs(){
 var h='';
 for(var i=0;i<tabs.length;i++){h+='<div class="tab" id="tab-'+tabs[i].id+'" onclick="switchTab(\''+tabs[i].id+'\')">'+tabs[i].icon+' '+tabs[i].l+'</div>';}
-h+='<div style="margin-left:auto;display:flex;gap:3px">';
-h+='<button class="btn btn-s btn-sm'+(currentPage==='landing'?' on':'')+'" onclick="switchPage(\'landing\')" style="border-radius:14px;font-size:10px;padding:4px 10px">🏠 Landing</button>';
-h+='<button class="btn btn-s btn-sm'+(currentPage==='planos'?' on':'')+'" onclick="switchPage(\'planos\')" style="border-radius:14px;font-size:10px;padding:4px 10px">💎 Planos</button>';
+h+='<div class="pageswitch" style="margin-left:auto">';
+h+='<button class="psbtn'+(currentPage==='landing'?' on':'')+'" data-page="landing" onclick="switchPage(\'landing\')" title="Editar a Página Principal — a página inicial que os visitantes veem">🏠 Página Principal</button>';
+h+='<button class="psbtn'+(currentPage==='planos'?' on':'')+'" data-page="planos" onclick="switchPage(\'planos\')" title="Editar a Página de Planos — acessada somente pelo link que você enviar">💎 Página de Planos <span class="ps-tag">via link</span></button>';
 h+='</div>';
 document.getElementById('tabs-bar').innerHTML=h;
 }
@@ -360,6 +374,9 @@ renderPanel();
 function switchPage(p){
 currentPage=p;
 document.getElementById('previewLabel').textContent=p==='landing'?'Landing Page':'Página de Planos';
+// Aviso: a página de planos não aparece no site — só abre pelo link
+var warn=document.getElementById('planosWarn');
+if(warn)warn.style.display=p==='planos'?'flex':'none';
 buildTabs();renderPanel();updatePreview();
 }
 
