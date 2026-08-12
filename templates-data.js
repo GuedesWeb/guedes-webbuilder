@@ -240,7 +240,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <div class="container">
 <p class="busca-title display" data-editable="busca-title">O que você busca?</p>
 <div class="cards-grid">
-<div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card1.avif)"><h3 data-editable="card1-titulo">Melhorar a saúde</h3><p data-editable="card1-desc">Trabalhe o tônus muscular, flexibilidade, força e postura.</p></div>
+<div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card1.avif)"><h3 data-editable="card1-titulo">Melhorar a saúde</h3><p data-editable="card1-desc">Melhorar tônus muscular, flexibilidade e postura.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-card2.avif)"><h3 data-editable="card2-titulo">Dê adeus ás dores</h3><p data-editable="card2-desc">Alivie o stress melhore a disposição e a auto estima.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/card3.avif)"><h3 data-editable="card3-titulo">Qualidade de vida</h3><p data-editable="card3-desc">Tenha uma rotina sem desconforto com um corpo totalmente transformado.</p></div>
 <div class="card-busca" style="background-image:url(https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/card4.avif)"><h3 data-editable="card4-titulo">Desempenho</h3><p data-editable="card4-desc">Otimize o desempenho das atividades diárias e de outras atividades físicas.</p></div>
@@ -262,7 +262,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <h2 class="aulas-title display" data-editable="aulas-title">Além disso, nossas aulas são indicadas para:</h2>
 <div class="aulas-grid">
 <img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_gravida.webp" alt="Gestantes">
-<div class="aulas-texto"><h3 data-editable="aulas-t1">Pós-reabilitação no Pilates</h3><p data-editable="aulas-d1">Após a liberação da fisioterapia, o Pilates é um grande aliado na continuidade do cuidado com o corpo. Trabalhamos de forma segura e personalizada para fortalecer a musculatura, melhorar a mobilidade e prevenir novas lesões, respeitando sempre os limites e a fase de cada aluno.</p></div>
+<div class="aulas-texto"><h3 data-editable="aulas-t1">Reabilitação</h3><p data-editable="aulas-d1">Recuperação de lesões, pós operatórios, ou continuação de tratamentos fisioterapêuticos visando a manutenção do equilíbrio muscular.</p></div>
 <img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_dores.webp" alt="Idosos">
 <div class="aulas-texto"><h3 data-editable="aulas-t2">Idosos</h3><p data-editable="aulas-d2">Prevenção de quedas, manutenção de força, alivio de dores, aumento da flexibilidade e melhora da postura para os alunos na melhor idade.</p></div>
 <div class="aulas-texto"><h3 data-editable="aulas-t3">Gestantes</h3><p data-editable="aulas-d3">Se mantenha ativa com segurança durante a gestação e pós parto.</p></div>

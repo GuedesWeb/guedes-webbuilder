@@ -6,7 +6,8 @@
 <title>Guedes WebBuilder</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
-<script src="templates-data.js?v=2"></script>
+<script src="templates-data.js?v=3"></script>
+<script src="inline-editor.js?v=1"></script>
 <style>
 /* ============ DESIGN SYSTEM — Pulsedesk-Inspired ============ */
 :root{
@@ -72,6 +73,12 @@ linear-gradient(180deg,#0b1020 0%,#080c14 42%,#0a0d13 100%);}
 .szbtns button{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:11px;font-family:var(--font);transition:all var(--transition)}
 .szbtns button:hover{background:var(--bg3);color:var(--text)}
 .szbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pgbtn{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:13px;font-family:var(--font);transition:all var(--transition)}
+.pgbtn:hover{background:var(--bg3);color:var(--text)}
+.pgbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.wb-toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;padding:10px 18px;border-radius:var(--r);font-size:11px;font-weight:600;z-index:99999;opacity:0;transform:translateY(10px);transition:all .25s;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.wb-toast.show{opacity:1;transform:translateY(0)}
+.wb-toast-err{background:var(--error);color:#fff}
 .pwrap{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;background:#0d1117;padding:28px}
 .pwrap iframe{border:none;background:#fff;border-radius:6px;transition:all var(--transition);box-shadow:0 0 0 1px rgba(255,255,255,.04),0 24px 80px rgba(0,0,0,.5)}
 
@@ -153,12 +160,17 @@ textarea.fi{resize:vertical;min-height:60px;line-height:1.7}
 <div class="preview-bar">
 <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
 <span class="purl" id="previewLabel">Landing Page</span>
+<div class="szbtns" style="margin-right:6px">
+<button class="pgbtn on" data-page="landing" onclick="switchPage('landing')" title="Landing">🏠</button>
+<button class="pgbtn" data-page="planos" onclick="switchPage('planos')" title="Planos">💎</button>
+</div>
 <div class="szbtns">
 <button class="on" onclick="setSize('100%',this)">💻</button>
 <button onclick="setSize('768px',this)">📲</button>
 <button onclick="setSize('375px',this)">📱</button>
 </div>
 </div>
+<div style="padding:4px 16px;font-size:10px;color:var(--dim);background:rgba(13,18,32,.4);border-bottom:1px solid var(--border)">✏️ Clique nos textos e imagens do preview para editar</div>
 <div class="pwrap" id="previewWrap"><iframe id="previewFrame" src="about:blank" style="width:100%;height:100%"></iframe></div>
 </div>
 
@@ -178,11 +190,9 @@ const STEPS=[
 {id:'setup',icon:'🚀',label:'Pré-Configuração'},
 {id:'identidade',icon:'🏷️',label:'Identidade'},
 {id:'cores',icon:'🎨',label:'Cores'},
-{id:'textos',icon:'📝',label:'Textos'},
-{id:'contato',icon:'🔗',label:'Contato'},
 {id:'imagens',icon:'🖼️',label:'Imagens'},
+{id:'contato',icon:'🔗',label:'Contato'},
 {id:'avaliacoes',icon:'⭐',label:'Avaliações'},
-{id:'planos',icon:'💎',label:'Planos'},
 {id:'publicar',icon:'🚀',label:'Publicar'},
 ];
 let currentPage='landing',currentStep=0,setupSubStep=0,setupCache={};
@@ -449,7 +459,7 @@ doc.querySelectorAll('[data-editable]').forEach(el=>{
 const key=el.getAttribute('data-editable');if(!key)return;
 if(el.tagName==='IMG'){e.imagens[key]=el.getAttribute('src')||'';return;}
 if(el.tagName==='A'&&el.hasAttribute('href')){e.links[key]=el.getAttribute('href')||'';
-if(el.hasAttribute('data-editable-text'))e.textos[el.getAttribute('data-editable-text')]=el.textContent.trim();return;}
+if(el.hasAttribute('data-editable-text')){e.textos[el.getAttribute('data-editable-text')]=el.textContent.trim();}else{var menuTxt=el.textContent.replace(/ /g,' ').trim();e.textos[key]=menuTxt;}return;}
 if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){e.textos[key]=el.getAttribute('value')||el.value||'';return;}
 if(el.hasAttribute('data-editable-text')){e.textos[el.getAttribute('data-editable-text')]=el.textContent.trim();}
 else{e.textos[key]=el.textContent.trim();}
@@ -480,9 +490,6 @@ document.getElementById('btnNext').textContent='Próximo →';
 function goToStep(i){
 	currentStep=i;
 	if(i===1)setupSubStep=0;
-	// Auto-switch page tab when entering/leaving planos step
-	if(i===8){currentPage='planos';}
-	else if(currentPage==='planos'){currentPage='landing';}
 	renderStep();updateStepsBar();
 }
 function nextStep(){
@@ -494,15 +501,11 @@ function nextStep(){
 		}
 	
 	if(currentStep<STEPS.length-1){currentStep++;
-		if(currentStep===8){currentPage='planos';}
-		else if(currentPage==='planos'){currentPage='landing';}
 		renderStep();updateStepsBar();
 	}else{exportAll()}
 }
 function prevStep(){
 	if(currentStep>0){currentStep--;
-		if(currentStep===8){currentPage='planos';}
-		else if(currentPage==='planos'){currentPage='landing';}
 		renderStep();updateStepsBar();
 	}
 }
@@ -516,11 +519,9 @@ case 'boasvindas':h+=renderBoasvindas();break;
 case 'setup':h+=renderSetup();break;
 case 'identidade':h+=renderIdentidade();break;
 case 'cores':h+=renderCores();break;
-case 'textos':h+=renderTextos();break;
-case 'contato':h+=renderContato();break;
 case 'imagens':h+=renderImagens();break;
+case 'contato':h+=renderContato();break;
 case 'avaliacoes':h+=renderAvaliacoes();break;
-case 'planos':h+=renderPlanos();break;
 case 'publicar':h+=renderPublicar();break;
 }
 pc.innerHTML=h;updateStepsBar();
@@ -578,7 +579,7 @@ wrapper.remove();
 
 function renderIdentidade(){
 let h='<p class="step-desc">Nome do negócio, logo e imagens decorativas da Hero</p>';
-h+=field('logo-text','Nome da Empresa (texto)','Sua Empresa');
+h+=field('logo-text','Nome da Empresa (usado no título SEO e rodapé)','Sua Empresa');
 h+=imageField('logo','Logo (Header)');
 h+=imageField('logo-hero','Logo (Hero)');
 h+=imageField('favicon','Favicon');
@@ -932,6 +933,7 @@ dots+=`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;
 let h=`<div style="text-align:center;margin-bottom:24px">${dots}</div>`;
 h+=`<div class="step-title" style="text-align:center">${icons[setupSubStep]} ${titles[setupSubStep]}</div>`;
 h+=`<p class="step-desc" style="text-align:center">Etapa ${setupSubStep+1} de ${total}</p>`;
+h+=`<p style="text-align:center;font-size:10px;color:var(--accent);margin-top:4px">✏️ Depois da configuracao, edite os textos diretamente clicando no preview do site</p>`;
 
 if(setupSubStep===0){
 // --- IDENTIDADE + LOGO + CORES ---
@@ -1430,45 +1432,21 @@ h+=`<div class="color-pick"><input type="color" value="${v}" data-ckey="${d.key}
 return h;
 }
 
-function renderTextos(){
-const e=edits[currentPage];let h='<p class="step-desc">Headlines, descrições e conteúdos de texto</p>';
-const exclude=['whatsapp-numero','google-reviews','footer-texto','logo-text'];
-const grouped={};
-Object.keys(e.textos).forEach(k=>{
-if(exclude.includes(k))return;
-const prefix=k.split('-')[0];
-if(!grouped[prefix])grouped[prefix]=[];
-grouped[prefix].push(k);
-});
-Object.keys(grouped).forEach(g=>{
-h+=`<div class="sec-hdr">📌 ${g.toUpperCase()}</div>`;
-grouped[g].forEach(k=>{
-const v=e.textos[k]||'',label=k.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
-h+=v.length>60
-?`<div class="fg"><label class="fl">${label}</label><textarea class="fi" data-tkey="${k}" oninput="updateText('${k}',this.value)" rows="2">${esc(v)}</textarea></div>`
-:`<div class="fg"><label class="fl">${label}</label><input class="fi" value="${esc(v)}" data-tkey="${k}" oninput="updateText('${k}',this.value)"></div>`;
-});
-});
-return h;
-}
 
 function renderContato(){
-let h='<p class="step-desc">WhatsApp, telefone, endereço e redes sociais</p>';
-h+=field('whatsapp-numero','WhatsApp (número com DDD)','5511999999999');
-h+=field('telefone-numero','Telefone visível','(11) 90000-0000');
-h+=field('telefone-link','Telefone (link)','tel:+5511900000000');
-h+=field('local-endereco','Endereço completo','Av. Paulista, 1159 - São Paulo - SP');
-h+=field('insta-link','Link do Instagram','https://instagram.com/seuinstagram');
-h+=field('insta-handle','@ do Instagram','@seuinstagram');
-h+=field('footer-texto','Texto do rodapé','© 2026 Sua Empresa - Todos os direitos reservados.');
-return h;
+	let h='<p class="step-desc">WhatsApp, links e redes sociais. <b style="color:var(--accent)">Textos sao editados clicando no preview.</b></p>';
+	h+=field('whatsapp-numero','WhatsApp (numero com DDD)','5511999999999');
+	h+=field('whatsapp-link','Link do WhatsApp','https://wa.me/5511999999999');
+	h+=field('telefone-link','Telefone (link)','tel:+5511900000000');
+	h+=field('insta-link','Link do Instagram','https://instagram.com/seuinstagram');
+	return h;
 }
 
 function renderImagens(){
 let h='<p class="step-desc">Upload ou URL das imagens do site</p>';
 const imgs=edits[currentPage].imagens;
 Object.keys(imgs).forEach(k=>{
-if(k.includes('galeria-'))return; // handled separately
+if(k.includes('galeria-')||k.startsWith('depo-')||k.startsWith('gal-'))return;
 h+=imageField(k,k.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()));
 });
 // Galeria
@@ -1496,38 +1474,6 @@ h+=`<div class="fg"><label class="fl">Código Embed do Elfsight</label><textarea
 return h;
 }
 
-function renderPlanos(){
-let h='<p class="step-desc">Edite o conteúdo da página de Planos: título, seção sobre as aulas, valores e observações.</p>';
-// Atualizar UI da tab de página sem causar recursão
-document.querySelectorAll('.page-tab').forEach(t=>t.classList.toggle('active',t.dataset.page==='planos'));
-document.getElementById('previewLabel').textContent='Página de Planos';
-// currentPage já foi definido como 'planos' pelo goToStep/nextStep/prevStep
-
-// Título da página
-h+='<div class="sec-hdr">📝 Título da Página</div>';
-h+=field('page-title','Título principal','Informações sobre planos e aulas');
-
-// Sobre as aulas
-h+='<div class="sec-hdr">📋 Sobre as Aulas</div>';
-h+=field('info-label','Título da seção','Sobre as aulas');
-h+=field('info-1','Informação 1','Nossas aulas tem a duração de 50 minutos...');
-h+=field('info-2','Informação 2','Trabalhamos com horário fixo e por escala...');
-h+=field('info-3','Informação 3','Oferecemos uma aula experimental...');
-
-// Planos
-h+='<div class="sec-hdr">💎 Valores dos Planos</div>';
-h+=field('planos-label','Título da seção','Sobre os planos');
-['plano1','plano2','plano3'].forEach((p,i)=>{
-const nomes=['Mensal','Trimestral','Semestral'];
-h+=`<p style="font-weight:600;font-size:12px;margin:12px 0 4px;color:var(--secondary)">📌 ${nomes[i]}</p>`;
-h+=field(p+'-nome','Nome do plano',nomes[i]);
-for(let j=1;j<=3;j++){h+=field(p+'-op'+j+'-label','Opção '+j+' - Label','');h+=field(p+'-op'+j+'-preco','Opção '+j+' - Preço','');}
-h+=field(p+'-obs','Observação','');
-});
-// Aula avulsa removida
-updatePreview();
-return h;
-}
 
 function renderExportar(){
 let h='<p class="step-desc">Baixe os arquivos ou vá para a próxima etapa para publicar online.</p>';
@@ -1664,7 +1610,7 @@ for(const[k,v]of Object.entries(e.imagens)){let val2=v;if(!val2||val2.startsWith
 for(const[k,v]of Object.entries(e.textos)){
 const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
 const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
-if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.children.length===0){el.textContent=v;}
+if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.tagName==='TITLE'){el.textContent=v;}else if(el.tagName==='META'){el.setAttribute('content',v);}else if(el.children.length===0){el.textContent=v;}
 }
 doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k&&e.textos[k])el.innerHTML=e.textos[k];});
 for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
@@ -1908,10 +1854,12 @@ for(const[k,v]of Object.entries(e.imagens)){let val2=v;if(!val2){val2=imOther2[k
 for(const[k,v]of Object.entries(e.textos)){
 const textEls=doc.querySelectorAll(`[data-editable-text="${k}"]`);if(textEls.length>0){textEls.forEach(el=>{el.textContent=v;});continue;}
 const el=doc.querySelector(`[data-editable="${k}"]`);if(!el)continue;
-if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.children.length===0){el.textContent=v;}
+if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.setAttribute('value',v);el.value=v;}else if(el.tagName==='TITLE'){el.textContent=v;}else if(el.tagName==='META'){el.setAttribute('content',v);}else if(el.children.length===0){el.textContent=v;}
 }
 doc.querySelectorAll('[data-editable-html]').forEach(el=>{const k=el.getAttribute('data-editable-html');if(k&&e.textos[k])el.innerHTML=e.textos[k];});
 for(const[k,v]of Object.entries(e.links)){const el=doc.querySelector(`[data-editable="${k}"]`);if(el&&el.tagName==='A')el.setAttribute('href',v);}
+// Injeta editor inline no preview
+var _scr=doc.createElement('script');_scr.textContent=window.WB_EDITOR_SRC;doc.body.appendChild(_scr);
 let html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
 if(customCode.head)html=html.replace('<!-- CUSTOM_HEAD -->',customCode.head);
 if(customCode.bodyStart)html=html.replace('<!-- CUSTOM_BODY_START -->',customCode.bodyStart);
@@ -1949,7 +1897,7 @@ setTimeout(()=>URL.revokeObjectURL(url),1000);
 // ==================== PAGE SWITCH ====================
 function switchPage(page){
 currentPage=page;
-document.querySelectorAll('.page-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===page));
+document.querySelectorAll('.pgbtn').forEach(t=>t.classList.toggle('on',t.dataset.page===page));
 document.getElementById('previewLabel').textContent=page==='landing'?'Landing Page':'Página de Planos';
 renderStep();updatePreview();
 }
@@ -1960,6 +1908,64 @@ const iframe=document.getElementById('previewFrame');
 document.querySelectorAll('.szbtns button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
 if(w==='100%'){iframe.style.width='100%';iframe.style.height='100%';}else{iframe.style.width=w;iframe.style.height='100%';}
 }
+
+// ==================== TOAST ====================
+function toast(msg,isErr){
+var t=document.createElement('div');t.className='wb-toast'+(isErr?' wb-toast-err':'');
+t.textContent=msg;document.body.appendChild(t);
+setTimeout(function(){t.classList.add('show');},10);
+setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},300);},2500);
+}
+
+// ==================== LISTENER PARA EDIÇÃO INLINE ====================
+window.addEventListener('message',function(e){
+if(!e.data||!e.data.type)return;
+if(e.data.type==='wb-edit-text'){
+var k=e.data.key,v=e.data.value;
+edits.landing.textos[k]=v;
+edits.planos.textos[k]=v;
+var previewFrame=document.getElementById('previewFrame');
+if(previewFrame&&previewFrame.contentWindow){
+previewFrame.contentWindow.postMessage({type:'wb-refresh-text',key:k,value:v},'*');
+}
+// Sync panel fields
+var panelInput=document.querySelector('[data-tkey="'+k+'"]');
+if(panelInput)panelInput.value=v;
+toast('Texto atualizado');
+}
+if(e.data.type==='wb-edit-image'){
+var k2=e.data.key;
+var fileInput=document.createElement('input');
+fileInput.type='file';fileInput.accept='image/*';
+fileInput.onchange=function(){
+if(this.files&&this.files[0]){
+var reader=new FileReader();
+reader.onload=function(ev){
+var dataUrl=ev.target.result;
+var img=new Image();img.onload=function(){
+var c=document.createElement('canvas');var mw=1200,mh=1200;
+var w=img.width,h=img.height;
+if(w>mw){h*=(mw/w);w=mw;}if(h>mh){w*=(mh/h);h=mh;}
+c.width=w;c.height=h;
+c.getContext('2d').drawImage(img,0,0,w,h);
+var du=c.toDataURL('image/webp',0.8);
+edits.landing.imagens[k2]=du;
+edits.planos.imagens[k2]=du;
+// Sync linked keys (logo <-> logo-hero)
+if(k2==='logo'){edits.landing.imagens['logo-hero']=du;edits.planos.imagens['logo-hero']=du;}
+if(k2==='logo-hero'){edits.landing.imagens['logo']=du;edits.planos.imagens['logo']=du;}
+var pf=document.getElementById('previewFrame');
+if(pf&&pf.contentWindow){
+pf.contentWindow.postMessage({type:'wb-refresh-img',key:k2,value:du},'*');
+}
+toast('Imagem alterada!');
+};img.src=dataUrl;
+};reader.readAsDataURL(this.files[0]);
+}
+};
+fileInput.click();
+}
+});
 
 // ==================== KEYBOARD ====================
 document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportAll();}});
