@@ -25,37 +25,20 @@ function positionPopup(p,r){
   return{top:t,left:l};
 }
 
-// ── Chip ✏️ no hover ──
+// ── Chip ✏️ flutuante no hover ──
 function showChip(el){
   hideChip();
   var r=el.getBoundingClientRect();
   var chip=document.createElement("div");
   chip.className="wb-edit-chip";
   chip.textContent="✏️";
-  chip.style.cssText="position:fixed;z-index:99998;top:"+(r.top-6)+"px;left:"+(r.right-4)+"px;"
-    +"background:#4C43F7;color:#fff;font-size:11px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;"
+  chip.style.cssText="position:fixed;z-index:99998;top:"+(r.top-8)+"px;left:"+(r.right-4)+"px;"
+    +"background:#4C43F7;color:#fff;font-size:12px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;"
     +"border-radius:50%;pointer-events:none;box-shadow:0 2px 8px rgba(76,67,247,.5);";
   document.body.appendChild(chip);
   hoverChip=chip;
 }
 function hideChip(){if(hoverChip){hoverChip.remove();hoverChip=null;}}
-
-// ── Sinalizador fixo de editabilidade no canto ──
-function addEditBadge(el){
-  if(el.querySelector(".wb-edit-badge"))return;
-  if(window.getComputedStyle(el).display==="none")return;
-  if(el.offsetHeight===0)return;
-  var badge=document.createElement("span");
-  badge.className="wb-edit-badge";
-  badge.innerHTML="&#9998;";
-  badge.title="Clique para editar";
-  el.style.position=el.style.position||"relative";
-  el.appendChild(badge);
-}
-function removeEditBadge(el){
-  var b=el.querySelector(".wb-edit-badge");
-  if(b)b.remove();
-}
 
 // ── Editor de Texto ──
 function openTextEditor(el,key){
@@ -113,14 +96,15 @@ function openImageEditor(el,key){
   p.querySelector(".wb-btn-cancel").onclick=function(){closeEditor();};
 }
 
-// ── Estilos ──
+// ── Estilos (sinalizacao via ::after no hover — nao mexe no position do elemento) ──
 var style=document.createElement("style");
 style.textContent=""
-  +".wb-hover{outline:2px dashed #4C43F7!important;outline-offset:3px!important;cursor:pointer!important;transition:outline .15s}"
+  // Hover: outline + cursor (sem mexer em position, sem pseudo-elementos)
+  +".wb-hover{outline:2px dashed #4C43F7!important;outline-offset:3px!important;cursor:pointer!important}"
   +".wb-hover-img{outline:2px dashed #56D9DF!important;cursor:pointer!important}"
-  +".wb-editing{outline:2px solid #6359FF!important;outline-offset:3px!important;position:relative;z-index:99}"
-  +".wb-edit-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#4C43F7;color:#fff;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:90;opacity:0;transition:opacity .15s;box-shadow:0 1px 4px rgba(76,67,247,.4)}"
-  +".wb-hover .wb-edit-badge,.wb-hover-img .wb-edit-badge{opacity:1}"
+  // Editing state
+  +".wb-editing{outline:2px solid #6359FF!important;outline-offset:3px!important;z-index:99}"
+  // Popup
   +".wb-editor-popup{position:fixed;z-index:99999;background:#1a1f2e;border:1px solid #4C43F7;border-radius:12px;padding:12px;min-width:280px;max-width:340px;box-shadow:0 16px 48px rgba(0,0,0,.6);font-family:Inter,system-ui,sans-serif;font-size:12px}"
   +".wb-editor-popup textarea{width:100%;min-height:52px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.5;overflow-y:auto}"
   +".wb-editor-popup textarea:focus{border-color:#4C43F7}"
@@ -133,26 +117,6 @@ style.textContent=""
   +".wb-field-label{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}"
   +"";
 document.head.appendChild(style);
-
-// ── Adiciona badges de edição nos elementos editáveis ──
-function addAllBadges(){
-  // data-editable-text
-  document.querySelectorAll("[data-editable-text]").forEach(function(el){
-    if(window.getComputedStyle(el).display!=="none"&&el.offsetHeight>0)addEditBadge(el);
-  });
-  // img[data-editable]
-  document.querySelectorAll("img[data-editable]").forEach(function(el){
-    if(el.offsetHeight>0)addEditBadge(el);
-  });
-  // [data-editable] com texto (não IMG, não escondido)
-  document.querySelectorAll("[data-editable]").forEach(function(el){
-    if(el.tagName==="IMG")return;
-    if(window.getComputedStyle(el).display==="none"||el.offsetHeight===0)return;
-    var txt=getEditableText(el);
-    if(txt||el.tagName==="A")addEditBadge(el);
-  });
-}
-setTimeout(addAllBadges,300);
 
 // ── Eventos de Hover ──
 document.addEventListener("mouseover",function(e){
@@ -192,7 +156,7 @@ document.addEventListener("click",function(e){
       return;
     }
   }
-  // Intercepta navegação de links
+  // Intercepta navegacao de links
   var linkEl=e.target.closest("a[href]");
   if(linkEl&&linkEl.getAttribute("href")!=="#"){e.preventDefault();e.stopPropagation();}
 });
@@ -218,8 +182,6 @@ window.addEventListener("message",function(e){
         else{el.textContent=e.data.value;}
       }
     }
-    // Re-adiciona badges após atualizar texto
-    setTimeout(addAllBadges,200);
   }
   if(e.data.type==="wb-refresh-img"){
     var el=document.querySelector('img[data-editable="'+e.data.key+'"]');
