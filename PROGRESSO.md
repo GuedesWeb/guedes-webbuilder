@@ -60,6 +60,15 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Testado com KV simulado: criação 201 + senha, repetição 200, inválido 400 ✅
 - ✅ Enviado ao GitHub no commit `f65f065`
 
+### 6. Acesso CMS visível na listagem do painel admin (13/08/2026)
+- Listagem de projetos do `admin.html` ganhou a coluna **"Acesso CMS"**: senha do cliente (clique copia), botão 📋 copiar, botão 🔄 gerar nova senha, link 🌐 do site publicado e link 🖊️ para o CMS
+- `api/admin-leads.js` enriquece cada lead buscando `cms-user:<email>` e `site:<slug>` no KV (senha, siteUrl, vercelProject)
+- Senha agora é gravada (campo `senha`) em `admin-criar-acesso.js` e `criar-acesso-cliente.js` — contas antigas aparecem como "senha não visível" e podem ser resolvidas com 🔄
+- Novo endpoint `api/admin-resetar-senha.js` (auth admin): gera nova senha para o cliente (a atual deixa de funcionar), registrado no `vercel.json`
+- ⚠️ Trade-off de segurança: a senha fica armazenada em texto puro no KV (necessário para o admin vê-la na listagem). Alternativa seria armazenar só o hash + botão de reset — avalie
+- Testado com KV simulado: enriquecimento por lead ✅, reset 200 ✅, reset inexistente 404 ✅
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos

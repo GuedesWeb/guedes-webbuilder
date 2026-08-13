@@ -84,7 +84,7 @@ module.exports = async function handler(req, res) {
 
     var senha = auth.gerarSenha();
     var hash = auth.hashSenha(senha);
-    var userDoc = { email: email, slug: slug, nome: nome, studio: studio, passwordHash: hash, criadoEm: new Date().toISOString() };
+    var userDoc = { email: email, slug: slug, nome: nome, studio: studio, passwordHash: hash, senha: senha, criadoEm: new Date().toISOString() };
     await kv.cmd('SET', 'cms-user:' + email, JSON.stringify(userDoc));
     await kv.cmd('RPUSH', 'clients', email);
 

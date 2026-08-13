@@ -1,10 +1,11 @@
 /**
- * POST /api/admin-criar-acesso
- * Admin cria acesso para um cliente (sem pagamento).
+ * POST /api/admin-resetar-senha
+ * Admin gera uma nova senha de acesso ao CMS para um cliente.
+ * A senha antiga deixa de funcionar.
  *
  * Headers: Authorization: Bearer <admin_token>
- * Body: { email, nome, studio, cpfCnpj? }
- * Retorna: { email, senha, slug }
+ * Body: { email }
+ * Retorna: { email, senha }
  */
 
 var kv = require('../lib/kv.js');
@@ -34,34 +35,30 @@ module.exports = async function handler(req, res) {
 
     var d = JSON.parse(body);
     var email = (d.email || '').trim().toLowerCase();
-    var nome = (d.nome || '').trim();
-    var studio = (d.studio || '').trim();
-    var cpfCnpj = (d.cpfCnpj || '').replace(/\D/g, '');
-
-    if (!email || !nome || !studio) {
+    if (!email) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'application/json');
-      return res.end(JSON.stringify({ erro: 'Email, nome e estúdio obrigatórios.' }));
+      return res.end(JSON.stringify({ erro: 'Email obrigatório.' }));
     }
 
-    var slug = auth.slugify(studio);
+    var raw = await kv.cmd('GET', 'cms-user:' + email);
+    if (!raw) {
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ erro: 'Nenhuma conta CMS encontrada para este email. Use "Criar Acesso para Cliente".' }));
+    }
 
+    var user = typeof raw === 'string' ? JSON.parse(raw) : raw;
     var senha = auth.gerarSenha();
-    var hash = auth.hashSenha(senha);
+    user.passwordHash = auth.hashSenha(senha);
+    user.senha = senha;
+    await kv.cmd('SET', 'cms-user:' + email, JSON.stringify(user));
 
-    var userDoc = { email, slug, nome, studio, passwordHash: hash, senha: senha, criadoEm: new Date().toISOString() };
-    await kv.cmd('SET', 'cms-user:' + email, JSON.stringify(userDoc));
-
-    var siteDoc = { slug, nome, email, studio, cpfCnpj, edits: null, customCode: null, criadoEm: new Date().toISOString() };
-    await kv.cmd('SET', 'site:' + slug, JSON.stringify(siteDoc));
-
-    await kv.cmd('RPUSH', 'clients', email);
-
-    res.statusCode = 201;
+    res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ email, senha, slug, studio }));
+    return res.end(JSON.stringify({ email: email, senha: senha, slug: user.slug }));
   } catch (e) {
-    console.error('[admin-criar-acesso]', e.message);
+    console.error('[admin-resetar-senha]', e.message);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({ erro: 'Erro interno.' }));

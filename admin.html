@@ -227,7 +227,7 @@ return;
 }
 
 var html = '<table class="tbl"><thead><tr>' +
-'<th>Data</th><th>Cliente</th><th>Estúdio</th><th>Email</th><th>CPF/CNPJ</th><th>Status</th>' +
+'<th>Data</th><th>Cliente</th><th>Estúdio</th><th>Email</th><th>CPF/CNPJ</th><th>Status</th><th>Acesso CMS</th>' +
 '</tr></thead><tbody>';
 
 json.leads.forEach(function(l) {
@@ -240,6 +240,7 @@ html += '<tr>' +
 '<td class="meta">' + esc(l.email) + '</td>' +
 '<td class="meta">' + esc(l.cpfCnpj || '—') + '</td>' +
 '<td><span class="pill ' + (ok ? 'ok' : 'wait') + '">' + (ok ? 'Pago' : 'Pendente') + '</span></td>' +
+celulaCms(l) +
 '</tr>';
 });
 
@@ -253,6 +254,61 @@ container.innerHTML = '<div class="empty-state"><div class="icon">—</div><p>N�
 function esc(s) {
 if (!s) return '';
 return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── CÉLULA DE ACESSO AO CMS ──
+function celulaCms(l) {
+if (!l.cms) return '<td class="meta">—</td>';
+var senhaHtml = l.cms.senha
+? '<span style="font-family:monospace;font-size:12px;color:var(--bright);cursor:pointer" title="Clique para copiar" onclick="copiarTexto(\'' + esc(l.cms.senha) + '\')">' + esc(l.cms.senha) + '</span>'
+: '<span style="font-size:10px;color:var(--orange)">senha não visível</span>';
+var botoes =
+'<button onclick="copiarTexto(\'' + esc(l.cms.senha || '') + '\')" title="Copiar senha" style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:10px;padding:3px 6px;color:var(--text)">📋</button>' +
+'<button onclick="resetarSenha(\'' + esc(l.cms.email) + '\',this)" title="Gerar nova senha (a atual deixa de funcionar)" style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:10px;padding:3px 6px;color:var(--text)">🔄</button>';
+var links = '';
+if (l.cms.siteUrl) links += '<a href="' + esc(l.cms.siteUrl) + '" target="_blank" style="color:var(--green);font-size:10px;text-decoration:none;margin-right:6px">🌐 site</a>';
+links += '<a href="cms.html" target="_blank" style="color:var(--brand);font-size:10px;text-decoration:none">🖊️ cms</a>';
+return '<td class="meta"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">' + senhaHtml + botoes + '</div><div>' + links + '</div></td>';
+}
+
+function copiarTexto(txt) {
+if (!txt) return;
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(txt).then(function () { toast('Senha copiada!'); }).catch(function () { prompt('Copie a senha:', txt); });
+} else {
+prompt('Copie a senha:', txt);
+}
+}
+
+async function resetarSenha(email, btn) {
+if (!confirm('Gerar nova senha de acesso ao CMS para ' + email + '?\nA senha atual deixará de funcionar.')) return;
+btn.textContent = '⏳';
+try {
+var res = await fetch('/api/admin-resetar-senha', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+body: JSON.stringify({ email: email })
+});
+var j = await res.json();
+if (res.ok) {
+toast('Nova senha: ' + j.senha);
+carregarLeads();
+} else {
+alert(j.erro || 'Erro');
+btn.textContent = '🔄';
+}
+} catch (e) {
+alert('Erro: ' + e.message);
+btn.textContent = '🔄';
+}
+}
+
+function toast(msg) {
+var t = document.createElement('div');
+t.textContent = msg;
+t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+document.body.appendChild(t);
+setTimeout(function () { t.remove(); }, 2500);
 }
 
 async function criarAcesso(){

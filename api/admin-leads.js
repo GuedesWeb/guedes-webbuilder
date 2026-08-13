@@ -36,6 +36,27 @@ module.exports = async function handler(req, res) {
     // Ordenar do mais recente pro mais antigo
     leads.reverse();
 
+    // Enriquece cada lead com os dados de acesso ao CMS (email, senha, site)
+    await Promise.all(leads.map(async function (l) {
+      try {
+        var email = (l.email || '').trim().toLowerCase();
+        if (!email) return;
+        var rawUser = await kv.cmd('GET', 'cms-user:' + email);
+        if (!rawUser) return;
+        var user = typeof rawUser === 'string' ? JSON.parse(rawUser) : rawUser;
+        var cms = { email: email, senha: user.senha || '', slug: user.slug || '', siteUrl: '', vercelProject: '' };
+        if (user.slug) {
+          var rawSite = await kv.cmd('GET', 'site:' + user.slug);
+          if (rawSite) {
+            var site = typeof rawSite === 'string' ? JSON.parse(rawSite) : rawSite;
+            cms.siteUrl = site.siteUrl || '';
+            cms.vercelProject = site.vercelProject || '';
+          }
+        }
+        l.cms = cms;
+      } catch (e) { /* segue sem dados do CMS */ }
+    }));
+
     // Resumo
     var total = leads.length;
     var pagos = leads.filter(function (l) { return l.pago; }).length;
