@@ -92,7 +92,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - **Problema:** o `buildHTML` do CMS injetava o script de edição (efeito do lápis no hover) em todos os arquivos — baixar/publicar levava o editor junto
 - **Solução:** `buildHTML(page, noindex, injetarEditor)` — o editor só é injetado no preview (`updatePreview`); `cmsBaixar` e `cmsPublicar` geram arquivos limpos
 - O export/publicação do WebBuilder (`buildPageHTML`) já era limpo
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `4f9756a`
 
 ---
 
