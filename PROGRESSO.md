@@ -117,7 +117,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
   - Seção "Além disso" com DOM em pares foto+texto; xadrez no desktop via `order`; mobile com `order:0!important` (intercalado)
   - Cards com tipografia maior no celular, mapa que se atualiza sozinho quando o endereço muda, links do WhatsApp unificados com `target=_blank`
 - Validações: sintaxe OK, chaves data-editable idênticas, marcadores CUSTOM presentes, ids críticos presentes, 0 restos de conteúdo do cliente, 0 base64
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `1eed363`
 
 ---
 
