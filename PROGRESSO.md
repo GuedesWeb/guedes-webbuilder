@@ -88,6 +88,12 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Testado com Vercel API simulada: sucesso 200 ✅, nome em uso 502 ✅, arquivo inválido 400 ✅, >4MB 413 ✅, sem token 500 ✅
 - ✅ Enviado ao GitHub no commit `b471ebd`
 
+### 10. HTML baixado/publicado sem o editor inline (13/08/2026)
+- **Problema:** o `buildHTML` do CMS injetava o script de edição (efeito do lápis no hover) em todos os arquivos — baixar/publicar levava o editor junto
+- **Solução:** `buildHTML(page, noindex, injetarEditor)` — o editor só é injetado no preview (`updatePreview`); `cmsBaixar` e `cmsPublicar` geram arquivos limpos
+- O export/publicação do WebBuilder (`buildPageHTML`) já era limpo
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos

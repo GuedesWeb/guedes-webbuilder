@@ -265,7 +265,8 @@ if(j.siteUrl){document.getElementById('dash-url').href=j.siteUrl;document.getEle
 }
 
 // ── BUILD ──
-function buildHTML(page,noindex){
+// injetarEditor: somente o preview usa (arquivos baixados/publicados nunca levam o editor)
+function buildHTML(page,noindex,injetarEditor){
 var e=edits[page];if(!e)return'';
 var p=new DOMParser();var d=p.parseFromString(templateData[page],'text/html');
 if(noindex){var m=d.createElement('meta');m.name='robots';m.content='noindex,nofollow';d.head.appendChild(m);}
@@ -303,10 +304,12 @@ var lkk=Object.keys(lk);
 for(var i=0;i<lkk.length;i++){var k4=lkk[i],v4=lk[k4];var lel=d.querySelector('[data-editable="'+k4+'"]');if(lel&&lel.tagName==='A')lel.setAttribute('href',v4);}
 
 
-	// SCRIPT DE EDICAO INLINE NO CANVAS (compartilhado)
+	// SCRIPT DE EDICAO INLINE NO CANVAS (compartilhado) — apenas no preview
+	if(injetarEditor){
 	var _editScript=d.createElement('script');
 	_editScript.textContent=window.WB_EDITOR_SRC;
 	d.body.appendChild(_editScript);
+	}
 
 
 var s=d.getElementById('wb-colors');if(s)s.removeAttribute('id');
@@ -338,7 +341,7 @@ d.querySelectorAll('[data-editable-html]').forEach(function(el){var k=el.getAttr
 
 // ── PREVIEW ──
 function updatePreview(){
-var html=buildHTML(currentPage,currentPage==='planos');
+var html=buildHTML(currentPage,currentPage==='planos',true);
 if(!html)return;
 var b=new Blob([html],{type:'text/html'});
 var u=URL.createObjectURL(b);
