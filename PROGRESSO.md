@@ -80,6 +80,15 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - ✅ Enviado ao GitHub no commit `7105f36`
 - **É TEMPORÁRIO — reverter para R$300 assim que terminar os testes!**
 
+### 9. Publicação grátis agora é feita pelo servidor (13/08/2026)
+- **Problema:** "Publicar Grátis" usava o token da Vercel do navegador do cliente (localStorage) — ninguém tinha, dava "Erro interno: token não encontrado"
+- **Solução:** novo endpoint `api/publicar-site.js` publica usando `process.env.VERCEL_TOKEN` do servidor (mesmo token usado pelo `client-publish` do CMS)
+- `publishToVercel()` no webbuilder agora chama `/api/publicar-site` e mostra os erros de forma amigável (nome em uso, site grande demais, token não configurado)
+- ⚠️ Requer a variável `VERCEL_TOKEN` configurada no projeto da Vercel
+- ⚠️ Pendente: o fluxo de **domínio pago** (`checkDomain`/`buyDomainVercel`/`registerDomain`) ainda usa o token do navegador — tem o mesmo problema e deve ir para o servidor também
+- Testado com Vercel API simulada: sucesso 200 ✅, nome em uso 502 ✅, arquivo inválido 400 ✅, >4MB 413 ✅, sem token 500 ✅
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos

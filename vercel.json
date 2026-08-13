@@ -47,6 +47,10 @@
     "api/client-publish.js": {
       "memory": 512,
       "maxDuration": 30
+    },
+    "api/publicar-site.js": {
+      "memory": 512,
+      "maxDuration": 30
     }
   }
 }
