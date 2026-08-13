@@ -137,7 +137,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <div class="toolbar">
 <h2>Projetos recentes</h2>
+<div style="display:flex;gap:8px">
+<button onclick="location.href='/?admin=1'" style="background:var(--brand);border-color:var(--brand);color:#fff" title="Abre o builder no modo admin (sem pagamento)">➕ Criar Site para Cliente</button>
 <button onclick="carregarLeads()">Atualizar</button>
+</div>
 </div>
 
 <div class="table-wrap" id="tabela-container">

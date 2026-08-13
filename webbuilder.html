@@ -445,6 +445,9 @@ return'('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7,11);
 
 // ==================== ADMIN CHECK ====================
 async function checkAdminMode(){
+// Modo admin só é ativado pelo link específico (?admin=1).
+// No domínio raiz, todo mundo vê a tela normal de cliente.
+if(new URLSearchParams(location.search).get('admin')!=='1')return;
 var t=localStorage.getItem('admin_token');
 if(!t)return;
 try{var r=await fetch('/api/admin-leads',{headers:{'Authorization':'Bearer '+t}});if(r.ok)isAdmin=true;}catch(e){}

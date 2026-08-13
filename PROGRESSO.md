@@ -69,6 +69,12 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Testado com KV simulado: enriquecimento por lead ✅, reset 200 ✅, reset inexistente 404 ✅
 - ✅ Enviado ao GitHub no commit `22acb50`
 
+### 7. Admin no domínio raiz vê a tela normal de cliente (13/08/2026)
+- O modo admin do builder não ativa mais sozinho pela presença do token — só ativa pelo link específico `/?admin=1`
+- No domínio raiz, o admin (e qualquer visitante) vê a tela normal de boas-vindas com pagamento
+- O fluxo "Criar site para cliente" (sem pagamento) continua disponível: botão **➕ Criar Site para Cliente** no painel admin abre o builder com `?admin=1`
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos
