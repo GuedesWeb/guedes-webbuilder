@@ -97,7 +97,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .card-busca:hover{transform:translateY(-4px);box-shadow:var(--sombra-md)}
 .card-busca h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;color:var(--cor-escuro);margin-bottom:4px}
 .card-busca p{font-size:15px;color:var(--cor-texto-suave);line-height:1.4}
-@media(max-width:768px){.cards-grid{grid-template-columns:1fr 1fr;gap:10px}.card-busca{padding:200px 12px 20px}.card-busca h3{font-size:17px}.card-busca p{font-size:12px}}
+@media(max-width:768px){.cards-grid{grid-template-columns:1fr;gap:14px}.card-busca{padding:200px 12px 20px}.card-busca h3{font-size:17px}.card-busca p{font-size:12px}}
 
 /* CTA */
 .cta-block{background:var(--cor-escuro);padding:80px 0;text-align:center;position:relative;overflow:hidden}
@@ -116,7 +116,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .aulas-texto{background:var(--cor-escuro);color:#fff;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .aulas-texto h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;margin-bottom:6px}
 .aulas-texto p{font-size:13px;line-height:1.7;opacity:.9}
-@media(max-width:768px){.aulas-grid{grid-template-columns:1fr}.aulas-grid img{height:220px;width:100%}.aulas-texto{padding:24px 20px}.aulas-texto h3{font-size:18px}.aulas-texto p{font-size:13px}}
+@media(max-width:768px){.aulas-grid{grid-template-columns:1fr}.aulas-grid img{height:220px;width:100%}.aulas-grid>*:nth-child(5){order:6}.aulas-grid>*:nth-child(6){order:5}.aulas-grid>*:nth-child(7){order:8}.aulas-grid>*:nth-child(8){order:7}.aulas-texto{padding:24px 20px}.aulas-texto h3{font-size:18px}.aulas-texto p{font-size:13px}}
 
 /* CARROSSEL */
 .espaco-section{background:var(--cor-superficie)}
@@ -179,7 +179,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .contato-card .btn{background:#fff;color:var(--cor-escuro);font-size:14px;margin-top:8px}
 .contato-card .btn:hover{background:var(--cor-fundo)}
 .contato-card p{font-size:15px;opacity:.8}
-@media(max-width:768px){.contato-card{padding:40px 24px}.contato-card svg{width:32px;height:32px}}
+@media(max-width:768px){.contato-grid{grid-template-columns:1fr}.contato-card{padding:40px 24px}.contato-card svg{width:32px;height:32px}.contato-card:first-child{border-radius:var(--raio) var(--raio) 0 0}.contato-card:last-child{border-radius:0 0 var(--raio) var(--raio);border-left:none;border-top:1px solid rgba(255,255,255,.1)}}
 
 /* LOCALIZAÇÃO */
 .local-section{background:var(--cor-superficie)}

@@ -100,6 +100,13 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - As edições agora persistem entre navegadores/dispositivos (browser B carrega o que browser A salvou)
 - ✅ Enviado ao GitHub no commit `8d1b2d8`
 
+### 12. Responsivo da landing no celular (13/08/2026)
+- Cards "O que você busca?" (`.cards-grid`): de 2 colunas para **1 coluna empilhada** no celular
+- Seção "Além disso, nossas aulas são indicadas para:" (`.aulas-grid`): no celular agora fica **intercalado imagem-texto-imagem-texto** (via `order` no media query — desktop preservado)
+- Cards de contato (`.contato-grid`): empilhados no celular, com cantos arredondados ajustados
+- ⚠️ Sites já publicados só recebem a correção após uma nova publicação (do builder ou do CMS)
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos
