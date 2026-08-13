@@ -98,7 +98,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - **Problema:** o botão "💾 Salvar" e o Ctrl+S chamavam `cmsSalvar()`, mas a função **nunca existiu** — edições ficavam só na memória do navegador e sumiam em outro computador
 - **Solução:** `cmsSalvar()` implementada — POST em `/api/client-site` com Bearer token, gravando `edits` + `customCode` no KV; salva também ao sair da página (`beforeunload` + `keepalive`)
 - As edições agora persistem entre navegadores/dispositivos (browser B carrega o que browser A salvou)
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `8d1b2d8`
 
 ---
 
