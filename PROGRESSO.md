@@ -94,6 +94,12 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - O export/publicação do WebBuilder (`buildPageHTML`) já era limpo
 - ✅ Enviado ao GitHub no commit `4f9756a`
 
+### 11. Salvar no CMS não funcionava (13/08/2026)
+- **Problema:** o botão "💾 Salvar" e o Ctrl+S chamavam `cmsSalvar()`, mas a função **nunca existiu** — edições ficavam só na memória do navegador e sumiam em outro computador
+- **Solução:** `cmsSalvar()` implementada — POST em `/api/client-site` com Bearer token, gravando `edits` + `customCode` no KV; salva também ao sair da página (`beforeunload` + `keepalive`)
+- As edições agora persistem entre navegadores/dispositivos (browser B carrega o que browser A salvou)
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos

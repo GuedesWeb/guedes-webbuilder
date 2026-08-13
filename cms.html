@@ -232,6 +232,34 @@ initDash();
 
 function logout(){token='';slug='';siteData=null;document.getElementById('login-screen').style.display='flex';document.getElementById('dash-screen').style.display='none';}
 
+// ── SALVAR RASCUNHO (botão Salvar / Ctrl+S) ──
+async function cmsSalvar(){
+if(!token||!slug){toast('Sessão expirada. Entre novamente.',true);return;}
+try{
+var r=await fetch('/api/client-site',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({edits:edits,customCode:customCode})
+});
+var j=await r.json();
+if(r.ok){toast('💾 Alterações salvas!');}
+else{toast(j.erro||'Erro ao salvar',true);}
+}catch(e){toast('Erro ao salvar: '+e.message,true);}
+}
+
+// Salva automaticamente ao sair da página
+window.addEventListener('beforeunload',function(){
+if(!token||!slug)return;
+try{
+fetch('/api/client-site',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+body:JSON.stringify({edits:edits,customCode:customCode}),
+keepalive:true
+});
+}catch(e){}
+});
+
 // ── INIT ──
 async function initDash(){
 if(typeof TEMPLATES==='undefined'){alert('templates-data.js não encontrado!');return}
