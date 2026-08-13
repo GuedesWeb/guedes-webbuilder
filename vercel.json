@@ -28,6 +28,10 @@
       "memory": 256,
       "maxDuration": 10
     },
+    "api/criar-acesso-cliente.js": {
+      "memory": 512,
+      "maxDuration": 10
+    },
     "api/client-auth.js": {
       "memory": 256,
       "maxDuration": 10

@@ -1,0 +1,80 @@
+# Progresso do Projeto — Guedes WebBuilder
+
+**Última atualização:** 12/08/2026
+**Último commit enviado:** `efec592` — "Tela de edicao estilo CMS com seletor de paginas em destaque" (branch `main`, GitHub `GuedesWeb/guedes-webbuilder`)
+
+---
+
+## Visão geral do projeto
+
+Builder de sites para estúdios de Pilates/wellness, com fluxo completo:
+
+1. **Boas-vindas** (`webbuilder.html`) — apresentação + pagamento de R$300 via Asaas/PIX (verificação automática a cada 10s, confirmação via WhatsApp como fallback)
+2. **Pré-Configuração** — 4 sub-etapas (Identidade/Cores, Fotos, Contato/Localização, Planos e Valores), aplicadas nas duas páginas
+3. **Tela de edição** — edição com preview ao vivo e clique direto nos textos/imagens
+4. **Publicação** — domínio próprio (R$79,90/ano via Asaas) ou subdomínio grátis `.vercel.app` na Vercel
+
+- **Página de Planos** é publicada como `/planos`, com `noindex` e **sem nenhum link a partir da landing** — só abre pelo link direto enviado ao cliente
+- **CMS** (`cms.html`) — painel do cliente pós-publicação (login via `/api/client-auth`)
+- **Templates reais** estão em `templates-data.js` (slots dinâmicos `depo-0..14`, `gal-0..19`, `galeria-1..8`). ⚠️ Os arquivos em `Templates/` estão desatualizados — o app usa `templates-data.js`
+- **API** (`api/`) — serverless functions Vercel (Asaas, leads, auth, publish)
+
+---
+
+## O que foi feito na sessão de 12/08/2026
+
+### 1. Tela de edição do WebBuilder replicada no estilo CMS
+O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato, Avaliações, Publicar) foi **substituído por abas estilo CMS**:
+
+```
+🎨 Cores | 🖼️ Imagens | 🔗 Links | 💬 Depoimentos | 📸 Galeria | ⚙️ Ajustes | 🚀 Publicar
+```
+
+- Rodapé do painel: `💾 Salvar · 📥 Baixar · 🚀 Publicar`
+- Depoimentos e Galeria com **multi-upload** (selecionar várias de uma vez)
+- Aba **Ajustes** reúne: SEO, WhatsApp, código Elfsight (avaliações do Google) e código customizado (head/body/footer)
+- O wizard ficou apenas para Boas-vindas e Pré-Configuração (`STEPS` agora só tem 2 itens; `editMode=true` após `applySetup()`)
+- **Rascunho automático** em localStorage (`wb_rascunho`): autosave ao sair da página + botão Salvar
+
+### 2. Seletor de páginas em destaque + aviso da página de planos
+- Botões grandes e nomeados na barra de abas: `🏠 Página Principal` e `💎 Página de Planos` (com tag `via link`)
+- Botão ativo em roxo com brilho (`.psbtn.on`)
+- **Banner de aviso** ao selecionar a Página de Planos: ela não aparece no site, só abre pelo link enviado e não é indexada pelo Google
+- Aviso também na tela Publicar (antes e depois de publicar)
+
+### 3. CMS atualizado igual
+- Mesmo seletor de páginas em destaque e o mesmo banner de aviso aplicados ao `cms.html`
+
+### 4. Enviado ao GitHub
+- Commit `efec592` publicado em `main` (2 arquivos: `webbuilder.html` + `cms.html`)
+
+### 5. Criação automática da conta CMS ao publicar (13/08/2026)
+- **Antes:** publicar só enviava o site à Vercel — a conta do CMS tinha que ser criada manualmente pelo admin
+- **Agora:** `publishToVercel()` chama o novo endpoint `POST /api/criar-acesso-cliente` logo após publicar
+  - Cria `cms-user:<email>` (senha gerada e mostrada na tela), `site:<slug>` (com edits, customCode, vercelProject e siteUrl) e adiciona à lista `clients`
+  - Se o email já tem conta: apenas atualiza o site doc e mostra "painel já ativo"
+  - Se o site tem imagens demais (>4,2MB, limite da Vercel): tenta de novo sem o conteúdo — acesso é criado mesmo assim
+  - Na tela de sucesso aparece a caixa "🔐 Seu painel de edição foi criado!" com email + senha (copiar) + link para o CMS
+- Novo arquivo: `api/criar-acesso-cliente.js` (registrado no `vercel.json` com 512MB)
+- ⚠️ O endpoint é aberto (sem autenticação), como `salvar-lead` — risco baixo (só cria registros no KV), mas se quiser posso exigir confirmação de pagamento via Asaas
+- Testado com KV simulado: criação 201 + senha, repetição 200, inválido 400 ✅
+- **Não enviado ao GitHub ainda** (commit pendente)
+
+---
+
+## Onde paramos / próximos passos
+
+- ✅ Tudo o que foi pedido nesta sessão está pronto e enviado
+- ⏳ **Pendente de teste manual no navegador** — validar o fluxo completo: pagamento → pré-configuração → abas de edição → troca de páginas → publicação
+- 💡 Ideias levantadas (não implementadas):
+  - Clientes que já pagaram poderiam pular direto para a tela de edição ao reabrir o builder (hoje passam pela pré-configuração de novo, com campos pré-preenchidos)
+  - A pasta `Templates/` está desatualizada em relação ao `templates-data.js` — considerar remover/atualizar para evitar confusão
+- 📄 Este arquivo (`PROGRESSO.md`) ainda **não foi commitado** — commit apenas se desejar
+
+## Como testar
+
+```
+cd "C:\Users\55389\Documents\Guedes WebBuilder"
+.\start-server.ps1        # porta 8080
+```
+Depois abrir `http://localhost:8080/webbuilder.html` (builder) e `http://localhost:8080/cms.html` (painel do cliente).

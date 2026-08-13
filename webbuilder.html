@@ -1872,8 +1872,10 @@ resultDiv.innerHTML=`<div style="background:rgba(32,201,151,.08);border:1px soli
 </div>
 </div>
 <p style="font-size:10px;color:var(--dim);margin-top:12px">Pode levar até 30s para ficar disponível.</p>
-</div>`;
+</div>
+<div id="pub-cms-result" style="margin-top:16px"></div>`;
 btn.textContent='✅ Publicado';btn.className='btn btn-s';btn.disabled=true;
+criarAcessoCMS(name,baseUrl);
 }else{
 let errMsg=json.error?.message||json.message||'Erro desconhecido';
 if(json.error?.code)errMsg='['+json.error.code+'] '+errMsg;
@@ -1891,6 +1893,52 @@ resultDiv.innerHTML=`<div style="background:rgba(239,68,68,.08);border:1px solid
 <strong>Provável causa:</strong> CORS bloqueado pelo navegador.<br>
 Abra o builder pelo servidor local: <strong>start-server.bat</strong></div>`;
 btn.textContent='🚀 Tentar Novamente';btn.disabled=false;
+}
+}
+
+// ==================== CRIAR ACESSO AO CMS APÓS PUBLICAR ====================
+async function criarAcessoCMS(vercelProject,siteUrl){
+const area=document.getElementById('pub-cms-result');
+if(!area)return;
+const email=(localStorage.getItem('cad_email')||'').trim().toLowerCase();
+if(!email){
+area.innerHTML='<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:14px;font-size:11px;color:var(--warning);line-height:1.5">⚠️ Nenhum email de cadastro encontrado neste navegador — peça ao Guedes para criar seu acesso ao painel.</div>';
+return;
+}
+area.innerHTML='<p style="font-size:11px;color:var(--dim);text-align:center">🔐 Criando seu acesso ao painel de edição...</p>';
+const nome=localStorage.getItem('cad_nome')||'';
+const studio=localStorage.getItem('cad_studio')||edits.landing.textos['logo-text']||'';
+const cpfCnpj=localStorage.getItem('cad_cpfcnpj')||'';
+const base={email:email,nome:nome,studio:studio,cpfCnpj:cpfCnpj,vercelProject:vercelProject,siteUrl:siteUrl};
+async function enviar(payload){
+return await fetch('/api/criar-acesso-cliente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+}
+try{
+let res=await enviar(Object.assign({edits:edits,customCode:customCode},base));
+if(res.status===413){
+// Site com muitas imagens excede o limite da Vercel — cria o acesso sem o conteúdo
+res=await enviar(base);
+}
+const j=await res.json();
+if(res.ok&&j.criado){
+area.innerHTML='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.2);border-radius:var(--r);padding:16px;text-align:left">'+
+'<p style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:10px">🔐 Seu painel de edição foi criado!</p>'+
+'<p style="font-size:11px;color:var(--text);margin-bottom:6px">Email: <b style="color:var(--bright)">'+esc(j.email)+'</b></p>'+
+'<div style="display:flex;gap:6px;align-items:center;margin-bottom:12px"><span style="font-size:11px;color:var(--text);white-space:nowrap">Senha:</span><input class="fi" value="'+esc(j.senha)+'" readonly style="flex:1;font-size:11px;cursor:text" onclick="this.select()" id="pub-cms-senha"><button class="btn btn-s btn-sm" onclick="copyLink(\'pub-cms-senha\')" style="white-space:nowrap">📋 Copiar</button></div>'+
+'<a href="cms.html" target="_blank" class="btn btn-p btn-sm" style="width:100%">🖊️ Abrir Painel de Edição →</a>'+
+'<p style="font-size:9px;color:var(--dim);margin-top:8px;line-height:1.5">Guarde a senha! No painel você edita o site sem precisar refazer nada. Em caso de dúvida, chame o Guedes no WhatsApp.</p>'+
+'</div>';
+}else if(res.ok&&j.existente){
+area.innerHTML='<div style="background:rgba(32,201,151,.06);border:1px solid rgba(32,201,151,.2);border-radius:var(--r);padding:14px;text-align:center">'+
+'<p style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">🔐 Seu painel de edição já está ativo</p>'+
+'<p style="font-size:10px;color:var(--dim);margin-bottom:10px">Entre com o email <b style="color:var(--bright)">'+esc(j.email)+'</b> e a senha que você já tem.</p>'+
+'<a href="cms.html" target="_blank" class="btn btn-p btn-sm" style="width:100%">🖊️ Abrir Painel de Edição →</a>'+
+'</div>';
+}else{
+area.innerHTML='<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:14px;font-size:11px;color:var(--warning);line-height:1.5">⚠️ Não foi possível criar seu acesso agora ('+esc(j.erro||'erro')+'). Fale com o Guedes no WhatsApp que ele resolve rapidinho.</div>';
+}
+}catch(e){
+area.innerHTML='<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:14px;font-size:11px;color:var(--warning);line-height:1.5">⚠️ Não foi possível criar seu acesso agora (erro de conexão). Fale com o Guedes no WhatsApp que ele resolve rapidinho.</div>';
 }
 }
 
