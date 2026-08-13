@@ -87,7 +87,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - ⚠️ Requer a variável `VERCEL_TOKEN` configurada no projeto da Vercel
 - ⚠️ Pendente: o fluxo de **domínio pago** (`checkDomain`/`buyDomainVercel`/`registerDomain`) ainda usa o token do navegador — tem o mesmo problema e deve ir para o servidor também
 - Testado com Vercel API simulada: sucesso 200 ✅, nome em uso 502 ✅, arquivo inválido 400 ✅, >4MB 413 ✅, sem token 500 ✅
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `b471ebd`
 
 ---
 
