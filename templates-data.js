@@ -1,14 +1,13 @@
 const TEMPLATES = {
   landing: `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-editable="seo-title">Sua Empresa</title>
 <meta name="description" content="Domine seu corpo e mente com o poder do Pilates. Agende uma aula experimental." data-editable="seo-description">
 <link rel="icon" href="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/cropped-FAVICON-32x32.png" data-editable="favicon">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&amp;display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -65,7 +64,15 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .menu-btn::before{top:12px}.menu-btn::after{bottom:12px}
 .menu-btn.active::before{top:19px;transform:rotate(45deg)}.menu-btn.active::after{bottom:19px;transform:rotate(-45deg)}.menu-btn.active span{opacity:0}
 @media(max-width:768px){
-.nav{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--cor-superficie);flex-direction:column;justify-content:center;gap:32px;z-index:100}.nav.active{display:flex}.nav a{font-size:20px}.menu-btn{display:block}
+.nav{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100dvh;background:var(--cor-superficie);flex-direction:column;justify-content:center;align-items:center;gap:32px;z-index:200;overflow-y:auto;padding:80px 24px}
+.nav.active{display:flex}
+.nav a{font-size:20px}
+.menu-btn{display:block;z-index:201}
+/* O backdrop-filter do header vira containing block e prenderia o menu fixed
+   dentro dele; por isso e desligado enquanto o menu esta aberto. */
+.header.nav-open{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+body.no-scroll{overflow:hidden}
+body.no-scroll .wpp-float{opacity:0;pointer-events:none}
 }
 
 /* HERO */
@@ -97,7 +104,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .card-busca:hover{transform:translateY(-4px);box-shadow:var(--sombra-md)}
 .card-busca h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;color:var(--cor-escuro);margin-bottom:4px}
 .card-busca p{font-size:15px;color:var(--cor-texto-suave);line-height:1.4}
-@media(max-width:768px){.cards-grid{grid-template-columns:1fr;gap:14px}.card-busca{padding:200px 12px 20px}.card-busca h3{font-size:17px}.card-busca p{font-size:12px}}
+@media(max-width:768px){.cards-grid{grid-template-columns:1fr;gap:16px}.card-busca{padding:240px 20px 28px}.card-busca h3{font-size:22px}.card-busca p{font-size:14px}}
 
 /* CTA */
 .cta-block{background:var(--cor-escuro);padding:80px 0;text-align:center;position:relative;overflow:hidden}
@@ -112,11 +119,16 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .aulas-section{background:var(--cor-superficie)}
 .aulas-title{text-align:center;font-size:clamp(24px,3.5vw,36px);font-weight:500;color:var(--cor-escuro);margin-bottom:40px}
 .aulas-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;gap:0;align-items:stretch}
+/* Desktop: xadrez (linha 2 invertida) sem quebrar o par foto+texto do DOM */
+.aulas-grid>*:nth-child(5){order:6}
+.aulas-grid>*:nth-child(6){order:5}
+.aulas-grid>*:nth-child(7){order:8}
+.aulas-grid>*:nth-child(8){order:7}
 .aulas-grid img{width:100%;height:100%;object-fit:cover;display:block;min-height:300px}
 .aulas-texto{background:var(--cor-escuro);color:#fff;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .aulas-texto h3{font-family:var(--fonte-display);font-size:22px;font-weight:600;margin-bottom:6px}
 .aulas-texto p{font-size:13px;line-height:1.7;opacity:.9}
-@media(max-width:768px){.aulas-grid{grid-template-columns:1fr}.aulas-grid img{height:220px;width:100%}.aulas-grid>*:nth-child(5){order:6}.aulas-grid>*:nth-child(6){order:5}.aulas-grid>*:nth-child(7){order:8}.aulas-grid>*:nth-child(8){order:7}.aulas-texto{padding:24px 20px}.aulas-texto h3{font-size:18px}.aulas-texto p{font-size:13px}}
+@media(max-width:768px){.aulas-grid{grid-template-columns:1fr}.aulas-grid>*{order:0!important}.aulas-grid img{height:260px;min-height:0;width:100%}.aulas-texto{padding:24px 20px}.aulas-texto h3{font-size:18px}.aulas-texto p{font-size:13px}}
 
 /* CARROSSEL */
 .espaco-section{background:var(--cor-superficie)}
@@ -149,7 +161,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .depo-dots{display:flex;justify-content:center;gap:8px;margin-top:24px}
 .depo-dot{width:10px;height:10px;border-radius:50%;background:var(--cor-borda);border:none;cursor:pointer;transition:all .3s}
 .depo-dot.active{background:var(--cor-acento);width:28px;border-radius:5px}
-@media(max-width:768px){.depo-slide{flex:0 0 85%}.depo-slide img{aspect-ratio:3/5}}
+@media(max-width:768px){.depo-slide{flex:0 0 88%;min-width:0;padding:0 6px}.depo-slide img{aspect-ratio:3/5}}
 .depo-arrow,.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);border:1px solid var(--cor-borda);cursor:pointer;font-size:28px;color:var(--cor-escuro);display:flex;align-items:center;justify-content:center;transition:all .25s;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 .depo-arrow:hover,.carousel-arrow:hover{background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.15);transform:translateY(-50%) scale(1.05)}
 .depo-arrow-left,.carousel-arrow-left{left:8px}
@@ -179,7 +191,15 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .contato-card .btn{background:#fff;color:var(--cor-escuro);font-size:14px;margin-top:8px}
 .contato-card .btn:hover{background:var(--cor-fundo)}
 .contato-card p{font-size:15px;opacity:.8}
-@media(max-width:768px){.contato-grid{grid-template-columns:1fr}.contato-card{padding:40px 24px}.contato-card svg{width:32px;height:32px}.contato-card:first-child{border-radius:var(--raio) var(--raio) 0 0}.contato-card:last-child{border-radius:0 0 var(--raio) var(--raio);border-left:none;border-top:1px solid rgba(255,255,255,.1)}}
+@media(max-width:768px){
+.contato-grid{grid-template-columns:1fr;max-width:100%}
+.contato-card{padding:36px 20px}
+.contato-card svg{width:32px;height:32px}
+.contato-card h3{font-size:20px}
+.contato-card:first-child{border-radius:var(--raio) var(--raio) 0 0}
+.contato-card:last-child{border-radius:0 0 var(--raio) var(--raio);border-left:none;border-top:1px solid rgba(255,255,255,.1)}
+.contato-card a[href^="tel:"]{font-size:20px;white-space:nowrap}
+}
 
 /* LOCALIZAÇÃO */
 .local-section{background:var(--cor-superficie)}
@@ -203,7 +223,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 .wpp-float svg{width:26px;height:26px;fill:#fff}
 </style>
 <!-- CUSTOM_HEAD -->
-</head>
+<style>:root{--cor-fundo:#d2bfa6;--cor-superficie:#ffffff;--cor-escuro:#363e2f;--cor-medio:#945631;--cor-acento:#945631;--cor-texto:#2C2420;--cor-texto-suave:#363e2f;--cor-borda:#E8E0D8;}</style></head>
 <body>
 <!-- CUSTOM_BODY_START -->
 
@@ -219,7 +239,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <a href="#nossoespaco" data-editable="menu-2">Nosso espaço</a>
 <a href="#localizacao" data-editable="menu-3">Localização</a>
 </nav>
-<button class="menu-btn" id="menuBtn" onclick="document.getElementById('nav').classList.toggle('active');this.classList.toggle('active')"><span></span></button>
+<button class="menu-btn" id="menuBtn" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav"><span></span></button>
 </div>
 </header>
 
@@ -231,7 +251,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <div class="container">
 <img class="hero-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='376' height='143'%3E%3Crect width='376' height='143' fill='none'/%3E%3Ctext x='188' y='80' text-anchor='middle' fill='%233A2D28' font-family='Poppins,sans-serif' font-size='36' font-weight='bold'%3ESua Logo%3C/text%3E%3C/svg%3E" alt="Logo" data-editable="logo-hero">
 <h2 data-editable="hero-headline">Domine seu corpo e mente com o poder do&nbsp;Pilates.</h2>
-<a href="#" class="btn btn-accent" data-editable="hero-btn-link" data-editable-text="hero-btn-text">Agende uma aula experimental</a>
+<a target="_blank" rel="noopener noreferrer" href="#" class="btn btn-accent" data-editable="hero-btn-link" data-editable-text="hero-btn-text">Agende uma aula experimental</a>
 </div>
 </section>
 
@@ -252,7 +272,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <section class="cta-block">
 <div class="container">
 <h2 class="display" data-editable="cta-headline">Clique no botão abaixo e agende sua aula experimental grátis</h2>
-<a href="#" class="btn" data-editable="cta-link" data-editable-text="cta-btn">Agende seu horário</a>
+<a target="_blank" rel="noopener noreferrer" href="#" class="btn" data-editable="cta-link" data-editable-text="cta-btn">Agende seu horário</a>
 </div>
 </section>
 
@@ -261,14 +281,14 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <div class="container">
 <h2 class="aulas-title display" data-editable="aulas-title">Além disso, nossas aulas são indicadas para:</h2>
 <div class="aulas-grid">
-<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_gravida.webp" alt="Gestantes">
+<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_reabilitacao.webp" alt="Aula de Pilates para reabilitação" loading="lazy">
 <div class="aulas-texto"><h3 data-editable="aulas-t1">Reabilitação</h3><p data-editable="aulas-d1">Recuperação de lesões, pós operatórios, ou continuação de tratamentos fisioterapêuticos visando a manutenção do equilíbrio muscular.</p></div>
-<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_dores.webp" alt="Idosos">
+<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-idoso.avif" alt="Aula de Pilates para idosos" loading="lazy">
 <div class="aulas-texto"><h3 data-editable="aulas-t2">Idosos</h3><p data-editable="aulas-d2">Prevenção de quedas, manutenção de força, alivio de dores, aumento da flexibilidade e melhora da postura para os alunos na melhor idade.</p></div>
+<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_gravida.webp" alt="Aula de Pilates para gestantes" loading="lazy">
 <div class="aulas-texto"><h3 data-editable="aulas-t3">Gestantes</h3><p data-editable="aulas-d3">Se mantenha ativa com segurança durante a gestação e pós parto.</p></div>
-<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_reabilitacao.webp" alt="Dores">
+<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img_dores.webp" alt="Aula de Pilates para dores crônicas" loading="lazy">
 <div class="aulas-texto"><h3 data-editable="aulas-t4">Dores Crônicas</h3><p data-editable="aulas-d4">Reduza a dor que te acompanha por mais de três meses, temos profissionais capacitadas para isso.</p></div>
-<img src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-new-idoso.avif" alt="Idosos">
 </div>
 </div>
 </section>
@@ -281,7 +301,7 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <div class="carousel" id="carousel">
 	<div class="carousel-track" id="carouselTrack"></div>
 </div>
-</div>
+
 <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
@@ -318,14 +338,14 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 
 	<!-- Slots ocultos para imagens (gerenciados pelo CMS) -->
 	<div style="display:none" aria-hidden="true">
-	<img id="depo-img-0" data-editable="depo-0" src=""><img id="depo-img-1" data-editable="depo-1" src=""><img id="depo-img-2" data-editable="depo-2" src=""><img id="depo-img-3" data-editable="depo-3" src=""><img id="depo-img-4" data-editable="depo-4" src="">
-	<img id="depo-img-5" data-editable="depo-5" src=""><img id="depo-img-6" data-editable="depo-6" src=""><img id="depo-img-7" data-editable="depo-7" src=""><img id="depo-img-8" data-editable="depo-8" src=""><img id="depo-img-9" data-editable="depo-9" src="">
-	<img id="depo-img-10" data-editable="depo-10" src=""><img id="depo-img-11" data-editable="depo-11" src=""><img id="depo-img-12" data-editable="depo-12" src=""><img id="depo-img-13" data-editable="depo-13" src=""><img id="depo-img-14" data-editable="depo-14" src="">
+	<img loading="lazy" id="depo-img-0" data-editable="depo-0" src=""><img loading="lazy" id="depo-img-1" data-editable="depo-1" src=""><img loading="lazy" id="depo-img-2" data-editable="depo-2" src=""><img loading="lazy" id="depo-img-3" data-editable="depo-3" src=""><img loading="lazy" id="depo-img-4" data-editable="depo-4" src="">
+	<img loading="lazy" id="depo-img-5" data-editable="depo-5" src=""><img loading="lazy" id="depo-img-6" data-editable="depo-6" src=""><img loading="lazy" id="depo-img-7" data-editable="depo-7" src=""><img loading="lazy" id="depo-img-8" data-editable="depo-8" src=""><img loading="lazy" id="depo-img-9" data-editable="depo-9" src="">
+	<img loading="lazy" id="depo-img-10" data-editable="depo-10" src=""><img loading="lazy" id="depo-img-11" data-editable="depo-11" src=""><img loading="lazy" id="depo-img-12" data-editable="depo-12" src=""><img loading="lazy" id="depo-img-13" data-editable="depo-13" src=""><img loading="lazy" id="depo-img-14" data-editable="depo-14" src="">
 	<span id="depo-count-val" data-editable="depo-count">0</span>
-	<img id="gal-img-0" data-editable="gal-0" src=""><img id="gal-img-1" data-editable="gal-1" src=""><img id="gal-img-2" data-editable="gal-2" src=""><img id="gal-img-3" data-editable="gal-3" src=""><img id="gal-img-4" data-editable="gal-4" src="">
-	<img id="gal-img-5" data-editable="gal-5" src=""><img id="gal-img-6" data-editable="gal-6" src=""><img id="gal-img-7" data-editable="gal-7" src=""><img id="gal-img-8" data-editable="gal-8" src=""><img id="gal-img-9" data-editable="gal-9" src="">
-	<img id="gal-img-10" data-editable="gal-10" src=""><img id="gal-img-11" data-editable="gal-11" src=""><img id="gal-img-12" data-editable="gal-12" src=""><img id="gal-img-13" data-editable="gal-13" src=""><img id="gal-img-14" data-editable="gal-14" src="">
-	<img id="gal-img-15" data-editable="gal-15" src=""><img id="gal-img-16" data-editable="gal-16" src=""><img id="gal-img-17" data-editable="gal-17" src=""><img id="gal-img-18" data-editable="gal-18" src=""><img id="gal-img-19" data-editable="gal-19" src="">
+	<img loading="lazy" id="gal-img-0" data-editable="gal-0" src=""><img loading="lazy" id="gal-img-1" data-editable="gal-1" src=""><img loading="lazy" id="gal-img-2" data-editable="gal-2" src=""><img loading="lazy" id="gal-img-3" data-editable="gal-3" src=""><img loading="lazy" id="gal-img-4" data-editable="gal-4" src="">
+	<img loading="lazy" id="gal-img-5" data-editable="gal-5" src=""><img loading="lazy" id="gal-img-6" data-editable="gal-6" src=""><img loading="lazy" id="gal-img-7" data-editable="gal-7" src=""><img loading="lazy" id="gal-img-8" data-editable="gal-8" src=""><img loading="lazy" id="gal-img-9" data-editable="gal-9" src="">
+	<img loading="lazy" id="gal-img-10" data-editable="gal-10" src=""><img loading="lazy" id="gal-img-11" data-editable="gal-11" src=""><img loading="lazy" id="gal-img-12" data-editable="gal-12" src=""><img loading="lazy" id="gal-img-13" data-editable="gal-13" src=""><img loading="lazy" id="gal-img-14" data-editable="gal-14" src="">
+	<img loading="lazy" id="gal-img-15" data-editable="gal-15" src=""><img loading="lazy" id="gal-img-16" data-editable="gal-16" src=""><img loading="lazy" id="gal-img-17" data-editable="gal-17" src=""><img loading="lazy" id="gal-img-18" data-editable="gal-18" src=""><img loading="lazy" id="gal-img-19" data-editable="gal-19" src="">
 	<span id="gal-count-val" data-editable="gal-count">0</span>
 	</div>
 
@@ -347,14 +367,14 @@ h1,h2,h3,h4,p,blockquote,li{text-wrap:pretty}
 <p class="contato-sub" data-editable="contato-sub">Entre em contato conosco em um de nossos canais de sua preferência</p>
 <div class="contato-grid">
 <div class="contato-card">
-<svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+<svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"></path></svg>
 <h3>WhatsApp</h3>
-<a href="#" class="btn" data-editable="whatsapp-link" data-editable-text="whatsapp-btn">Agende seu horário</a>
+<a target="_blank" rel="noopener noreferrer" href="#" class="btn" data-editable="whatsapp-link" data-editable-text="whatsapp-btn">Agende seu horário</a>
 </div>
 <div class="contato-card">
-<svg viewBox="0 0 512 512"><path d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z"/></svg>
+<svg viewBox="0 0 512 512"><path d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z"></path></svg>
 <h3>Telefone</h3>
-<a href="tel:+5538998760323" style="color:#fff;font-size:18px;font-weight:600" data-editable="telefone-link" data-editable-text="telefone-numero">(38) 99876-0323</a>
+<a target="_top" href="tel:+5538998760323" style="color:#fff;font-size:18px;font-weight:600" data-editable="telefone-link" data-editable-text="telefone-numero">(38) 99876-0323</a>
 </div>
 </div>
 </div>
@@ -388,14 +408,14 @@ if(endereco){ var obs = new MutationObserver(updateMap); obs.observe(endereco, {
 <div style="text-align:left;flex:1;min-width:280px">
 <h2 style="font-size:clamp(28px,3.5vw,44px);font-weight:600;color:var(--cor-escuro);margin-bottom:16px;line-height:1.2" data-editable="insta-hashtag">#Siga Nosso Instagram</h2>
 <div style="display:inline-flex;align-items:center;gap:10px;font-family:var(--fonte-display);font-size:20px;font-weight:500;color:var(--cor-acento);margin-bottom:8px;transition:opacity .3s">
-<svg width="24" height="24" viewBox="0 0 448 512" fill="currentColor"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8z"/></svg>
-<a href="#" style="color:var(--cor-acento);font-family:var(--fonte-display);font-size:20px;font-weight:500" data-editable="insta-link" data-editable-text="insta-handle">@seuinstagram</a>
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><rect x="2" y="2" width="20" height="20" rx="5.5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+<a target="_blank" rel="noopener noreferrer" href="#" style="color:var(--cor-acento);font-family:var(--fonte-display);font-size:20px;font-weight:500" data-editable="insta-link" data-editable-text="insta-handle">@seuinstagram</a>
 </div>
 </div>
 <div style="flex-shrink:0">
 <div style="width:240px;background:#1a1a1a;border-radius:32px;padding:12px;box-shadow:0 0 0 2px #333,0 0 0 5px #1a1a1a,0 30px 50px rgba(0,0,0,.18)">
 <div style="width:66px;height:18px;background:#1a1a1a;border-radius:0 0 12px 12px;margin:0 auto 8px"></div>
-<div style="border-radius:20px;overflow:hidden;background:#fff"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='420'%3E%3Crect width='240' height='420' fill='%23F5F0EB'/%3E%3Ccircle cx='120' cy='150' r='45' fill='none' stroke='%235C4033' stroke-width='1' opacity='.15'/%3E%3Ctext x='120' y='230' text-anchor='middle' fill='%235C4033' font-family='sans-serif' font-size='12' opacity='.3'%3E@seuinstagram%3C/text%3E%3C/svg%3E" alt="Instagram" style="width:100%;aspect-ratio:9/19;object-fit:cover;display:block" src="https://pilatesamandacarvalho.com.br/wp-content/uploads/2026/03/img-mockup.avif" alt="Instagram" style="width:100%;aspect-ratio:9/19;object-fit:cover;display:block" data-editable="insta-mockup"></div>
+<div style="border-radius:20px;overflow:hidden;background:#fff"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='420'%3E%3Crect width='240' height='420' fill='%23F5F0EB'/%3E%3Ccircle cx='120' cy='150' r='45' fill='none' stroke='%235C4033' stroke-width='1' opacity='.15'/%3E%3Ctext x='120' y='230' text-anchor='middle' fill='%235C4033' font-family='sans-serif' font-size='12' opacity='.3'%3E@seuinstagram%3C/text%3E%3C/svg%3E" alt="Instagram" style="width:100%;aspect-ratio:9/19;object-fit:cover;display:block" data-editable="insta-mockup"></div>
 </div>
 </div>
 </div>
@@ -405,111 +425,166 @@ if(endereco){ var obs = new MutationObserver(updateMap); obs.observe(endereco, {
 
 <!-- Google Place ID — cole o ID do seu negócio -->
 
-<a href="#" class="wpp-float" data-editable="whatsapp-float-link" title="WhatsApp"><svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg></a>
+<a target="_blank" rel="noopener noreferrer" href="#" class="wpp-float" data-editable="whatsapp-float-link" title="WhatsApp"><svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"></path></svg></a>
 
 <script>
 window.addEventListener('scroll',()=>document.getElementById('header').classList.toggle('scrolled',window.scrollY>50));
+
+// Menu mobile
+(function(){
+var btn=document.getElementById('menuBtn'),nav=document.getElementById('nav'),header=document.getElementById('header');
+if(!btn||!nav||!header)return;
+function setMenu(open){
+nav.classList.toggle('active',open);
+btn.classList.toggle('active',open);
+header.classList.toggle('nav-open',open);
+document.body.classList.toggle('no-scroll',open);
+btn.setAttribute('aria-expanded',open?'true':'false');
+btn.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');
+}
+btn.addEventListener('click',function(){setMenu(!nav.classList.contains('active'))});
+// Logo volta ao topo (href="#" sozinho nao rola por causa do overflow-x:hidden)
+var logo=document.querySelector('.logo-img-link');
+if(logo)logo.addEventListener('click',function(e){e.preventDefault();setMenu(false);window.scrollTo({top:0,behavior:'smooth'})});
+// Fecha ao escolher uma secao, senao o menu cobre o destino da ancora.
+// A rolagem e feita na mao: o salto nativo da ancora acontece no mesmo frame
+// em que o body ainda esta travado com overflow:hidden e acaba engolido.
+nav.querySelectorAll('a').forEach(function(a){
+a.addEventListener('click',function(e){
+setMenu(false);
+var href=a.getAttribute('href')||'';
+if(href.charAt(0)!=='#'||href.length<2)return;
+var alvo=document.querySelector(href);
+if(!alvo)return;
+e.preventDefault();
+// scrollIntoView nao funciona aqui: o overflow-x:hidden em html e body cria
+// contextos de rolagem concorrentes. window.scrollTo e o unico confiavel.
+var off=parseFloat(getComputedStyle(alvo).scrollMarginTop)||0;
+var y=alvo.getBoundingClientRect().top+window.pageYOffset-off;
+window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+history.replaceState(null,'',href);
+});
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'||e.key==='Esc')setMenu(false)});
+window.addEventListener('resize',function(){if(window.innerWidth>768)setMenu(false)});
+})();
 
 // Unificar links do WhatsApp
 (function(){
 var numEl=document.querySelector('[data-editable="whatsapp-numero"]');
 if(!numEl)return;
-var num=numEl.textContent.replace(/\\D/g,'');
+var num=numEl.textContent.replace(/\D/g,'');
 if(!num)return;
 var whatsUrl='https://wa.me/'+num+'?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es';
-document.querySelectorAll('[data-editable="hero-btn-link"],[data-editable="cta-link"],[data-editable="whatsapp-link"],[data-editable="whatsapp-float-link"]').forEach(function(a){a.href=whatsUrl});
-})();
-// Depoimentos Slider — scroll infinito com setas
-(function(){
-const track=document.getElementById("depoimentosTrack"),dotsC=document.getElementById("depoimentosDots");
-const slider=document.getElementById("depoimentosSlider");
-if(!track||!dotsC||!slider)return;
-const count=parseInt(document.getElementById("depo-count-val")?.textContent||"0");
-if(count===0){slider.style.display="none";dotsC.style.display="none";return;}
-for(let i=0;i<count;i++){
-const srcEl=document.getElementById("depo-img-"+i);
-if(!srcEl||!srcEl.getAttribute("src"))continue;
-const slide=document.createElement("div");slide.className="depo-slide";
-const img=document.createElement("img");img.src=srcEl.getAttribute("src");img.alt="Depoimento "+(i+1);
-slide.appendChild(img);track.appendChild(slide);
-const dot=document.createElement("button");dot.className="depo-dot"+(i===0?" active":"");dot.onclick=()=>goTo(i);dotsC.appendChild(dot);
-}
-const slides=track.querySelectorAll(".depo-slide");
-const total=slides.length;
-if(total===0){slider.style.display="none";dotsC.style.display="none";return;}
-// Clona primeiro e ultimo para scroll infinito
-const firstClone=slides[0].cloneNode(true);const lastClone=slides[total-1].cloneNode(true);
-track.appendChild(firstClone);track.insertBefore(lastClone,slides[0]);
-let cur=1;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';
-const dots=dotsC.querySelectorAll(".depo-dot");
-let autoPlay=total>3?setInterval(next,5000):null;
-function updateDots(i){dots.forEach((dt,j)=>dt.classList.toggle("active",j===i));}
-function goTo(i){
-cur=i+1;track.style.transition="transform .5s ease";
-track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(i);
-resetAuto();
-}
-function next(){if(cur===total){cur=total+1;track.style.transition='transform .5s ease';track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(0);resetAuto();}else{goTo((cur)%total);}}
-function prev(){if(cur===1){cur=0;track.style.transition='transform .5s ease';track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(total-1);resetAuto();}else{goTo((cur-2+total)%total);}}
-function resetAuto(){if(autoPlay){clearInterval(autoPlay);autoPlay=setInterval(next,5000);}}
-track.addEventListener("transitionend",function(){
-if(cur===total+1){track.style.transition="none";cur=1;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(0);}
-if(cur===0){track.style.transition="none";cur=total;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(total-1);}
+// target=_blank e obrigatorio: a pagina roda dentro de um iframe no Elementor e
+// o WhatsApp recusa ser enquadrado (X-Frame-Options), entao sem isso o clique
+// nao faz nada.
+document.querySelectorAll('[data-editable="hero-btn-link"],[data-editable="cta-link"],[data-editable="whatsapp-link"],[data-editable="whatsapp-float-link"]').forEach(function(a){
+a.href=whatsUrl;a.target='_blank';a.rel='noopener noreferrer';
 });
-// Setas
-var prevBtn=document.createElement("button");prevBtn.className="depo-arrow depo-arrow-left";prevBtn.innerHTML="‹";prevBtn.onclick=prev;
-var nextBtn=document.createElement("button");nextBtn.className="depo-arrow depo-arrow-right";nextBtn.innerHTML="›";nextBtn.onclick=next;
-slider.appendChild(prevBtn);slider.appendChild(nextBtn);
 })();
+// Carrossel generico — scroll infinito, medido em pixels reais (funciona com
+// qualquer quantidade de slides visiveis: 3 no desktop, 1 no mobile).
+function initCarousel(o){
+var track=document.getElementById(o.track),dotsC=document.getElementById(o.dots),wrap=document.getElementById(o.wrap);
+if(!track||!dotsC||!wrap)return;
+var count=parseInt((document.getElementById(o.countId)||{}).textContent||'0',10);
+var srcs=[];
+for(var i=0;i<count;i++){
+var el=document.getElementById(o.imgPrefix+i);
+var src=el&&el.getAttribute('src');
+if(src)srcs.push(src);
+}
+var total=srcs.length;
+if(total===0){wrap.style.display='none';dotsC.style.display='none';return;}
 
-// Carrossel dinamico — scroll infinito com setas
-(function(){
-const track=document.getElementById('carouselTrack'),dotsC=document.getElementById('carouselDots');
-const carousel=document.getElementById('carousel');
-if(!track||!dotsC||!carousel)return;
-const count=parseInt(document.getElementById('gal-count-val')?.textContent||'0');
-if(count===0)return;
-for(let i=0;i<count;i++){
-const srcEl=document.getElementById('gal-img-'+i);
-if(!srcEl||!srcEl.getAttribute('src'))continue;
-const slide=document.createElement('div');slide.className='carousel-slide';
-const img=document.createElement('img');img.src=srcEl.getAttribute('src');img.alt='Foto '+(i+1);
-img.style.cssText='width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)';
-slide.appendChild(img);track.appendChild(slide);
-const dot=document.createElement('button');dot.className='carousel-dot'+(i===0?' active':'');dot.onclick=()=>goTo(i);dotsC.appendChild(dot);
+function mkSlide(src,i){
+var s=document.createElement('div');s.className=o.slideClass;
+var img=document.createElement('img');img.src=src;img.alt=o.alt+' '+(i+1);img.loading='lazy';
+if(o.imgStyle)img.style.cssText=o.imgStyle;
+s.appendChild(img);return s;
 }
-const slides=track.querySelectorAll('.carousel-slide');
-const total=slides.length;
-if(total===0)return;
-// Clona primeiro e ultimo para scroll infinito
-const firstClone=slides[0].cloneNode(true);const lastClone=slides[total-1].cloneNode(true);
-track.appendChild(firstClone);track.insertBefore(lastClone,slides[0]);
-let cur=1;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';
-const dots=dotsC.querySelectorAll('.carousel-dot');
-let autoPlay=total>3?setInterval(next,4000):null;
-function updateDots(i){dots.forEach((dt,j)=>dt.classList.toggle('active',j===i));}
-function goTo(i){
-cur=i+1;track.style.transition='transform .5s ease';
-track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(i);
-resetAuto();
-}
-function next(){if(cur===total){cur=total+1;track.style.transition='transform .5s ease';track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(0);resetAuto();}else{goTo((cur)%total);}}
-function prev(){if(cur===1){cur=0;track.style.transition='transform .5s ease';track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(total-1);resetAuto();}else{goTo((cur-2+total)%total);}}
-function resetAuto(){if(autoPlay){clearInterval(autoPlay);autoPlay=setInterval(next,4000);}}
-track.addEventListener('transitionend',function(){
-if(cur===total+1){track.style.transition='none';cur=1;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(0);}
-if(cur===0){track.style.transition='none';cur=total;track.style.transform='translateX(-'+(cur*(100/(total+2)))+'%)';updateDots(total-1);}
+
+srcs.forEach(function(src,i){
+track.appendChild(mkSlide(src,i));
+var d=document.createElement('button');d.className=o.dotClass+(i===0?' active':'');
+d.type='button';d.setAttribute('aria-label','Ir para o item '+(i+1));
+d.onclick=function(){goTo(i)};dotsC.appendChild(d);
 });
-// Setas de navegacao
-var prevBtn=document.createElement('button');prevBtn.className='carousel-arrow carousel-arrow-left';prevBtn.innerHTML='‹';prevBtn.onclick=prev;
-var nextBtn=document.createElement('button');nextBtn.className='carousel-arrow carousel-arrow-right';nextBtn.innerHTML='›';nextBtn.onclick=next;
-carousel.appendChild(prevBtn);carousel.appendChild(nextBtn);
-})();
+
+// Clones nas duas pontas (o bastante para cobrir 3 slides visiveis)
+var CL=Math.min(3,total);
+for(var c=0;c<CL;c++)track.appendChild(mkSlide(srcs[c],c));
+for(var c=0;c<CL;c++)track.insertBefore(mkSlide(srcs[total-1-c],total-1-c),track.firstChild);
+
+var dots=dotsC.querySelectorAll('.'+o.dotClass);
+var cur=CL,animating=false;
+
+function slideW(){return track.children[0].getBoundingClientRect().width}
+function perView(){var w=slideW();return w?Math.max(1,Math.round(wrap.getBoundingClientRect().width/w)):1}
+function apply(anim){
+track.style.transition=anim?'transform .5s ease':'none';
+track.style.transform='translate3d(-'+(cur*slideW())+'px,0,0)';
+if(!anim)track.offsetHeight; // forca reflow para o salto ser instantaneo
+}
+function realIndex(){var i=(cur-CL)%total;return i<0?i+total:i}
+function updateDots(){var r=realIndex();dots.forEach(function(d,j){d.classList.toggle('active',j===r)})}
+
+// Timer em vez de transitionend: o evento nao dispara se a transicao for
+// cancelada (resize/load no meio do movimento) e o carrossel travaria.
+var tmr;
+function move(){
+animating=true;apply(true);updateDots();resetAuto();
+clearTimeout(tmr);
+tmr=setTimeout(function(){
+animating=false;
+if(cur>=CL+total){cur-=total;apply(false)}
+else if(cur<CL){cur+=total;apply(false)}
+},520);
+}
+function goTo(i){if(animating)return;cur=CL+i;move()}
+function next(){if(animating)return;cur++;move()}
+function prev(){if(animating)return;cur--;move()}
+
+var auto=null;
+function tick(){if(total>perView())next()}
+function startAuto(){if(!auto)auto=setInterval(tick,o.interval)}
+function resetAuto(){if(auto){clearInterval(auto);auto=null}startAuto()}
+startAuto();
+wrap.addEventListener('mouseenter',function(){if(auto){clearInterval(auto);auto=null}});
+wrap.addEventListener('mouseleave',startAuto);
+
+// Setas
+var prevBtn=document.createElement('button');prevBtn.type='button';prevBtn.className=o.arrowClass+' '+o.arrowClass+'-left';prevBtn.innerHTML='‹';prevBtn.setAttribute('aria-label','Anterior');prevBtn.onclick=prev;
+var nextBtn=document.createElement('button');nextBtn.type='button';nextBtn.className=o.arrowClass+' '+o.arrowClass+'-right';nextBtn.innerHTML='›';nextBtn.setAttribute('aria-label','Proximo');nextBtn.onclick=next;
+wrap.appendChild(prevBtn);wrap.appendChild(nextBtn);
+
+// Swipe no mobile
+var x0=null,y0=null;
+wrap.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+wrap.addEventListener('touchend',function(e){
+if(x0===null)return;
+var dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;
+if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){dx<0?next():prev()}
+x0=null;y0=null;
+},{passive:true});
+
+// Recalcula ao girar a tela / redimensionar
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){if(!animating)apply(false)},150)});
+
+// Posicao inicial (reaplica quando as imagens definirem a largura final)
+apply(false);
+window.addEventListener('load',function(){if(!animating)apply(false)});
+}
+
+initCarousel({wrap:'depoimentosSlider',track:'depoimentosTrack',dots:'depoimentosDots',countId:'depo-count-val',imgPrefix:'depo-img-',slideClass:'depo-slide',dotClass:'depo-dot',arrowClass:'depo-arrow',alt:'Depoimento',interval:5000});
+
+initCarousel({wrap:'carousel',track:'carouselTrack',dots:'carouselDots',countId:'gal-count-val',imgPrefix:'gal-img-',slideClass:'carousel-slide',dotClass:'carousel-dot',arrowClass:'carousel-arrow',alt:'Foto do espaco',interval:4000,imgStyle:'width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--raio)'});
 </script>
 <!-- CUSTOM_FOOTER -->
-</body>
-</html>
-`,
+
+
+</body></html>`,
   planos: `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>

@@ -107,6 +107,18 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - ⚠️ Sites já publicados só recebem a correção após uma nova publicação (do builder ou do CMS)
 - ✅ Enviado ao GitHub no commit `e0f6cec`
 
+### 13. Template da landing substituído pela versão aprovada (13/08/2026)
+- O usuário aprovou o arquivo `index (5).html` (Downloads) como referência de carrossel e responsividade
+- Template landing do `templates-data.js` foi **substituído pela estrutura da referência**, com o conteúdo padrão restaurado (a referência era o site de um cliente real — Instituto Porto: textos, fotos base64, telefone e instagram foram removidos/restaurados para os padrões do template)
+- Melhorias adotadas da referência:
+  - Carrossel **infinito e genérico** (fotos do espaço e depoimentos): medido em pixels, funciona com qualquer quantidade de slides (3 no desktop, 1 no mobile), com setas, dots, autoplay, swipe e resize
+  - Carrossel agora é alimentado pelas fotos da galeria (`gal-*`) — antes usava 8 imagens estáticas (`galeria-1..8`)
+  - Menu mobile em tela cheia corrigido (100dvh, bloqueio de scroll, fechamento por Escape/resize/click, correção do backdrop-filter)
+  - Seção "Além disso" com DOM em pares foto+texto; xadrez no desktop via `order`; mobile com `order:0!important` (intercalado)
+  - Cards com tipografia maior no celular, mapa que se atualiza sozinho quando o endereço muda, links do WhatsApp unificados com `target=_blank`
+- Validações: sintaxe OK, chaves data-editable idênticas, marcadores CUSTOM presentes, ids críticos presentes, 0 restos de conteúdo do cliente, 0 base64
+- **Não enviado ao GitHub ainda** (commit pendente)
+
 ---
 
 ## Onde paramos / próximos passos
