@@ -75,10 +75,9 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - O fluxo "Criar site para cliente" (sem pagamento) continua disponível: botão **➕ Criar Site para Cliente** no painel admin abre o builder com `?admin=1`
 - ✅ Enviado ao GitHub no commit `31509e0`
 
-### 8. ⚠️ TESTE — preço reduzido para R$5 (13/08/2026)
-- Valor de R$300 → **R$5** em `webbuilder.html` (cards, botão, tela de investimento) e em `api/criar-cobranca.js` (`value: 5`)
-- ✅ Enviado ao GitHub no commit `7105f36`
-- **É TEMPORÁRIO — reverter para R$300 assim que terminar os testes!**
+### 8. ⚠️ TESTE — preço reduzido para R$5 (13/08/2026) → ✅ REVERTIDO
+- Valor de R$300 → **R$5** em `webbuilder.html` (cards, botão, tela de investimento) e em `api/criar-cobranca.js` (`value: 5`) — commit `7105f36`
+- Revertido para **R$300** em 13/08/2026 (4 pontos conferidos: cards, botão, tela de investimento, value da cobrança)
 
 ### 9. Publicação grátis agora é feita pelo servidor (13/08/2026)
 - **Problema:** "Publicar Grátis" usava o token da Vercel do navegador do cliente (localStorage) — ninguém tinha, dava "Erro interno: token não encontrado"

@@ -108,7 +108,7 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         customer: customer.id,
         billingType: 'PIX',
-        value: 5,
+        value: 300,
         dueDate: dueDate,
         description: 'Site - ' + studio,
         postalService: false,
