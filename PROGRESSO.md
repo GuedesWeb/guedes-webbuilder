@@ -77,6 +77,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 
 ### 8. ⚠️ TESTE — preço reduzido para R$5 (13/08/2026)
 - Valor de R$300 → **R$5** em `webbuilder.html` (cards, botão, tela de investimento) e em `api/criar-cobranca.js` (`value: 5`)
+- ✅ Enviado ao GitHub no commit `7105f36`
 - **É TEMPORÁRIO — reverter para R$300 assim que terminar os testes!**
 
 ---
