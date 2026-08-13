@@ -105,7 +105,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Seção "Além disso, nossas aulas são indicadas para:" (`.aulas-grid`): no celular agora fica **intercalado imagem-texto-imagem-texto** (via `order` no media query — desktop preservado)
 - Cards de contato (`.contato-grid`): empilhados no celular, com cantos arredondados ajustados
 - ⚠️ Sites já publicados só recebem a correção após uma nova publicação (do builder ou do CMS)
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `e0f6cec`
 
 ---
 
