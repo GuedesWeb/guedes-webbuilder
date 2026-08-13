@@ -67,7 +67,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Novo endpoint `api/admin-resetar-senha.js` (auth admin): gera nova senha para o cliente (a atual deixa de funcionar), registrado no `vercel.json`
 - ⚠️ Trade-off de segurança: a senha fica armazenada em texto puro no KV (necessário para o admin vê-la na listagem). Alternativa seria armazenar só o hash + botão de reset — avalie
 - Testado com KV simulado: enriquecimento por lead ✅, reset 200 ✅, reset inexistente 404 ✅
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `22acb50`
 
 ---
 
