@@ -73,7 +73,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - O modo admin do builder não ativa mais sozinho pela presença do token — só ativa pelo link específico `/?admin=1`
 - No domínio raiz, o admin (e qualquer visitante) vê a tela normal de boas-vindas com pagamento
 - O fluxo "Criar site para cliente" (sem pagamento) continua disponível: botão **➕ Criar Site para Cliente** no painel admin abre o builder com `?admin=1`
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `31509e0`
 
 ---
 
