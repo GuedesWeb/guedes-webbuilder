@@ -58,7 +58,7 @@ O wizard de etapas pós-pré-configuração (Identidade, Cores, Imagens, Contato
 - Novo arquivo: `api/criar-acesso-cliente.js` (registrado no `vercel.json` com 512MB)
 - ⚠️ O endpoint é aberto (sem autenticação), como `salvar-lead` — risco baixo (só cria registros no KV), mas se quiser posso exigir confirmação de pagamento via Asaas
 - Testado com KV simulado: criação 201 + senha, repetição 200, inválido 400 ✅
-- **Não enviado ao GitHub ainda** (commit pendente)
+- ✅ Enviado ao GitHub no commit `f65f065`
 
 ---
 
